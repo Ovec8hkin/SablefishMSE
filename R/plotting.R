@@ -1,4 +1,4 @@
-plot_ssb <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALSE, common_trajectory=64, base_hcr="F40"){
+plot_ssb <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALSE, common_trajectory=64, base_hcr="F40", highlight=NULL){
     group_columns <- colnames(data)
     group_columns <- group_columns[! group_columns %in% c("sim", "spbio", "biomass")]
     # Plot spawning biomass from OM and EM
@@ -8,7 +8,16 @@ plot_ssb <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALSE, common_trajec
         group_by(across(all_of(group_columns))) %>%
         median_qi(spbio, .width=c(0.50, 0.80), .simple_names=FALSE) %>%
         # Reformat ggdist tibble into long format
-        reformat_ggdist_long(n=length(group_columns))
+        reformat_ggdist_long(n=length(group_columns)) %>%
+        mutate(
+            color_group = as.character(hcr) 
+        )
+
+    if(!is.null(highlight)){
+        d <- d %>% mutate(
+            color_group = ifelse(hcr %in% highlight, color_group, "Other")
+        )
+    }
 
     hcr1 <- as.character((d %>% pull(hcr) %>% unique)[1])
 
@@ -19,25 +28,41 @@ plot_ssb <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALSE, common_trajec
 
     base_hcr_d <- d %>% filter(L1 == "naa", hcr == base_hcr)
 
+    colors <- hcr_colors
+    sizes <- rep(0.85, length(colors))
+    names(sizes) <- names(colors)
+    if(!is.null(highlight)){
+        colors <- hcr_colors[highlight]
+        colors <- c(colors, "Other" = "grey70")
+
+        sizes <- c(rep(1.2, length(highlight)), 0.85)
+        names(sizes) <- c(highlight, "Other")
+    }
+
     plot <- ggplot(d %>% filter(L1 == "naa")) + 
-        geom_lineribbon(data = base_hcr_d, aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
-        geom_line(aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
+        geom_lineribbon(data = base_hcr_d, aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group), size=0.85)+
+        geom_line(aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group, size=color_group))+
+        geom_line(
+            data = d %>% filter(color_group != "Other", time > common_trajectory-1), 
+            aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group, size=color_group)
+        )+
         geom_line(data = common, aes(x=time, y=median), size=0.85)+
         geom_vline(data=common, aes(xintercept=common), linetype="dashed")+
         # geom_hline(yintercept=121.4611, linetype="dashed")+
         scale_fill_brewer(palette="Blues")+
-        scale_color_manual(values=hcr_colors)+
+        scale_color_manual(values=colors)+
+        scale_size_manual(values=sizes)+
         scale_y_continuous(limits=c(0, 500))+
         labs(x="Year", y="SSB")+
         coord_cartesian(expand=0)+
-        guides(color=guide_legend(title="Management \n Strategy", nrow=2), fill="none")
+        guides(color=guide_legend(title="Management \n Strategy", nrow=2), fill="none", size="none")
 
     if(show_est){
         plot <- plot + geom_pointrange(data = d %>% filter(L1 == "naa_est"), aes(x=time, y=median, ymin=lower, ymax=upper, color=hcr), alpha=0.35)
     }
 
     if(!is.na(v2) && is.na(v3)){
-        plot <- plot + facet_wrap(~.data[[v2]])+guides(fill="none")
+        plot <- plot + facet_wrap(vars(.data[[v2]]))+guides(fill="none")
     }else if(!is.na(v2) && !is.na(v3)){
         plot <- plot + facet_grid(rows=vars(.data[[v2]]), cols=vars(.data[[v3]]))+guides(fill="none")
     }
@@ -47,9 +72,9 @@ plot_ssb <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALSE, common_trajec
 
 plot_relative_ssb <- function(data, v1="hcr", v2=NA, common_trajectory=64, base_hcr="No Fishing"){
     group_columns <- colnames(data)
-    group_columns <- group_columns[! group_columns %in% c("sim", "spbio")]
+    group_columns <- group_columns[! group_columns %in% c("sim", "spbio", "biomass")]
     
-    base_ssb_data <- data %>% filter(hcr == base_hcr)
+    base_ssb_data <- data %>% filter(hcr == base_hcr, L1 == "spbio")
     rel_ssb <- data %>% left_join(base_ssb_data, by=c("time", "sim", "L1", "om"), suffix=c("", ".nofish")) %>%
         filter(time > common_trajectory) %>%
         mutate(
@@ -147,14 +172,23 @@ plot_recruitment <- function(data, v1="hcr", v2=NA, show_est=FALSE, common_traje
     return(plot)
 }
 
-plot_landed_catch <- function(data, v1="hcr", v2=NA, v3=NA, by_fleet=FALSE, common_trajectory=64, base_hcr="F40"){
+plot_landed_catch <- function(data, v1="hcr", v2=NA, v3=NA, by_fleet=FALSE, common_trajectory=64, base_hcr="F40", highlight=NULL){
     group_columns <- colnames(data)
     group_columns <- group_columns[! group_columns %in% c("sim", "catch", "total_catch")]
 
     c <- data %>%
         group_by(across(all_of(group_columns))) %>%
         median_qi(catch, total_catch, .width=c(0.50, 0.80), .simple_names=TRUE) %>%
-        reformat_ggdist_long(n=length(group_columns))
+        reformat_ggdist_long(n=length(group_columns)) %>%
+        mutate(
+            color_group = as.character(hcr) 
+        )
+
+    if(!is.null(highlight)){
+        c <- c %>% mutate(
+            color_group = ifelse(hcr %in% highlight, color_group, "Other")
+        )
+    }
     
     hcr1 <- as.character((c %>% pull(hcr) %>% unique)[1])
     traj_column <- ifelse(is.na(v3), v2, v3)
@@ -170,17 +204,33 @@ plot_landed_catch <- function(data, v1="hcr", v2=NA, v3=NA, by_fleet=FALSE, comm
 
     base_hcr_c <- c %>% filter(hcr == base_hcr)
 
-    plot <- ggplot(c %>% left_join(traj, by=traj_column) %>% filter(time > common-1))+
+    colors <- hcr_colors
+    sizes <- rep(0.85, length(colors))
+    names(sizes) <- names(colors)
+    if(!is.null(highlight)){
+        colors <- hcr_colors[highlight]
+        colors <- c(colors, "Other" = "grey70")
+
+        sizes <- c(rep(1.2, length(highlight)), 0.85)
+        names(sizes) <- c(highlight, "Other")
+    }
+
+    plot <- ggplot(c %>% filter(time > common_trajectory-1))+
         geom_lineribbon(data = base_hcr_c, aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
-        geom_line(aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
+        geom_line(aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group, size=color_group))+
+        geom_line(
+            data = c %>% filter(color_group != "Other", time > common_trajectory-1), 
+            aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group, size=color_group)
+        )+
         geom_line(data = common, aes(x=time, y=median), size=0.85)+
         geom_vline(data=common, aes(xintercept=common), linetype="dashed")+ 
         scale_fill_brewer(palette="Blues")+
-        scale_color_manual(values=hcr_colors)+
+        scale_color_manual(values=colors)+
+        scale_size_manual(values=sizes)+    
         # scale_y_continuous(limits=c(0, 60))+
         labs(x="Year", y="Catch (mt)", color="Management \n Strategy")+
         coord_cartesian(expand=0, ylim=c(0, 60))+
-        guides(color=guide_legend(title="Management \n Strategy", nrow=2), fill="none")
+        guides(color=guide_legend(title="Management \n Strategy", nrow=2), fill="none", size="none")
 
     if(!is.na(v2) && is.na(v3)){
         plot <- plot + facet_wrap(~.data[[v2]])+guides(fill="none")
@@ -196,7 +246,7 @@ plot_landed_catch <- function(data, v1="hcr", v2=NA, v3=NA, by_fleet=FALSE, comm
 
 }
 
-plot_ssb_catch <- function(ssb_data, catch_data, v1="hcr", v2=NA, v3=NA, common_trajectory=64, base_hcr="F40"){
+plot_ssb_catch <- function(ssb_data, catch_data, v1="hcr", v2=NA, v3=NA, common_trajectory=64, base_hcr="F40", flip_facet=FALSE, highlight=NULL){
 
     group_columns <- colnames(ssb_data)
     group_columns <- group_columns[! group_columns %in% c("sim", "spbio", "biomass")]
@@ -207,7 +257,16 @@ plot_ssb_catch <- function(ssb_data, catch_data, v1="hcr", v2=NA, v3=NA, common_
         group_by(across(all_of(group_columns))) %>%
         median_qi(spbio, .width=c(0.50, 0.80), .simple_names=FALSE) %>%
         # Reformat ggdist tibble into long format
-        reformat_ggdist_long(n=length(group_columns))
+        reformat_ggdist_long(n=length(group_columns)) %>%
+        mutate(
+            color_group = as.character(hcr) 
+        )
+
+    if(!is.null(highlight)){
+        ssb_d <- ssb_d %>% mutate(
+            color_group = ifelse(hcr %in% highlight, color_group, "Other")
+        )
+    }
 
     hcr1 <- as.character((ssb_d %>% pull(hcr) %>% unique)[1])
 
@@ -223,7 +282,16 @@ plot_ssb_catch <- function(ssb_data, catch_data, v1="hcr", v2=NA, v3=NA, common_
     catch_d <- catch_data %>%
         group_by(across(all_of(group_columns))) %>%
         median_qi(total_catch, .width=c(0.50, 0.80), .simple_names=TRUE) %>%
-        reformat_ggdist_long(n=length(group_columns))
+        reformat_ggdist_long(n=length(group_columns)) %>%
+        mutate(
+            color_group = as.character(hcr) 
+        )
+
+    if(!is.null(highlight)){
+        catch_d <- catch_d %>% mutate(
+            color_group = ifelse(hcr %in% highlight, color_group, "Other")
+        )
+    }
     
     hcr1 <- as.character((catch_d %>% pull(hcr) %>% unique)[1])
     traj_column <- ifelse(is.na(v3), v2, v3)
@@ -238,18 +306,34 @@ plot_ssb_catch <- function(ssb_data, catch_data, v1="hcr", v2=NA, v3=NA, common_
 
     base_hcr <- d %>% filter(hcr == base_hcr)
 
+    colors <- hcr_colors
+    sizes <- rep(0.85, length(colors))
+    names(sizes) <- names(colors)
+    if(!is.null(highlight)){
+        colors <- hcr_colors[highlight]
+        colors <- c(colors, "Other" = "grey70")
+
+        sizes <- c(rep(1.2, length(highlight)), 0.85)
+        names(sizes) <- c(highlight, "Other")
+    }
+
     plot <- ggplot(d) + 
         geom_line(data = base_hcr, aes(x=time, y=median, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
-        geom_line(aes(x=time, y=median, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
+        geom_line(aes(x=time, y=median, group=.data[[v1]], color=color_group, size=color_group))+
+        geom_line(
+            data = d %>% filter(color_group != "Other", time > common_trajectory-1), 
+            aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group, size=color_group)
+        )+
         geom_line(data = common, aes(x=time, y=median), size=0.85)+
         geom_vline(data=common, aes(xintercept=common), linetype="dashed")+
         # geom_hline(yintercept=121.4611, linetype="dashed")+
         scale_fill_brewer(palette="Blues")+
-        scale_color_manual(values=hcr_colors)+
+        scale_color_manual(values=colors)+
+        scale_size_manual(values=sizes)+
         # scale_y_continuous(limits=c(0, 320))+
         labs(x="Year", y="1000s Metric Tons")+
         coord_cartesian(expand=0)+
-        guides(color=guide_legend("Management \n Strategy", nrow=2), fill="none")+
+        guides(color=guide_legend("Management \n Strategy", nrow=2), fill="none", size="none")+
         facet_grid(rows=vars(L1), cols=vars(.data[[v2]]), scales="free_y")+
         ggh4x::facetted_pos_scales(
             y = list(
@@ -257,6 +341,11 @@ plot_ssb_catch <- function(ssb_data, catch_data, v1="hcr", v2=NA, v3=NA, common_
                 scale_y_continuous(limits=c(0, 500))
             )
         )
+
+    if(flip_facet){
+        plot <- plot + facet_grid(rows=vars(.data[[v2]]), cols=vars(L1), scales="free_y")
+    }
+    
     return(plot+custom_theme)
 }
 
@@ -572,22 +661,44 @@ plot_mse_summary <- function(model_runs, extra_columns, dem_params, hcr_filter, 
     return(plot+custom_theme)
 }
 
-plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_relative=FALSE, summary_hcr="F40"){
+plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_relative=FALSE, summary_hcr="F40", highlight=NULL){
 
     metric_minmax = perf_data %>% group_by(name) %>% summarise(min=min(lower), max=max(upper))
     axis_scalar <- c(0.9, 1.1)
 
     summary <- perf_data %>% filter(!is.infinite(median), hcr != "No Fishing") %>% summarise(median=mean(median))
 
+    perf_data <- perf_data %>% mutate(color_group = as.character(hcr))
+    if(!is.null(highlight)){
+        perf_data <- perf_data %>% mutate(
+            color_group = ifelse(hcr %in% highlight, color_group, "Other")
+        )
+    }
+    # perf_data <- perf_data %>% mutate(color_group = factor(color_group))
+
+    # colors <- rank_colors
+    # if(!is.null(highlight)){
+    #     colors <- rank_colors[highlight]
+    #     colors <- c(colors, "Other" = "grey70")
+    # }
+
+    colors <- rank_colors
+    if(!is.null(highlight)){
+        colors <- c(hcr_colors, "Other" = "grey70")
+        colors <- colors[perf_data$color_group %>% unique]
+    }
+
+    color_var <- ifelse(is.null(highlight), "rank", "color_group")
+
     plot <- ggplot(perf_data)+
                 geom_vline(data=summary, aes(xintercept = median), color="black")+
                 scale_shape_discrete()+
-                scale_color_manual(values=rank_colors)+
+                scale_color_manual(values=colors)+
                 # scale_color_manual(values=hcr_colors)+
                 # facet_wrap(vars(name), scales="free_x")+
                 labs(y="", x="", shape="OM", color="Performance Order")+
                 coord_cartesian(expand=0)+
-                guides(shape="none", color=guide_legend(nrow=1))
+                guides(shape="none", color=guide_legend(nrow=1))+
                 theme(
                     plot.margin = margin(0.25, 1, 0.25, 0.25, "cm"),
                     panel.spacing.x = unit(5, "cm"),
@@ -597,11 +708,11 @@ plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_rel
 
     if(is.character(v2)){
         plot <- plot + 
-                    geom_pointinterval(aes(x=median, xmin=lower, xmax=upper, y=.data[[v1]], color=rank, shape=.data[[v2]]), point_size=3, position="dodge")+
+                    geom_pointinterval(aes(x=median, xmin=lower, xmax=upper, y=.data[[v1]], color=.data[[color_var]], shape=.data[[v2]]), point_size=3, position="dodge")+
                     facet_grid(rows=vars(.data[[v2]]), cols=vars(name), scales="free_x")
     }else{
         plot <- plot + 
-                    geom_pointinterval(aes(x=median, xmin=lower, xmax=upper, y=.data[[v1]], color=rank), point_size=3, position="dodge")+
+                    geom_pointinterval(aes(x=median, xmin=lower, xmax=upper, y=.data[[v1]], color=.data[[color_var]]), point_size=3, position="dodge")+
                     facet_wrap(~name, scales="free_x")
     }
 
@@ -624,7 +735,7 @@ plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_rel
                     scale_x_continuous(limits=c(0, 1.25)),
                     scale_x_continuous(limits=c(0, 3.5)),
                     scale_x_continuous(limits=c(0, 2)),
-                    scale_x_continuous(limits=c(0.75, 2.5)),
+                    scale_x_continuous(limits=c(0, 1.25)),
                     scale_x_continuous(limits=c(0.5, 1.25))
                 )
             )
@@ -747,10 +858,10 @@ set_hcr_colors <- function(hcrs){
 
 set_hcr_colors2 <- function(hcrs){
     hcr_colors <- c(
-        "F40" = "#E31C39",
+        "F40" = "black",
         "F50" = "#EA8115",
         "B40/F50" = "#1C39E3",
-        "No Fishing" = "#000000",
+        "No Fishing" = "#E31C39",
         "F40 +/- 5%" = "#30AF6C",
         "F40 +/- 10%" = "#8115EA",
         "15k Harvest Cap" = "#29C1D6",
@@ -763,7 +874,7 @@ set_hcr_colors2 <- function(hcrs){
 }
 
 
-rank_colors <- c(
+rank_colors_small <- c(
     "#D55E00",
     "#FF740A",
     "#FF8B33",
@@ -775,6 +886,24 @@ rank_colors <- c(
     "#0AA5FF",
     "#008EE0",
     "#0072B2"
+)
+
+rank_colors_large <- c(
+    "#8F3E00",
+    "#B85000",
+    "#D55E00",
+    "#FF740A",
+    "#FF8B33",
+    "#FFA35C",
+    "#FFBA85",
+    "#AAAAAA",
+    "#5CC3FF",
+    "#33B4FF",
+    "#0AA5FF",
+    "#008EE0",
+    "#0072B2",
+    "#005A8F",
+    "#004166"
 )
 
 custom_theme <- ggplot2::theme_bw()+ggplot2::theme(
