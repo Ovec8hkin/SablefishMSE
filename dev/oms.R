@@ -1,6 +1,5 @@
-
 # Define recruitment to occur via historical resampling
-assessment <- dget("data/sablefish_assessment_2023.rdat")
+assessment <- dget(file.path(here::here(), "data", "sablefish_assessment_2023.rdat"))
 hist_recruits <- assessment$natage.female[,1]*2
 
 dp_y <- afscOM::subset_dem_params(sable_om$dem_params, 64, d=1, drop=FALSE)
@@ -27,6 +26,15 @@ ref_naa <- compute_naapr(
     sel =  joint_selret$sel[,,1,,drop=FALSE],
     ret = joint_selret$ret[,,1,,drop=FALSE],
     F = rp$Fref
+)
+ref_naa0 <- compute_naapr(
+    nages=30,
+    mort = dp_y$mort[,,1,],
+    mat = dp_y$mat[,,1,],
+    waa = dp_y$waa[,,1,],
+    sel =  joint_selret$sel[,,1,,drop=FALSE],
+    ret = joint_selret$ret[,,1,,drop=FALSE],
+    F = 0
 )
 sbpr <- compute_sbpr(
     nages=30,

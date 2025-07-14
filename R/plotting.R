@@ -319,17 +319,17 @@ plot_ssb_catch <- function(ssb_data, catch_data, v1="hcr", v2=NA, v3=NA, common_
 
     plot <- ggplot(d) + 
         geom_line(data = base_hcr, aes(x=time, y=median, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
-        geom_line(aes(x=time, y=median, group=.data[[v1]], color=color_group, size=color_group))+
-        geom_line(
-            data = d %>% filter(color_group != "Other", time > common_trajectory-1), 
-            aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group, size=color_group)
-        )+
+        geom_line(aes(x=time, y=median, group=.data[[v1]], color=hcr), size=0.85)+
+        # geom_line(
+        #     data = d %>% filter(color_group != "Other", time > common_trajectory-1), 
+        #     aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group, size=color_group)
+        # )+
         geom_line(data = common, aes(x=time, y=median), size=0.85)+
         geom_vline(data=common, aes(xintercept=common), linetype="dashed")+
         # geom_hline(yintercept=121.4611, linetype="dashed")+
         scale_fill_brewer(palette="Blues")+
         scale_color_manual(values=colors)+
-        scale_size_manual(values=sizes)+
+        # scale_size_manual(values=sizes)+
         # scale_y_continuous(limits=c(0, 320))+
         labs(x="Year", y="1000s Metric Tons")+
         coord_cartesian(expand=0)+
@@ -666,7 +666,23 @@ plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_rel
     metric_minmax = perf_data %>% group_by(name) %>% summarise(min=min(lower), max=max(upper))
     axis_scalar <- c(0.9, 1.1)
 
+    # hist_abcs <- c(44200, 37100, 33400, 28800, 25200, 25000, 28800, 25300, 19600, 17200, 16800, 15900, 17200, 16900, 17300, 20900, 23000, 21000, 21000, 20100, 18000, 16100, 15200, 16000, 17200, 16200, 13700, 13700, 11800, 13100, 15000, 15100, 22000, 29600, 34500, 40500)
+
     summary <- perf_data %>% filter(!is.infinite(median), hcr != "No Fishing") %>% summarise(median=mean(median))
+    # summary$median <- rep(
+    #     c(
+    #         18538/1000,#median(assessment$t.series[,"Catch_HAL"]+assessment$t.series[,"Catch_TWL"]),
+    #         perf_data %>% ungroup() %>% filter(!is.infinite(median), hcr != "No Fishing", name=="Catch AAV") %>% summarise(median=mean(median)) %>% as.numeric,
+    #         # median(assessment$t.series[,"spbiom"]),
+    #         105.935,
+    #         median(apply(assessment$natage.female, 1, \(x) compute_average_age(x, 2:31))),
+    #         sum(assessment$t.series[,"spbiom"] < 105)/length(assessment$t.series[,"spbiom"])
+    #     ),
+    #     length(perf_data$om %>% unique)*2
+    # )
+    if(is_relative){
+        summary$median <- rep(1, nrow(summary))
+    }
 
     perf_data <- perf_data %>% mutate(color_group = as.character(hcr))
     if(!is.null(highlight)){
@@ -691,12 +707,12 @@ plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_rel
     color_var <- ifelse(is.null(highlight), "rank", "color_group")
 
     plot <- ggplot(perf_data)+
-                geom_vline(data=summary, aes(xintercept = median), color="black")+
+                geom_vline(data=summary, aes(xintercept = median), color="grey50", linetype="dashed")+
                 scale_shape_discrete()+
                 scale_color_manual(values=colors)+
                 # scale_color_manual(values=hcr_colors)+
                 # facet_wrap(vars(name), scales="free_x")+
-                labs(y="", x="", shape="OM", color="Performance Order")+
+                labs(y="", x="", shape="OM", color="Relative MS Order")+
                 coord_cartesian(expand=0)+
                 guides(shape="none", color=guide_legend(nrow=1))+
                 theme(
@@ -721,7 +737,7 @@ plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_rel
                 ggh4x::facetted_pos_scales(
                     x = list(
                         scale_x_continuous(limits=c(0, 55)),
-                        scale_x_continuous(limits=c(0, 0.06), breaks=c(0, 0.02, 0.04, 0.06)),
+                        scale_x_continuous(limits=c(0, 0.08), breaks=c(0, 0.025, 0.05, 0.075)),
                         # scale_x_continuous(limits=c(0, 1), breaks=c(0, 0.50, 1.0)),
                         scale_x_continuous(limits=c(0, 550), breaks=c(0, 150, 300, 450)),
                         scale_x_continuous(limits=c(0, 15)),

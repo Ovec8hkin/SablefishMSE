@@ -72,13 +72,16 @@ relativize_performance <- function(data, rel_column, value_column, rel_value, gr
     if(is.null(rel_value)){
         return(data)
     }
+
+    total_cols <- ncol(data)-1
     
     return(
         data %>%
             group_by(across(all_of(grouping))) %>%
             pivot_wider(names_from=rel_column, values_from = value_column) %>%
             mutate(across(everything(), ~ . / eval(rlang::parse_expr(rel_value)))) %>%
-            pivot_longer((length(grouping)+1):(ncol(.)), names_to=rel_column, values_to=value_column)
+            # pivot_longer((length(grouping)+1):(ncol(.)), names_to=rel_column, values_to=value_column)
+            pivot_longer(total_cols:(ncol(.)), names_to=rel_column, values_to=value_column)
     )
 }
 
@@ -175,7 +178,7 @@ scale_and_rank <- function(data, col_name){
                 rank = ifelse(
                             name %in% c(
                                 "Catch AAV", 
-                                "Proportion of Years with Low SSB", 
+                                "Proportion of Years SSB < B35", 
                                 "Recovery Time"
                             ), 
                             factor(desc(row_number())), 

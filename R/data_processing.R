@@ -401,8 +401,8 @@ get_reference_points <- function(model_runs, extra_columns, hcr_filter, om_filte
 get_b40_timeseries <- function(model_runs, extra_columns, hcr_filter, om_filter){
 
     get_rps <- function(om_name, hcr_name, recruitment, prop_fs){
-        om <- om_list[which(om_names == om_name)]
-        hcr <- hcr_list[which(hcr_names == hcr_name)]
+        om <- om_list[which(publication_oms == om_name)]
+        hcr <- hcr_list[which(publication_hcrs == hcr_name)]
 
         om <- om[[1]]
 
@@ -425,13 +425,13 @@ get_b40_timeseries <- function(model_runs, extra_columns, hcr_filter, om_filter)
         return(ref_pts$Bref)
     }
 
-    avg_recruitment <- get_recruits(model_runs, extra_columns2, hcr_filter, om_filter) %>% 
+    avg_recruitment <- get_recruits(model_runs, extra_columns, hcr_filter, om_filter) %>% 
         filter(L1 == "naa") %>% 
         group_by(sim, om, hcr) %>%
         mutate(avg_rec = unlist(lapply(slide(rec, ~.x, .before=Inf), \(x) mean(x)))) %>%
         arrange(hcr, om, sim)
 
-    prop_fs_df <- get_fishing_mortalities(model_runs, extra_columns2, hcr_filter, om_filter) %>%
+    prop_fs_df <- get_fishing_mortalities(model_runs, extra_columns, hcr_filter, om_filter) %>%
         filter(L1 != "faa_est") %>%
         group_by(time, sim, om, hcr, fleet) %>%
         mutate(

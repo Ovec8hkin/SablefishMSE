@@ -321,11 +321,12 @@ prop_low_biomass <- function(
             total_low_bio = sum(low_bio),
             prop_years = total_low_bio/(time_horizon[2]-time_horizon[1])
         ) %>%
+        select(-c("total_low_bio")) %>%
         relativize_performance(
             rel_column = "hcr",
             value_column = "prop_years",
             rel_value = relative,
-            grouping = group_columns
+            grouping = c("sim", "om")
         )
     
     if(!is.null(extra_filter)){
@@ -915,7 +916,8 @@ average_annual_value <- function(
     time_horizon = c(65, NA), 
     extra_filter=NULL, 
     relative=NULL, 
-    summarise_by=c("om", "hcr")
+    summarise_by=c("om", "hcr"),
+    summary_out=TRUE
 ){
 
     group_columns <- c("sim", summarise_by)
@@ -953,11 +955,14 @@ average_annual_value <- function(
         avg_rel_value <- avg_rel_value %>% filter(eval(extra_filter))
     }
 
-    return(
-        avg_rel_value %>%
+    out <- avg_rel_value
+    if(summary_out){
+        out <- avg_rel_value %>%
             group_by(across(all_of(summarise_by))) %>%
             median_qi(annual_value, .width=interval_widths, .simple_names=FALSE)
-    )
+    }
+
+    return(out)
 }
 
 #' Compute Average Annual Dynamic Value of Catch across projection period
@@ -992,7 +997,8 @@ average_annual_dynamic_value <- function(
     time_horizon = c(65, NA), 
     extra_filter=NULL, 
     relative=NULL, 
-    summarise_by=c("om", "hcr")
+    summarise_by=c("om", "hcr"),
+    summary_out=TRUE
 ){
     
     compute_dynamic_value <- function(landings, min_price_age, max_price_age, breakpoints=c(15, 30)){
@@ -1057,11 +1063,14 @@ average_annual_dynamic_value <- function(
         dyn_value <- dyn_value %>% filter(eval(extra_filter))
     }
 
-    return(
-        dyn_value %>%
+    out <- dyn_value
+    if(summary_out){
+        out <- dyn_value %>%
             group_by(across(all_of(summarise_by))) %>%
             median_qi(dyn_annual_value, .width=interval_widths, .simple_names=FALSE)
-    )
+    }
+
+    return(out)
 
 }
 

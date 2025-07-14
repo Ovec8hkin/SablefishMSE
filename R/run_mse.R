@@ -141,7 +141,7 @@ run_mse <- function(om, mp, mse_options, nyears_input=NA, seed=1120, file_suffix
         }
 
         prev_naa <- naa[y,,,, drop = FALSE]
-        out_vars <- project(
+        out_vars <- project_single(
             removals = removals_input,
             dem_params=dp_y,
             prev_naa=prev_naa,
