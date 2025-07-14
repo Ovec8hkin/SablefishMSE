@@ -43,7 +43,7 @@ plot_ssb <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALSE, common_trajec
         geom_lineribbon(data = base_hcr_d, aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group), size=0.85)+
         geom_line(aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group, size=color_group))+
         geom_line(
-            data = d %>% filter(color_group != "Other", time > common_trajectory-1), 
+            data = d %>% filter(color_group != "Other", time > common_trajectory-1, L1 == "naa"), 
             aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group, size=color_group)
         )+
         geom_line(data = common, aes(x=time, y=median), size=0.85)+
