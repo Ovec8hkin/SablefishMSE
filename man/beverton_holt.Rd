@@ -2,13 +2,7 @@
 % Please edit documentation in R/recruitment_utils.R
 \name{beverton_holt}
 \alias{beverton_holt}
-\title{Beverton-Holt stock recruitment relationship
-#'
-Defines a function factory for yieding recruitment from a Bevrton-Holt
-stock recruitment relationship, parameterized using steepeness. Initial
-call to this function sets up a new function that takes the current SSB
-as input, and returns the predicted recruitment from the BH SRR defined
-by h, R0, and S0.}
+\title{Beverton-Holt stock recruitment relationship}
 \usage{
 beverton_holt(h, R0, S0, sigR, seed)
 }
@@ -20,8 +14,6 @@ beverton_holt(h, R0, S0, sigR, seed)
 \item{S0}{unfished spawning biomass}
 }
 \description{
-Beverton-Holt stock recruitment relationship
-#'
 Defines a function factory for yieding recruitment from a Bevrton-Holt
 stock recruitment relationship, parameterized using steepeness. Initial
 call to this function sets up a new function that takes the current SSB

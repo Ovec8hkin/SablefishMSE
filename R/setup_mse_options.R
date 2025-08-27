@@ -2,7 +2,7 @@
 #' 
 #' Set MP object list items to reasonable default values.
 #'
-#' @export setup_mse_options
+#' @export setup_mp_options
 #'
 #' @example
 #'
@@ -45,6 +45,14 @@ setup_hcr_options <- function(){
     )
 }
 
+#' Setup MSE Options Object
+#' 
+#' Set MSE optios list items to reasonable default values.
+#'
+#' @export setup_mse_options
+#'
+#' @example
+#'
 setup_mse_options <- function(){
     return(
         list(

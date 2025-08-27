@@ -31,7 +31,7 @@ recruitment_obj <- list(
 om$recruitment <- recruitment_obj
 ```
 
-Recruitment functions can be as complicated as necessary, and can also make use of annual population state variables, such as spawning biomass. Examples are more complex recruitment functions are available at the end of this page.
+Recruitment functions can be as complicated as necessary, and can also make use of annual population state variables, such as spawning biomass. Examples of more complex recruitment functions are available at the end of this page.
 
 ### Provided Recruitment Functions
 
@@ -171,7 +171,7 @@ The primary difference between defining state-dependent and state-independent re
 
 Below is an example of creating a new Beverton-Holt style stock recruit relationship, this time parameterized using $\alpha$ and $\beta$:
 
-```{r, bevhlt2, eval=FALSE}
+```{r, bevholt2, eval=FALSE}
 beverton_holt_ab <- function(a, b, seed){
     set.seed(seed)
     function(ssb, y){

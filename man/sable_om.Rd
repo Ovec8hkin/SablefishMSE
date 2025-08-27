@@ -3,7 +3,7 @@
 \docType{data}
 \name{sable_om}
 \alias{sable_om}
-\title{Default Operating Model for Alaska Sablfish}
+\title{Default Operating Model for Alaska Sablefish}
 \format{
 list containing OM components
 }

@@ -84,7 +84,7 @@ regime_recruits <- function(mus, cvs, nyears, regime_length, starting_regime, se
 }
 
 #' Beverton-Holt stock recruitment relationship
-#' #'
+#' 
 #' Defines a function factory for yieding recruitment from a Bevrton-Holt
 #' stock recruitment relationship, parameterized using steepeness. Initial
 #' call to this function sets up a new function that takes the current SSB
@@ -116,6 +116,23 @@ beverton_holt <- function(h, R0, S0, sigR, seed){
     }
 }
 
+#' Regime Beverton-Holt stock recruitment relationship
+#'
+#' Defines a two-regime recruitment function where each regime
+#' is defined by a Beverton-Holt stock recruitment relationship 
+#' with differeing levels of R0 or sigR.
+#'
+#' @param h steepness (0.2 <= h <= 1.0)
+#' @param sbpr spawning biomass per recruit at unfished conditions
+#' @param R0s vector of unfished recruitments (one for each regime, max 2)
+#' @param sigRs vector of recruitment variability (one for each regime, max 2)
+#' @param nyears total number of years of recruitments to generate
+#' @param regime_length vector of length of each regime
+#' @param starting_regime regime to start with (0 = first regime, 1 = second regime)
+#' @param seed random seed for reproducability
+#'
+#' @export bevholt_regimes
+#'
 bevholt_regimes <- function(h, sbpr, R0s, sigRs, nyears, regime_length, starting_regime, seed){
     set.seed(seed)
     function(ssb, y){
