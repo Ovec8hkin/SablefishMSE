@@ -1,5 +1,5 @@
-pandoc: 3.6.2
-pkgdown: 2.1.1
+pandoc: 2.16.2
+pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   00_sablefish_example: 00_sablefish_example.html
@@ -11,4 +11,5 @@ articles:
   06_processing_mse_results: 06_processing_mse_results.html
   07_plotting_mse_results: 07_plotting_mse_results.html
   SablefishMSE: SablefishMSE.html
-last_built: 2025-01-28T21:24Z
+last_built: 2025-08-26T23:50Z
+
