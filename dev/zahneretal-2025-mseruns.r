@@ -54,7 +54,16 @@ mse_options_list <- listN(mse_options)
 
 om_list <- listN(om_rand_recruit, om_bh_recruit, om_bhcyclic_recruit, om_immcrash_recruit)
 hcr_list <- listN(
-    mp_pfmc4010
+    mp_f40,
+    mp_f50,
+    mp_5perc, 
+    mp_10perc,
+    mp_15cap,
+    mp_25cap,
+    mp_pfmc4010,
+    mp_bcsable,
+    mp_f50chr,
+    mp_f00chr
 )
 
 
@@ -83,8 +92,8 @@ publication_oms <- c("Random Recruitment", "Beverton-Holt Regime Recruitment", "
 publication_metrics = c("Annual Catch", "Catch AAV", "SSB", "Average Age", "Proportion of Years with Low SSB")
 metric_names <- c("Annual Catch", "Catch AAV", "Average SSB", "Average Age", "Proportion of Years SSB < B35*")
 
-mse_runs <- get_saved_model_runs(om_order=publication_oms2, hcr_order=publication_hcrs)
-mse_runs <- readRDS(file.path(here::here(), "data", "zahneretal2025_mseruns_FINAL.RDS"))
+# mse_runs <- get_saved_model_runs(om_order=publication_oms2, hcr_order=publication_hcrs)
+mse_runs <- readRDS(file.path(here::here(), "data", "zahneretal2025_mseruns_FINAL2.RDS"))
 model_runs <- mse_runs$model_runs
 extra_columns <- mse_runs$extra_columns2
 extra_columns <- extra_columns %>% 
