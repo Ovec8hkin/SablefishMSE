@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Harvest Control Rules</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Harvest Control Rules</h1>
+
+
+
+<p>Users must provide as input to the MSE function a list object that
+defines the harvest control rule (HCR) to apply to the population in
+each timestep. HCRs can take many forms including constant catch,
+constant fishing mortality, threshold, etc. Several HCR functions are
+provided as part of the package, including the current Tier 3a HCR used
+by the North Pacific Fisheries Management Council for Alaska sablefish,
+but users can also define custom HCR functions for their own
+purposes.</p>
+<p>A simple example of an HCR function is as follows:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>npfmc_tier3_F <span class="ot">&lt;-</span> <span class="cf">function</span>(ssb, B_ref, F_ref){</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>    x <span class="ot">&lt;-</span> ssb<span class="sc">/</span>B_ref</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>    f_min <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>    f_max <span class="ot">=</span> F_ref</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>    lrp <span class="ot">=</span> <span class="fl">0.05</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>    urp <span class="ot">=</span> <span class="dv">1</span> </span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>    <span class="cf">if</span>(x <span class="sc">&gt;=</span> urp)  F <span class="ot">&lt;-</span> f_max <span class="co"># if stock status &gt;= 1</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>    <span class="cf">if</span>(x <span class="sc">&gt;</span> lrp <span class="sc">&amp;&amp;</span> x <span class="sc">&lt;</span> urp) F <span class="ot">&lt;-</span> f_max <span class="sc">*</span> ((x<span class="sc">-</span>lrp)<span class="sc">/</span>(urp<span class="sc">-</span>lrp)) <span class="co"># if stock status &gt; alpha &amp; stock status &lt; 1</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>    <span class="cf">if</span>(x <span class="sc">&lt;=</span> lrp) F <span class="ot">&lt;-</span> f_min</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>    </span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>    <span class="fu">return</span>(F)</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>}</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>tier3 <span class="ot">&lt;-</span> <span class="cf">function</span>(ref_pts, naa, dem_params){</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>    <span class="co"># Calculate ssb as naa*waa*mat (female only)</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>    ssb <span class="ot">&lt;-</span> <span class="fu">apply</span>(naa[,,<span class="dv">1</span>,]<span class="sc">*</span>dem_params<span class="sc">$</span>waa[,,<span class="dv">1</span>,,<span class="at">drop=</span><span class="cn">FALSE</span>]<span class="sc">*</span>dem_params<span class="sc">$</span>mat[,,<span class="dv">1</span>,,<span class="at">drop=</span><span class="cn">FALSE</span>], <span class="dv">1</span>, sum)</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>    <span class="fu">return</span>(</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>        <span class="fu">npfmc_tier3_F</span>(ssb, ref_pts<span class="sc">$</span>B40, ref_pts<span class="sc">$</span>F40)</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>    )</span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>}</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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4AVjQR4vuI1/K6Y61KhRw72v/XqBZ6xu3bru9XHHHVcsb+KL/v37Fytf/fr13XbeH+Ni6x999FG3qVzK2mfiMcr72gvCXRm222672BFHHBGTbZs2bWJesFLeXSXN3717d7f/VPvzgk/3vszzLXkBe+zYY4+NDR48OFTRK3LthDpAikzlLWeK3RRbvcMOO8S8L4LF1iW+OPfcc9259b7Axfbff//g31ZbbeXWFxUVxe66667Ezcp87V8zX331VZl5yYAAAgggULqAlf52/r4bH4A2bdo0tnjx4hKVSRWAXn311SXyfv3117Fdd901Vq1atdhPP/3k3vcD0J9//rlE/sQVCkAV2HqtojGvFSfxbfe6S5cuLo+C1PgA9LXXXot5rTcxr+Um9uOPPwbbrlmzJua1xrg/qiNGjAjWl7Xgtcq6bbxWoqRZp0+fHps5c2bS99KxcuHChbEtttgidv7558e81l63y6lTp7oyXX755ek4RCzKAeiSJUucVZgANN3XTnlOTnnKGXa/5QlAly1bVmy3GzdujOk622WXXWJVqlSJeXdJir1f1gsC0LKEeB8BBBAIL5D6vm1pzaZ59N7RRx9tuv142WWXVajUXrDqbo+vX7/e3n333U3al27Jn3DCCaZb94lp9erV9q9//cv+/ve/F3vLO5V26qmnWoMGDWzs2LHm/QEO3vdaRO0f//iHu1Xfr18/063OdCSvZTXprfBFixbZG2+8YR9++KGtXLmy2KFWrFhhs2bN0hca84J1+/LLL4u9H/9Ct0d32mkn8wL94NEBr6XKWrRoYW+//XZ8Vresxyl0u94LpswL9ku8n84VXlDvyq9HA7744otQ9VT55syZk7QYMpFbfCrN0c/nBU/2zjvv2CuvvFJs33pcYfbs2S7b77//Hpj728X/rMi188svv7hjf/TRR6Zzm5j0O6XjK6k8L730kiuLny9VOcu6TrTd559/bi+88EKx/fn7rchPL+g0XWd6zEU2/uMzy5cvd8fSIzDxyfvSGqoMemTm22+/tRdffDFU/vhjsIwAAggUrID3QRzJ5LeADhs2LHbOOee4FqNnn322WF3L0wKqDYcPH+72M3LkSLef8raA6pa3Wja9iy3mBTfFyvLEE0+41lH91Pt+C6j3h829/uc//1ksf/yLX3/9NabWprCprBbQxFvwupV61VVXudvkulWu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EEibAAFo2ijZEQIIIIAAAggggEAYAQLQMErkQQABBBBAAAEEEEibAAFo2ijZEQIIIIAAAggggEAYAWZCCqNEHgRyRODggw+2Ro0a5UhpKAYCCCCAAAKbJkAAumlubIVApQicffbZlXJcDooAAggggEA6BbgFn05N9oUAAggggAACCCBQpgABaJlEZEAAAQQQQAABBBBIpwABaDo12RcCCCCAAAIIIIBAmQIEoGUSkQEBBBBAAAEEEEAgnQIEoOnUZF8IZFhgxIgRdtlll2X4KOweAQQQQACBzArQCz6zvuwdgbQKfP755/bee++ldZ/sDAEEEEAAgWwL0AKabXGOhwACCCCAAAIIFLgAAWiBXwBUHwEEEEAAAQQQyLYAAWi2xTkeAggggAACCCBQ4AIEoAV+AVB9BBBAAAEEEEAg2wJ0Qsq2OMdDoAICw4cPr8DWbIoAAggggEBuCGStBfS3336zl156yaZPn15qzfX+yy+/bMofnzZs2GDvv/++ff3117Zx48b4t1hGoGAEqlSpYvpHQgABBBBAIJ8FshKAauiYrl272owZM6xv37725JNPJjUbNmyYDR061JS/W7duNnv2bJdvzpw51rlzZ3vrrbfsscces4EDB1osFku6D1YigAACCCCAAAII5LZAVgLQO+64wwYPHmwXX3yxjRw50kaNGmVr164tJjNr1ix755133Pv9+vWz008/3R599FGX54UXXrD/+7//s6uvvtpuuukmW7p0qb355pvFtucFAggggAACCCCAQH4IZPwZ0PXr15taMFu2bOlEttlmG9tss81s7ty5tuOOOwZKM2fOdHmqVv3/MXHr1q3tueeec+9/+eWXdtpppwV5d9ttN/vhhx/siCOOCNbpFr1/a17HVKKVNOApdUFO/r9SM/KmE/CvK8zCXxDxZuG3KtyceJX/3PP7WH4zbeFfa5u2dWFtxTUW/nyHua4yHoDOnz/f6tSpU+y5tS222MIWLVpULAD95ZdfTOv9tPnmm9vChQvdy7Zt29qrr75qBx10kK1evdo9C7rXXnv5Wd3PXr162RtvvOGWa9eubW3atLF58+YVy8OL0gXwKt0n8d0lS5aY/mUz/fvf/7bFixfbwQcfnM3Dpu1Y2fZKW8EraUe//vprJR05Pw+LV/nPG5/75TPDK5yXGgLLCkIzHoAWFRWZWifjkwpWq1at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GzYsre689z8BBeuanUfPKZLKFpCXeqPXrVu3xDOdPXr0sBkzZrid7LDDDjZp0qS0XocKblu1apXWfZZd44rn0CxQCqR4Bjacpbz0O6nPMALQcGYKpPQZhld4LwWg/J0M56VcusbwCuelALSs38XIBqDhiMiFQPoEbr/9dps4caLbYa1atVyno3R/WJ1yyinpKzB7QgABBBBAoJIEeAa0kuA5bLQE3n77bevXr19Qqfvuu89at24dvGYBAQQQQAABBP4QIAD9w4IlBDZJ4JdffnHjfeo5WqXzzz+/WCekTdopGyGAAAIIIBBhAQLQCJ9cqpZ5AT3nopmO5s2b5w62//7729133535A3MEBBBAAAEE8liAADSPTx5Fr3yBK6+80t577z1XkEaNGrnnPmvWrFn5BaMECCCAAAII5LAAAWgOnxyKltsC6nB01113uUJq1IXHH3/ctt9++4wWesiQIXbmmWdm9BjsHAEEEEAAgUwLEIBmWpj9R1JAg8337NkzqNsNN9xgRx99dPA6UwszZ860adOmZWr37BcBBBBAAIGsCBCAZoWZg0RJYOnSpdatWzfTWI1KJ510kl199dVRqiJ1QQABBBBAIKMCBKAZ5WXnURPQwM3nnHOO/fjjj65qu+yyiz3yyCNlDrgbNQfqgwACCCCAQEUECEArose2BSdw66232lNPPeXqrVl9pkyZYltssUXBOVBhBBBAAAEEKiJAAFoRPbYtKIHXXnvNBg4cGNT53nvvtb333jt4nY2FevXqMRVcNqA5BgIIIIBARgWYijOjvOw8KgI///yznX766bZhwwZXJd2G79SpU9arN3To0KwfkwMigAACCCCQbgFaQNMtyv4iJ7B27Vrr0KGDLViwwNXtoIMOskGDBkWunlQIAQQQQACBbAnQApotaY6TtwKXXnqpffzxx678W2+9tWn8z2rV+NXJ2xNKwRFAAAEEKl2AFtBKPwUUIJcFxowZY/fff78rYlFRkU2YMMGaNm2ay0WmbAgggAACCOS8AAFozp8iClhZAl988YX16NEjOPwtt9xihx9+ePCaBQQQQAABBBDYNAEC0E1zY6uIC/z+++/Wvn17W7VqlaupljXve2Wnd9991803X9nl4PgIIIAAAghURIAAtCJ6bBtJAQ02r/nWNe2l0h577GGjR4/OibqOGzfOrrvuupwoC4VAAAEEEEBgUwUIQDdVju0iK6B53Z9//nlXv7p167rB5jX+JgkBBBBAAAEE0iNAAJoeR/YSEYEXX3yx2BBLDz30kO25554RqR3VQAABBBBAIDcECEBz4zxQihwQmDVrlp1xxhm2ceNGV5rLL7/cOnbsmAMlowgIIIAAAghES4AANFrnk9psosDq1atdp6NFixa5PRx22GGmed9JCCCAAAIIIJB+AUbTTr8pe8xDgV69etlnn33mSr7tttu68T5zcbB5lbNz5855KEyREUAAAQQQ+EOAAPQPC5YKVOCBBx6wUaNGudpXr17dJk2aZI0bN85Jjb333jsny0WhEEAAAQQQKI8At+DLo0XeyAl88skndvHFFwf1uu2226xt27bBaxYQQAABBBBAIP0CBKDpN2WPeSKwcOFC99znmjVrXIlPP/10u+SSS/Kk9BQTAQQQQACB/BUgAM3fc0fJKyCgnu4KOGfPnu328qc//cl0K56EAAIIIIAAApkXIADNvDFHyEGBa665xl555RVXss0339xNb1mnTp0cLGnxIilw9oeJKv4OrxBAAAEEEMgfAQLQ/DlXlDRNAs8884zddNNNbm9VqlSxMWPG2G677ZamvWd2Nz179rRWrVpl9iDsHQEEEEAAgQwLEIBmGJjd55bA999/b126dDHN967Ur18/O/nkk3OrkJQGAQQQQACBiAsQgEb8BFO9PwRWrlzpOh0tWbLErTzqqKNs8ODBf2RgCQEEEEAAAQSyIkAAmhVmDpILAhdeeKF9+eWXrijbbbedPf7441ZUVJQLRaMMCCCAAAIIFJQAAWhBne7Crey9995r48aNcwA1atRwg81vtdVWhQtCzRFAAAEEEKhEgVJnQnr33XetefPmptaiiqbffvvNPv30U9thhx1s9913T7m76dOn208//WStW7e2LbfcMsinsRqnTp1q6jRy4IEHmmasISEQRuCDDz6w3r17B1nvvPNOa9OmTfA6nxb23Xdfq127dj4VmbIigAACCCBQQqDUFtDu3bvbc889F2z01Vdf2a233hq8Drvw+eefW9euXW3GjBnWt29fe/LJJ5NuOmzYMBs6dKgpf7du3YIxGvXsnm6fKiB+77337MwzzzR/8PCkO2IlAv8TmD9/vp166qm2bt06t+bss882Xdf5mvR7oN8TEgIIIIAAAvksUGoAmlixb7/91u66667E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EEAAAQQQQCBjAgSgGaONxo7Vw3348OGuMkVFRabB55s2bRqNyuVhLe666y674IIL8rDkFBkBBBBAAIE/BAhA/7BgKUFg2rRp1r1792DtzTffbEcccUTwmoXsC3z77bf2wQcfZP/AHBEBBBBAAIE0ChCAphEzSrtavHixG2x+1apVrlrt2rWzPn36RKmK1AUBBBBAAAEEKkmAALSS4HP5sLFYzPVwnzlzpivm7rvvbg8//HAuF5myIYAAAggggEAeCRCA5tHJylZRBw8ebM8995w7XN26dd1g8/Xq1cvW4TkOAggggAACCERcgAA04ie4vNV76aWX7Lrrrgs2e/DBB61FixbBaxYqV0CjD9SsWbNyC8HREUAAAQQQqKAAU3FWEDBKm//000/WuXNn27hxo6tW79697bTTTotSFfO+LuoFT0IAAQQQQCDfBWgBzfczmKbyr1692tq3b2+LFi1yezz00ENtyJAhado7u0EAAQQQQAABBP4QIAD9w6Kgl/r27WuffvqpM9h2221t4sSJVq0aDeQFfVFQeQQQQAABBDIkQACaIdh82q2e8xw3bpwrsoJOBZ+NGzfOpyoC4AFtAAAe0ElEQVRQVgQQQAABBBDIIwEC0Dw6WZkoqlo9L7744mDXt912mx1yyCHBaxYQQAABBBBAAIF0CxCApls0j/a3cOFC99zn2rVrXak7depkl156aR7VoPCK+sknn9gLL7xQeBWnxggggAACkRIgAI3U6QxfGfV0V4939XxX2mOPPUy34km5LaBzpOd1SQgggAACCOSzAAFoPp+9CpT92muvtZdfftntQYPMP/LII1anTp0K7JFNEUAAAQQQQACBcAIEoOGcIpXr2WeftRtvvDGo0+jRo22XXXYJXrOAAAIIIIAAAghkUiBrAehvv/1mmmVn+vTppdZH76tlTvnjk8apfOutt0zPwK1fvz7+LZbLIfDDDz9Yly5dTPO9K/Xr189OOeWUcuyBrAgggAACCCCAQMUEshKAfv7559a1a1ebMWOGe37tySefTFrqYcOG2dChQ035u3XrZrNnz3b5FixYYGeccYZ9/fXXNmnSJLv66quTbs/K0gVWrVpl7dq1s8WLF7uMRx55ZLGW0NK35l0EEEAAAQQQQCA9AlkZafyOO+6wwYMHW6tWraxjx4523nnn2QknnGCa19pPs2bNsnfeecee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ki/Bz0wJpJrVi2svU+KFtd/SZoRLde0VlhC1DSOgTm5qBY2fzMDfLtVnVWnXnr8tPxEII5Dqs8q/9iIZgIaBIQ8CCCCAAAIIIIBA5QhE6hnQyiHkqAgggAACCCCAAALlESAALY8WeRFAAAEEEEAAAQQqLEAAWmFCdoAAAggggAACCCBQHgEC0PJokRcBBBBAAAEEEECgwgKRGoi+whrsAAEEEMiAgHoWP/bYY/bZZ5+5XskabkmDg2tYnPgUJt+QIUNs1apVwWYaWHyvvfayww47zKpWpU0hgGEBAQRyWoBe8Dl9eigcAgjku4CGIjnhhBPsq6++Mo0rqxlnNLasgsWnnnrK2rRp46oYNp8Czvr161vz5s3dXPKafeS7775z88lPnDjRatSoke9klB8BBApAgAC0AE4yVUQAgcoTeOihh+ySSy6xH374wRo3buwKEovFbL/99rOGDRu6YFQrw+ZTANq3b1/3z6/VJ5984mZReu655+z444/3V/MTAQQQyFkBbsHn7KmhYAggEAUBzZusQFOBo580A9Kdd95p77zzjr/KwuYLNohbUDBbr149++9//xu3lkUEEEAgdwVoAc3dc0PJEEAgAgJffPGFtW3b1vbdd183X/LRRx/tpkZMrFrYfApke/bsaRdddJGpJfX333+3sWPH2pgxY0wtoX4ra+L+eY0AAgjkkgABaC6dDcqCAAKRFFBg2K9fP3v77bfdXNw77LCDC0YHDhxo1atXD+ocJp8C0IULFwbb+AsPPvigdevWzX/JTwQQQCCnBQhAc/r0UDgEEIiSwJIlS+ytt96yF1980T3zefDBB9sbb7xhuiUfn0rLpwC0a9eudv7557tNFi1aZB999JENGDDABg0aZFdccUX8rlhGAAEEclKAADQnTwuFQgCBqAiMHDnSDjroINPQS/FJgeeRRx7phmbS7fmw+RSAJnZC0n7V0UmB7YwZM+IPwzICCCCQkwIMGpeTp4VCIYBAVAQmTJhgt9xyS4nq7Lrrrm7d+vXr3c+w+UrsKG7F2rVr416xiAACCOSuAL3gc/fcUDIEEIiAwIUXXminn3661a5d28455xzXAWn69OnulnmLFi1s//33d7UMm0+Zf/zxx6AHvQav//jjj23EiBHcfo/A9UIVECgUAW7BF8qZpp4IIFBpAhqfU7fNdXtcLZ516tQx9YYfNWqUNWjQIChXmHyJnZC0r+22284Fuf3797dq1WhXCEBZQACBnBUgAM3ZU0PBEEAgagK6RT537lzbfvvtraioKGX1wuZLuQPeQAABBHJcgAA0x08QxUMAAQQQQAABBKImQCekqJ1R6oMAAggggAACCOS4AAFojp8giocAAggggAACCERNgAA0ameU+iCAAAIIIIAAAjkuQACa4yeI4iGAAAIIIIAAAlETIACN2hmlPggggAACCCCAQI4LEIDm+AmieAgggAACCCCAQNQECECjdkapDwIIIIAAAgggkOMCBKA5foIoHgIIIIAAAgggEDWB/wcI34OEjEB/OAAAAABJRU5ErkJggg==" width="\textwidth" height="\textheight" /></p>
+<p>The function <code>npfmc_tier3_F</code> defines the NPFMC Tier 3a HCR
+that is currently used for sablefish management in Alaska. The HCR is a
+threshold rule that converts annual SSB into an allowable fishing
+mortality rate (see ____) based on a maximum reference level for F and a
+biomass reference level. The wrapper function <code>tier3()</code>
+encapsulates converting from numbers-at-age (<code>naa</code>, the unit
+of output from the OM) into SSB for the <code>npfmc_tier3_F</code>
+function.</p>
+<p>In order for an HCR function to be compatible with the MSE framework,
+it must take, at minimum, three parameters: <code>ref_pts</code>,
+<code>naa</code>, and <code>dem_params</code>. The <code>ref_pts</code>
+input parameter expects an object generated via the
+<code>calculate_ref_points()</code> function that the MSE runs
+internally. The <code>naa</code> input parameter is a four dimensional
+array (dims [1, nages, nsexes, 1]) of numbers-at-age as output by either
+the OM or the EM. Finally, the <code>dem_params</code> input parameter
+is the demographic parameter matrix that is supplied as part of the OM
+definition.</p>
+<p>All three of these parameters are required even for HCRs that may not
+make direct use of one or more of such parametrs (such as a constant
+catch rule, which doesn’t require any of them). More complex HCR
+functions may optionally take additional parameters. Construction of
+such HCRs is discussed later.</p>
+<div id="defining-the-management-procedure-object" class="section level4">
+<h4>Defining the Management Procedure Object</h4>
+<p>The combination of a stock assessment method, harvest control rule,
+and management implementation process is known as a “management
+procedure”. The <code>run_mse(...)</code> function, and its associated
+wrapper functions, require as input a list object that defines the
+management procedure. These “MP” list objects take the folowing
+form:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a> mp <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>    <span class="at">hcr =</span> <span class="fu">list</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>        <span class="at">func =</span> hcr_func, <span class="co"># the HCR function to evaluate</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>        <span class="at">extra_pars =</span> <span class="cn">NA</span>, <span class="co"># any additional parameter values that are needed by the HCR function</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>        <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>            <span class="at">max_stability =</span> <span class="cn">NA</span>, <span class="co"># a maximum permissable annual change in TACs (as a proportion)</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>            <span class="at">harvest_cap =</span> <span class="cn">NA</span>    <span class="co"># a maximum permissable annual TAC</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>        ),</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>        <span class="at">units =</span> <span class="st">&quot;F&quot;</span> <span class="co"># the output units of the HCR function (should usually be &quot;F&quot; or &quot;TAC&quot;)</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>    )</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>    <span class="at">ref_points =</span> <span class="fu">list</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>        <span class="at">spr_target =</span> <span class="fl">0.40</span>   <span class="co"># the target SPR level for SPR-based reference points</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>    ),</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>    <span class="at">management =</span> <span class="fu">list</span>(</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>        <span class="at">abc_tac_reduction =</span> <span class="dv">1</span>, <span class="co"># proportion of the ABC to set the TAC too</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>        <span class="at">tac_land_reduction =</span> <span class="dv">1</span> <span class="co"># proprtion of the TAC to set realized landings too</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>    )</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>)</span></code></pre></div>
+<p>Required elements of MP objects include:</p>
+<ul>
+<li><p><code>hcr$func</code>: a reference to an R function that defines
+the harvest control rule</p></li>
+<li><p><code>hcr$extra_pars</code>: a list of additional parameter
+values required by the HCR function. These values must be provided at
+runtime and can not be dynamically calculated based on internal state
+variables.</p></li>
+<li><p><code>hcr$units</code>: the output units of the HCR function
+(should be either “F” or “TAC”). If “TAC”, the <code>run_mse</code>
+function will compute the corresponding F that would result in the
+output TAC</p></li>
+<li><p><code>hcr$extra_options$max_stability</code>: the maximum
+permissable annual change in TACs as a proportion. If <code>NA</code>
+(the default), any change in TAC betwen successive years is
+allowed.</p></li>
+<li><p><code>hcr$extra_options$harvest_cap</code>: the maximum
+permissable TAC. If <code>NA</code> (the default), any TAC, as computed
+from the HCR function is allowed, otherwise, HCR computed TACs that
+exceed this value, will be capped back down to the value
+specified.</p></li>
+<li><p><code>ref_points$spr_target</code>: the target SPR level for
+SPR-based reference points</p></li>
+<li><p><code>management$abc_tac_reduction</code>: the proportion of the
+ABC to set the TAC too. HCR functions are used to compute the ABC
+(Acceptable Biological Catch), which is a maximum permissable TAC, but
+TACs are often set lower than ABC. This parameter captures that
+reduction level. <em>Default value is 1</em>.</p></li>
+<li><p><code>management$tac_land_reduction</code>: the proportion of the
+TAC to set the following years realized landings too. For use when the
+entire TAC is not utilized by the fishery. <em>Default value is
+1</em>.</p></li>
+</ul>
+<p>The <code>abc_tac_reduction</code> and
+<code>tac_land_reduction</code> can, optionally, also be calculated
+internally based on a provided function and list of parameters. The
+below example will calculate the annual <code>tac_land_reduction</code>
+using the “stairstep_attainment” function and the associated parameter
+values.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>mp<span class="sc">$</span>management<span class="sc">$</span>tac_land_reduction <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>    <span class="at">func =</span> stairstep_attainment,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    <span class="at">pars =</span> <span class="fu">list</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>        <span class="at">breakpoints =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">30</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>        <span class="at">levels =</span> <span class="fu">c</span>(<span class="fl">0.9</span>, <span class="fl">0.8</span>, <span class="fl">0.6</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>        <span class="at">phase_ins =</span> <span class="dv">0</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    )</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>)</span></code></pre></div>
+<p>A default <code>mp</code> object can be generated from the
+<code>setup_mp_options()</code> function. Default MP objects do not have
+an HCR element defined. HCR objects must be defined by the user and
+inserted into the <code>mp</code> object.</p>
+<p>This list object is then supplied as an input to the
+<code>run_mse(...)</code> function or its associated wrapper functions,
+like: <code>run_mse(..., hcr=mp_obj, ...)</code>.</p>
+</div>
+<div id="constructing-a-new-hcr-function" class="section level4">
+<h4>Constructing a New HCR Function</h4>
+<p>Here, we show how to construct a new step-wise harvest control rule
+function, where F=0.10 when SSB &gt; 100,000 tons, and where F=0.01 when
+SSB &lt;= 100,000 tons.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>step_hcr <span class="ot">&lt;-</span> <span class="cf">function</span>(ref_pts, naa, dem_params){</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>    <span class="co"># Calculate ssb as naa*waa*mat (female only) in units of 1,000s tons</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>    ssb <span class="ot">&lt;-</span> <span class="fu">apply</span>(naa[,,<span class="dv">1</span>,]<span class="sc">*</span>dem_params<span class="sc">$</span>waa[,,<span class="dv">1</span>,,<span class="at">drop=</span><span class="cn">FALSE</span>]<span class="sc">*</span>dem_params<span class="sc">$</span>mat[,,<span class="dv">1</span>,,<span class="at">drop=</span><span class="cn">FALSE</span>], <span class="dv">1</span>, sum)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">ifelse</span>(ssb <span class="sc">&gt;</span> <span class="dv">100</span>, <span class="fl">0.10</span>, <span class="fl">0.01</span>))</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>}</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>    <span class="at">func =</span> step_hcr, <span class="co"># the HCR function to evaluate</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="cn">NA</span>, <span class="co"># no extra parameter needed</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="cn">NA</span>, <span class="co"># no stability constraints</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="cn">NA</span> <span class="co"># no harvest caps</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>    ),</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">&quot;F&quot;</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>)</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>mp <span class="ot">&lt;-</span> <span class="fu">setup_mp_options</span>()</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>mp<span class="sc">$</span>hcr <span class="ot">&lt;-</span> hcr</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">run_mse</span>(<span class="at">om=</span>om, <span class="at">hcr=</span>hcr, <span class="at">nyears_input=</span><span class="dv">100</span>)</span></code></pre></div>
+<p>The HCR function above (<code>step_hcr</code>) takes the three
+required parameters as inputs, though only makes use of <code>naa</code>
+and <code>dem_params</code> (if users write a function that does not
+take all three parameters as inputs, the MSE function will fail when
+attempting to evaluate the HCR function).</p>
+</div>
+<div id="constructing-more-complex-hcr-functions" class="section level4">
+<h4>Constructing More Complex HCR Functions</h4>
+<p>Some HCRs require more information than just the three required
+parameters to be defined. For example, consider an HCR that wants to
+dynamically reduce the maximum F applied by a threshold HCR based on the
+average age of the population in a given year. Such an HCR can be
+defined like below:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>average_age <span class="ot">&lt;-</span> <span class="cf">function</span>(naa, ages){</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">weighted.mean</span>(ages, naa))</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>}</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>avgage_threshold_f <span class="ot">&lt;-</span> <span class="cf">function</span>(ref_pts, naa, dem_params, ref_naa, ages){</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    <span class="co"># Calculate ssb as naa*waa*mat (female only) in units of 1,000s tons</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>    ssb <span class="ot">&lt;-</span> <span class="fu">apply</span>(naa[,,<span class="dv">1</span>,]<span class="sc">*</span>dem_params<span class="sc">$</span>waa[,,<span class="dv">1</span>,,<span class="at">drop=</span><span class="cn">FALSE</span>]<span class="sc">*</span>dem_params<span class="sc">$</span>mat[,,<span class="dv">1</span>,,<span class="at">drop=</span><span class="cn">FALSE</span>], <span class="dv">1</span>, sum)</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>    as_stat <span class="ot">&lt;-</span> <span class="fu">average_age</span>(naa, ages)<span class="sc">/</span><span class="fu">average_age</span>(ref_naa, ages)</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>    as_scalar <span class="ot">&lt;-</span> <span class="fu">threshold_f</span>(as_stat, <span class="at">f_min=</span><span class="dv">0</span>, <span class="at">f_max=</span><span class="dv">1</span>, <span class="at">lrp=</span><span class="dv">0</span>, <span class="at">urp=</span><span class="dv">1</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>    x <span class="ot">&lt;-</span> ssb<span class="sc">/</span>ref_pts<span class="sc">$</span>B40</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    f_max <span class="ot">&lt;-</span> ref_pts<span class="sc">$</span>F40<span class="sc">*</span>as_scalar</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    f_min <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>    lrp <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>    urp <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>    <span class="cf">if</span>(x <span class="sc">&gt;=</span> urp)  F <span class="ot">&lt;-</span> f_max <span class="co"># if stock status &gt;= 1</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>    <span class="cf">if</span>(x <span class="sc">&gt;</span> lrp <span class="sc">&amp;&amp;</span> x <span class="sc">&lt;</span> urp) F <span class="ot">&lt;-</span> f_max <span class="sc">*</span> ((x<span class="sc">-</span>lrp)<span class="sc">/</span>(urp<span class="sc">-</span>lrp)) <span class="co"># if stock status &gt; alpha &amp; stock status &lt; 1</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>    <span class="cf">if</span>(x <span class="sc">&lt;=</span> lrp) F <span class="ot">&lt;-</span> f_min</span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>    <span class="fu">return</span>(f)</span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>}</span></code></pre></div>
+<p>The <code>avgeage_threshold_f</code> HCR function accepts two more
+parameters (<code>ref_naa</code> and <code>ages</code>) than are
+required by all HCR functions. The values for these parameters should be
+placed in the <code>hcr$extra_pars</code> list element that is required
+for defining an HCR object. So, for this example, the final MSE call
+would look something like:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>ages <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">31</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>ref_naa <span class="ot">&lt;-</span> <span class="dv">25</span><span class="sc">*</span><span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>, \(i) <span class="dv">1</span><span class="sc">*</span>(<span class="fu">exp</span>(<span class="sc">-</span><span class="fl">0.1</span>))<span class="sc">^</span>i)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="at">func =</span> avgage_threshold_f, <span class="co"># the HCR function to evaluate</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="fu">list</span>(</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>        <span class="co"># extra parameter values required by the &quot;avgage_threshold_f function&quot;</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>        <span class="at">ref_naa =</span> ref_naa, </span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>        <span class="at">ages =</span> age</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>    ),</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="cn">NA</span>, <span class="co"># a maximum permissable annual change in TACs (as a proportion)</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="cn">NA</span> <span class="co"># a maximum permissable annual TAC</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>    ),</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">&quot;F&quot;</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>)</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>mp <span class="ot">&lt;-</span> <span class="fu">setup_mp_options</span>()</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>mp<span class="sc">$</span>hcr <span class="ot">&lt;-</span> hcr</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">run_mse</span>(<span class="at">om=</span>om, <span class="at">hcr=</span>mp, <span class="at">nyears_input=</span><span class="dv">100</span>)</span></code></pre></div>
+<p>This pattern extends to any HCR function, even ones that require
+dozens of additional parameters (parameter names still need to be
+unique, so paramaters cannot have names likes <code>om</code>,
+<code>hcr</code>, <code>ref_pts</code>, <code>naa</code>, etc. as they
+are already used by either the calling MSE function or are default
+parameters alredy supplued to the HCR function.</p>
+</div>
+<div id="additional-hcr-complexity" class="section level4">
+<h4>Additional HCR Complexity</h4>
+<p>HCRs can also have additional “meta-rules” that further define their
+behavior. A common example are stability constraints, which limit how
+much annual catch levels are allowed to change between years. These
+constraints are defined by the <code>extra_options</code> list object
+within the larged HCR object definition.</p>
+<p>To supply additional management rules, such as stability constraints
+or harvest caps, a named list <code>extra_options</code> must be added
+to the larger <code>hcr</code> list object. The
+<code>extra_options</code> list object, can, presently, define two
+parameters:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>hcr<span class="sc">$</span>extra_options <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>    <span class="at">max_stability =</span> <span class="fl">0.15</span>,   <span class="co"># maximum allowed percent increase in TAC between successive years</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="at">harvest_cap =</span> <span class="dv">100000</span>    <span class="co"># maximum allowed TAC</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>)</span></code></pre></div>
+<p><em>NOTE: The interface for defining complex HCR functions and for
+defining additional management meta-rules is subject to change
+(07/22/2024).</em></p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

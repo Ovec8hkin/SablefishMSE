@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Processing MSE Output Data</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Processing MSE Output Data</h1>
+
+
+
+<p>MSEs output large amounts of data – numbers-at-age across years,
+landed catch by year, fishing mortality by year, recommended harvest
+levels by year, etc. – and this data output quickly grows as the number
+of operating models (OMs), management procedures (MPs), and simulations
+grows. <code>SablefishMSE</code> provides several wrapper functions to
+faciliate easier processing of large MSE outputs and computation of
+common derived quantities (spawning biomass, total biomass, total catch,
+etc.)</p>
+<div id="mse-output-data" class="section level3">
+<h3>MSE Output Data</h3>
+<p>All three of the MSE functions (<code>run_mse</code>,
+<code>run_mse_parallel</code>, and <code>run_mse_multiple</code>) output
+the same types of data in a similar format.</p>
+<ul>
+<li><code>run_mse</code> - data is output as a named list of
+multidimensional arrays of maximum dimension
+<code>[n_proj_years+n_spinup_years, nages, nsexes, nregions, nfleets]</code>.</li>
+<li><code>run_mse_parallel</code> - data is output as a named list of
+multidimensional arrays the same as <code>run_mse</code> but with an
+added dimension referring to the simulation</li>
+<li><code>run_mse_multiple</code> - data is output at a list of
+completed MSE simulations from <code>run_mse_parallel</code>, with each
+list element referring to one combination of OM, MP, and MSE
+option.</li>
+</ul>
+<div id="description-of-output-data" class="section level5">
+<h5>Description of Output Data</h5>
+<p>The following data is output with every call to <code>run_mse</code>
+and is consequently available with calls to
+<code>run_mse_parallel</code> and <code>run_mse_multiple</code>:</p>
+<ul>
+<li><code>land_caa</code> - landed catch-at-age from the OM
+(<code>[nyears, nages, nsexes, nregions, nfleets]</code>)</li>
+<li><code>disc_caa</code> - discarded catch-at-age from the OM
+(<code>[nyears, nages, nsexes, nregions, nfleets]</code>)</li>
+<li><code>caa</code> - total catch-at-age (landed + discarded) from the
+OM (<code>[nyears, nages, nsexes, nregions, nfleets]</code>)</li>
+<li><code>faa</code> - fishing mortality -at-age from the OM
+(<code>[nyears, nages, nsexes, nregions, nfleets]</code>)</li>
+<li><code>faa_est</code> - fishing mortality -at-age estimated from the
+EM (<code>[nyears, nages, nsexes, nregions, nfleets]</code>)</li>
+<li><code>naa</code> - numbers-at-age from the OM
+(<code>[nyears, nages, nsexes, nregions]</code>)</li>
+<li><code>naa_est</code> - numbers-at-age estimated from the EM
+(<code>[nyears, nages, nsexes, nregions]</code>)</li>
+<li><code>hcr_f</code> - the fishing mortality recommended by the HCR
+(<code>[nyears, 1]</code>)</li>
+<li><code>abc</code> - the Acceptable Biological Catch resulting from
+applying the HCR (<code>[nyears, 1]</code>)</li>
+<li><code>tac</code> - the Total Allowable Catch resulting from applying
+the HCR and subsequent stability constraint or harvest caps
+(<code>[nyears, 1]</code>)</li>
+<li><code>exp_land</code> - the expected landings after accounting for
+partial attainment of the TAC (<code>[nyears, 1]</code>)</li>
+<li><code>global_rec_devs</code> - recruitment deviates from the OM
+(<code>[nyears, 1]</code>)</li>
+</ul>
+<p>Additionally, if <code>diagnostics=TRUE</code> for
+<code>run_mse_parallel</code> or <code>run_mse_multiple</code>, the
+following outputs are also available:</p>
+<ul>
+<li><code>survey_obs</code> - observation data generated by the OM</li>
+<li><code>model_outs</code> - completed TMB model objects</li>
+</ul>
+<p>The functions discussed below were not developed with the intent to
+be used on the <code>survey_obs</code> or <code>model_outs</code> output
+datatypes.</p>
+</div>
+</div>
+<div id="reading-mse-output-from-a-file" class="section level3">
+<h3>Reading MSE Output from a File</h3>
+<p>If <code>run_mse_multiple</code> is used, users can optionally
+specify <code>save=TRUE</code> to save MSE outputs to a file. These
+outputs can be read back into R using the provided
+<code>get_saved_model_runs</code> function:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>model_runs <span class="ot">&lt;-</span> <span class="fu">get_saved_model_runs</span>()</span></code></pre></div>
+</div>
+<div id="bind_mse_outputs" class="section level3">
+<h3><code>bind_mse_outputs</code></h3>
+<p>Because users will frequently deal with data of up to 8 dimensions
+(<code>[nyears, nages, nsexes, nregions, nfleets, nsims, nMPs, nOMs]</code>),
+spread across multiple list objects, a helper function has been provided
+to faciliate collating specific data outputs across all available MSE
+models: <code>bind_mse_outputs</code>.</p>
+<p>The <code>bind_mse_outputs</code> function takes a list of a
+completed MSE model runs (e.g. the output from a finished call to
+<code>run_mse_multiple</code>), a vector of outputs to collect
+(e.g. <code>naa</code>, <code>faa</code>, etc.), and a
+<code>data.frame</code> specifying additional data to append to the
+output. The function will collate the specified outputs from across the
+completed model runs into a long format <code>data.frame</code>, with
+additional columns added to specify the MP and OM the data is from.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">bind_mse_outputs</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>    <span class="at">model_runs=</span>model_runs, </span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="at">var=</span><span class="fu">c</span>(<span class="st">&quot;naa&quot;</span>),</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="at">extra_columns=</span><span class="fu">expand.grid</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>        <span class="at">om=</span><span class="fu">c</span>(<span class="st">&quot;OM1&quot;</span>, <span class="st">&quot;OM2&quot;</span>), </span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>        <span class="at">hcr=</span><span class="fu">c</span>(<span class="st">&quot;MP1&quot;</span>, <span class="st">&quot;MP2&quot;</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    )</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>)</span></code></pre></div>
+<p>The <code>extra_columns</code> parameter allows users to specify what
+OM and MP (or HCR) each model run corresponds too. We recommended using
+<code>expand.grid</code> to do this, as it mimics how the factorial grid
+is created in <code>run_mse_multiple</code>, and ensures that the data
+is correctly associated with the OM and MP combination that generated
+it. Generally, the <code>expand.grid</code> call should also be ordered
+as: <code>om</code>, <code>hcr</code>, and <code>options</code>.</p>
+</div>
+<div id="existing-mse-processing-functions" class="section level3">
+<h3>Existing MSE Processing Functions</h3>
+<p>Several processing functions are available through the
+<code>SablefishMSE</code> package allowing for easy computation of
+common fisheries quantities. All functions generally accept the same
+parameters, and return a long format <code>tibble</code>.</p>
+<ul>
+<li><code>get_ssb_biomass</code> - calculates spawning biomass (SSB) and
+total biomass for every year across all model runs and simulations.</li>
+<li><code>get_fishing_mortalities</code> - calculates fleet-specific and
+total fishing mortality for every year across all model runs and
+simulations. Total fishing mortality is assumed to be the maximum
+age-specific fishing mortality aggregated across fleets.</li>
+<li><code>get_recruits</code> - calculates recruitment for every year
+across all model runs and simulations. This function does not handle
+recruitment deviates.</li>
+<li><code>get_landed_catch</code> - calculates fleet-specific and total
+landed catch for every year across all model runs and simulations.</li>
+<li><code>get_management_quantities</code> - aggregates ABC, TAC, and
+expected landings data for every year across all model runs and
+simulations. Historical ABC, TAC, and realized landings are hard coded
+into the function.</li>
+<li><code>get_reference_points</code> - calculates median
+<code>Fref</code>, <code>Bref</code>, <code>Fmax</code> and
+<code>B0</code> reference points across the simulation period across all
+models runs and simulations.</li>
+<li><code>get_*_phaseplane_data</code> - aggregates SSB and either
+realized fishing mortality (<code>get_phaseplane_data</code>), HCR
+recommended fishing mortality (<code>get_hcrphase_data</code>), or
+landed catch (<code>get_phaseplane_catch_data</code>) for all years
+across all model runs and simulations.</li>
+</ul>
+</div>
+<div id="performance-metrics" class="section level3">
+<h3>Performance Metrics</h3>
+<p>Many functions are available for calculating common and
+sablefish-specific performance metrics from MSE output data. All
+functions calculate their performance metric across the projection
+period only, and across all model runs.</p>
+<ul>
+<li><code>average_catch</code> - average annual catch</li>
+<li><code>total_catch</code> - total catch (sum of catch over all
+years)</li>
+<li><code>prop_years_catch</code> - proportion of projection years in
+which catch exceeded some threshold value</li>
+<li><code>average_ssb</code> - average annual spanwing biomass</li>
+<li><code>prop_low_biomass</code> - proportion of projection years in
+which SSB was <span class="math inline">\(&lt;0.4\text{SSB}_{1960}\)</span></li>
+<li><code>average_age</code> - average age of an individual in the
+population</li>
+<li><code>average_abi</code> - average ABI of the population (Griffiths
+et al. 2023)</li>
+<li><code>average_proportion_catch_large</code> - average annual
+proportion of the landed catch &gt;9yo</li>
+<li><code>average_proportion_biomass_old</code> - average annual
+proportion of the biomass &gt;21yo</li>
+<li><code>annual_value</code> - average annual value of the catch
+assuming a fixed relative price per age class</li>
+<li><code>dynamic_annual_value</code> - average annual value of the
+catch assuming prices fluctuate with landed catch volume</li>
+<li><code>biomass_crash_time</code> - average time required for the SSB
+to decline to <span class="math inline">\(&lt;0.20\text{SSB}_{1960}\)</span>. This metric is
+only calculated over the first 20 years of the projection period.</li>
+<li><code>biomass_recovery_time</code> - average time required for the
+SSB to recover to <span class="math inline">\(&gt;0.40\text{SSB}_{1960}\)</span>. This metric is
+calculated starting year 21 of the projection period.</li>
+</ul>
+<p>For additional information on any of these functions, see their
+function documentation.</p>
+<div id="performance_metric_summary-function" class="section level5">
+<h5><code>performance_metric_summary</code> Function</h5>
+<p>A summary function is available to compute multiple performance
+metrics and concatenate them into a single summary
+<code>data.frame</code> object:
+<code>performance_metric_summary</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">performance_metric_summary</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>    <span class="at">model_runs=</span>model_runs, </span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    <span class="at">extra_columns=</span>extra_columns, </span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    <span class="at">dem_params=</span>om<span class="sc">$</span>dem_params, </span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    <span class="at">ref_naa=</span>ref_naa,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    <span class="at">hcr_filter=</span><span class="fu">c</span>(<span class="st">&quot;MP1&quot;</span>, <span class="st">&quot;MP2&quot;</span>),</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="at">om_filter=</span><span class="fu">c</span>(<span class="st">&quot;OM1&quot;</span>, <span class="st">&quot;OM2&quot;</span>),</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    <span class="at">interval_widths=</span><span class="fu">c</span>(<span class="fl">0.50</span>, <span class="fl">0.95</span>), </span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>    <span class="co"># List of metrics to calculate</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>    <span class="at">metric_list =</span> <span class="fu">c</span>(<span class="st">&quot;avg_catch&quot;</span>, <span class="st">&quot;avg_variation&quot;</span>, <span class="st">&quot;avg_ssb&quot;</span>, <span class="st">&quot;avg_age&quot;</span>, <span class="st">&quot;prop_years_lowssb&quot;</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>)</span></code></pre></div>
+<p>The <code>metric_list</code> parameter controls which performance
+metrics to calculate and return in the output <code>data.frame</code>.
+Refer to the function documentation for a list of valid values to
+provide in <code>metric_list</code>.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

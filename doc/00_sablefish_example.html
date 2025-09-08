@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Sablefish MSE Example</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Sablefish MSE Example</h1>
+
+
+
+<p>A fully worked example of this MSE framework for Alaska Sablefish
+follows. This example includes the following features:</p>
+<ul>
+<li>multiple operating models</li>
+<li>multiple harvest control rules</li>
+<li>state-dependent and state-independent recruitment functions</li>
+<li>HCRs with stability costraints and harvest caps</li>
+<li>HCRs with different reference point levels</li>
+<li>Parallel MSE simulations</li>
+<li>MSE output processing and plotting.</li>
+</ul>
+<div id="defining-operating-models" class="section level3">
+<h3>Defining Operating Models</h3>
+<p>A base operating model (OM) object is already available to the
+package to start from. As all of the OMs developed for this example vary
+only in terms of how recruitment is projected in the future, we will
+load that base OM object in, and simply modify the recruitment
+parameter.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>nyears <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>sable_om <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">&quot;data/sablefish_om_big.RDS&quot;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># Also load the historical recruitment timeseries</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>assessment <span class="ot">&lt;-</span> <span class="fu">dget</span>(<span class="st">&quot;data/sablefish_assessment_2023.rdat&quot;</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>hist_recruits <span class="ot">&lt;-</span> assessment<span class="sc">$</span>natage.female[,<span class="dv">1</span>]<span class="sc">*</span><span class="dv">2</span></span></code></pre></div>
+<p>OM1 will project future recruitment by resampling from the historical
+recruitment timeseries, using the <code>resample_recruits</code>
+function:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>om1 <span class="ot">&lt;-</span> sable_om</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>om1<span class="sc">$</span>recruitment<span class="sc">$</span>func <span class="ot">&lt;-</span> resample_recruits</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>om1<span class="sc">$</span>recruitment<span class="sc">$</span>pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="at">hist_recruits =</span> hist_recruits,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="at">nyears =</span> nyears</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>)</span></code></pre></div>
+<p>OM2 will project future recruitment by resampling historical
+recruitment from different regimes using
+<code>resample_regime_recruits</code>. In this case, a “low regime” has
+been defined as consisting of recruitment events with fewer than 35
+million recruits, while a “high regime” has been defined as consisting
+of recruitment events with more than 35 million recruits. The regimes
+alternate, beginning with the low regime for 20 years, following by the
+high regime for 5 years.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>om2 <span class="ot">&lt;-</span> sable_om</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>om2<span class="sc">$</span>recruitment<span class="sc">$</span>func <span class="ot">&lt;-</span> resample_regime_recruits</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>om2<span class="sc">$</span>recruitment<span class="sc">$</span>pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    <span class="at">regime1_recruits =</span> hist_recruits[hist_recruits <span class="sc">&lt;=</span> <span class="dv">35</span>],</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    <span class="at">regime2_recruits =</span> hist_recruits[hist_recruits <span class="sc">&gt;</span> <span class="dv">35</span>],</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    <span class="at">nyears =</span> <span class="dv">10</span><span class="sc">*</span>nyears,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="at">regime_length =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">5</span>),</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    <span class="at">starting_regime =</span> <span class="dv">0</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>)</span></code></pre></div>
+<p>OM3 projects future recruitment via a Beverton-Holt stock recruit
+relationship with <span class="math inline">\(h=0.7\)</span> and <span class="math inline">\(\sigma_R = 1.04\)</span>. As a state-dependent
+recruitment function, the underlying <code>beverton_holt</code> R
+function is a “function factory”, whose returned function is used
+internally by the MSE to compute recruitment based on current spawning
+biomass.</p>
+<p><code>{r. om3, eval=FALSE} om3 &lt;- sable_om om3$recruitment$func &lt;- beverton_holt om3$recruitment$pars &lt;- list(     h = 0.7,     R0 = 25,     S0 = 300,     sigR = 1.04 )</code></p>
+<p>OM4 assumes that future recruitment stays “low” by parameterizing a
+lognormal distribution with the mean and CV of historical recruitment
+events &lt;35 million strong. This is accomplished using the
+<code>regime_recruits</code> function with a regime length longer than
+the projection period.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>om4 <span class="ot">&lt;-</span> sable_om</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>om4<span class="sc">$</span>recruitment<span class="sc">$</span>func <span class="ot">&lt;-</span> regime_recruits</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>om4<span class="sc">$</span>recruitment<span class="sc">$</span>pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="at">mus =</span> <span class="fu">c</span>(<span class="fu">mean</span>(hist_recruits[hist_recruits <span class="sc">&lt;=</span> <span class="dv">35</span>])),</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    <span class="at">cvs =</span> <span class="fu">c</span>(<span class="fu">sd</span>(hist_recruits[hist_recruits <span class="sc">&lt;=</span> <span class="dv">35</span>])<span class="sc">/</span><span class="fu">mean</span>(hist_recruits[hist_recruits <span class="sc">&lt;=</span> <span class="dv">35</span>])),</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    <span class="at">nyears =</span> <span class="dv">10</span><span class="sc">*</span>nyears,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    <span class="at">regime_length =</span> <span class="fu">c</span>(nyears<span class="sc">*</span><span class="dv">10</span>),</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>    <span class="at">starting_regime =</span> <span class="dv">0</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>)</span></code></pre></div>
+<p>OM6 assumes that recruitment crashes for the first 10 years of the
+projection period (a “crash” being defined as 0 annual recruits), while
+the recruitment for the remainder of the projection period is
+historcially resamples as in OM1.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>om6 <span class="ot">&lt;-</span> sable_om</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>om6<span class="sc">$</span>recruitment<span class="sc">$</span>func <span class="ot">&lt;-</span> recruits_crash</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>om6<span class="sc">$</span>recruitment<span class="sc">$</span>pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">crash_start_year =</span> <span class="dv">1</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="at">crash_length =</span> <span class="dv">10</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    <span class="at">crash_value =</span> <span class="dv">0</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>    <span class="at">hist_recruits =</span> hist_recruits,</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>    <span class="at">nyears =</span> <span class="dv">10</span><span class="sc">*</span>nyears</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>)</span></code></pre></div>
+<p>The five OM objects are placed in a master list that will later be
+passed to the MSE function.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>om_list <span class="ot">&lt;-</span> <span class="fu">listN</span>(om1, om2, om3, om4, om6)</span></code></pre></div>
+</div>
+<div id="defining-management-procedures" class="section level3">
+<h3>Defining Management Procedures</h3>
+<p>Management procedures (MPs) are specified as a complex list of values
+that define the specified of the harvest control rule to be applied, the
+reference point targets to use, ABC-TAC and TAC-landings reductions,
+survey frequency, and assessment frequency. A default MP objects is
+available through the <code>setup_mp_options</code> function. The eleven
+MPs specified here differ only in terms of their HCR function and their
+reference point target, so the default MP object can, largely be
+reused.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>mp_base <span class="ot">&lt;-</span> <span class="fu">setup_mp_options</span>()</span></code></pre></div>
+<p>The default value for the TAC-landings reduction factor (otherwise
+known as attainment) is 1 (meaning that the TAC is taken exactly). Here,
+we specify a custom attainment function to use that sets the annual
+attainment level as a function of the TAC. The attainment function used
+here establishes three attainment levels: 87.4% when TAC &lt; 20k mt,
+78.6% when 20k &lt; TAC &lt; 30k mt, and 64.7% when TAC &gt; 30k mt.
+This attainment function will be used for all MPs, so it is applied to
+the base MP object (<code>mp_base</code>).</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>mp_base<span class="sc">$</span>management<span class="sc">$</span>tac_land_reduction <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>    <span class="at">func =</span> stairstep_attainment,</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>    <span class="at">pars =</span> <span class="fu">list</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>        <span class="at">breakpoints =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">30</span>),</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>        <span class="at">levels =</span> <span class="fu">c</span>(<span class="fl">0.874</span>, <span class="fl">0.786</span>, <span class="fl">0.647</span>),</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>        <span class="at">phase_ins =</span> <span class="dv">0</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    )</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>)</span></code></pre></div>
+<p>MP1 is the NPFMC Tier 3a HCR that is currently used to manage
+sablefish in Alaska. It is a threshold HCR that uses a target reference
+point of SPR_40%. The HCR function (<code>tier3</code>) outputs in unit
+of fihsing mortality (F), as specified by “units”. No harvest cap or
+stability constraints are applied.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>mp1 <span class="ot">&lt;-</span> mp_base</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>mp1<span class="sc">$</span>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>    <span class="at">func =</span> tier3,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="cn">NA</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="cn">NA</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="cn">NA</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>    ),</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">&quot;F&quot;</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>)</span></code></pre></div>
+<p>MP2, MP3, and MP4 are a simple variation on MP1, where stability
+constraints of 10%, 15%, and 25% are applied to the TAC. Otherwise,
+these MPs are defined exactly as MP1.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>mp2 <span class="ot">&lt;-</span> mp_base</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>mp2<span class="sc">$</span>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>    <span class="at">func =</span> tier3,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="cn">NA</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="fl">0.10</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="cn">NA</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>    ),</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">&quot;F&quot;</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>)</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>mp3 <span class="ot">&lt;-</span> mp_base</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>mp3<span class="sc">$</span>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>    <span class="at">func =</span> tier3,</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="cn">NA</span>,</span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="fl">0.15</span>,</span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="cn">NA</span></span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a>    ),</span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">&quot;F&quot;</span></span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a>)</span>
+<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a></span>
+<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a>mp4 <span class="ot">&lt;-</span> mp_base</span>
+<span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a>mp4<span class="sc">$</span>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a>    <span class="at">func =</span> tier3,</span>
+<span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="cn">NA</span>,</span>
+<span id="cb10-27"><a href="#cb10-27" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb10-28"><a href="#cb10-28" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="fl">0.25</span>,</span>
+<span id="cb10-29"><a href="#cb10-29" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="cn">NA</span></span>
+<span id="cb10-30"><a href="#cb10-30" tabindex="-1"></a>    ),</span>
+<span id="cb10-31"><a href="#cb10-31" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">&quot;F&quot;</span></span>
+<span id="cb10-32"><a href="#cb10-32" tabindex="-1"></a>)</span></code></pre></div>
+<p>MP5 is also like MP1 but uses a different target reference point of
+SPR_50%. The reference point target level is defined as part of the
+larger MP object, rather than within the HCR list.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>mp5 <span class="ot">&lt;-</span> mp_base</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>mp5<span class="sc">$</span>ref_points<span class="sc">$</span>spr_target <span class="ot">&lt;-</span> <span class="fl">0.50</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>mp5<span class="sc">$</span>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>    <span class="at">func =</span> tier3,</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="cn">NA</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="cn">NA</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="cn">NA</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>    ),</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">&quot;F&quot;</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>)</span></code></pre></div>
+<p>MP6 and MP7 are another variation on MP1, where the input to the HCR
+(total spawning biomass for MP1) is changed to spawning biomass of
+individuals &gt;7yo and &gt;14yo respectvively.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>mp6 <span class="ot">&lt;-</span> mp_base</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>mp6<span class="sc">$</span>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>    <span class="at">func =</span> tier3,</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="fu">list</span>(<span class="at">cutoff_age =</span> <span class="dv">7</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="cn">NA</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="cn">NA</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>    ),</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">&quot;F&quot;</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>)</span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a>mp7 <span class="ot">&lt;-</span> mp_base</span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>mp7<span class="sc">$</span>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a>    <span class="at">func =</span> tier3,</span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="fu">list</span>(<span class="at">cutoff_age =</span> <span class="dv">14</span>),</span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="cn">NA</span>,</span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="cn">NA</span></span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a>    ),</span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">&quot;F&quot;</span></span>
+<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a>)</span></code></pre></div>
+<p>MP8 is an implementation of the Pacific Fisheries Management
+Council’s “40-10” HCR that is used to maanged sablefish along the west
+coast of the continental United States. This HCR traditionally operates
+at the TAC level, but is implemented here so as to output an ABC, as the
+other HCR functions do. MP8 uses a target reference level of SPR_45%,
+and, unlike the other HCR functions, outputs in units of catch (TAC)
+rather than F.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>mp8 <span class="ot">&lt;-</span> mp_base</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>mp8<span class="sc">$</span>ref_points<span class="sc">$</span>spr_target <span class="ot">&lt;-</span> <span class="fl">0.45</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>mp8<span class="sc">$</span>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>    <span class="at">func =</span> pfmc4010,</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="cn">NA</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="cn">NA</span>,</span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="cn">NA</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>    ),</span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">&quot;TAC&quot;</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>)</span></code></pre></div>
+<p>MP9, MP10, and MP11 are another simple variation on MP1, whereby a
+maximum permissable TAC is implemented. If the recommended TAC (via
+evaluation of the harvest control rule and after application of the
+ABC-TAC reduction) exceeds the specified harvest cap, the TAC will be
+reduced to the harvest cap exactly. Attainment will be applied after the
+harvest cap has been applied. Harvest caps are 15k, 20k, and 25k mt
+respectively.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>mp9 <span class="ot">&lt;-</span> mp_base</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>mp9<span class="sc">$</span>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>    <span class="at">func =</span> tier3,</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="cn">NA</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="cn">NA</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="dv">15</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>    ),</span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">&quot;F&quot;</span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>)</span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a>mp10 <span class="ot">&lt;-</span> mp_base</span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>mp10<span class="sc">$</span>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a>    <span class="at">func =</span> tier3,</span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="cn">NA</span>,</span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="cn">NA</span>,</span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="dv">20</span></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a>    ),</span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">&quot;F&quot;</span></span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a>)</span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a></span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a>mp11 <span class="ot">&lt;-</span> mp_base</span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a>mp11<span class="sc">$</span>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a>    <span class="at">func =</span> tier3,</span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="cn">NA</span>,</span>
+<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="cn">NA</span>,</span>
+<span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="dv">25</span></span>
+<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a>    ),</span>
+<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">&quot;F&quot;</span></span>
+<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a>)</span></code></pre></div>
+<p>The eleven MP objects are placed in a master list that will later be
+passed to the MSE function.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>mp_list <span class="ot">&lt;-</span> <span class="fu">listN</span>(mp1, mp2, mp, mp4, mp5, mp6, mp7, mp8, mp9, mp10, mp11)</span></code></pre></div>
+</div>
+<div id="defining-the-mse_options-object" class="section level3">
+<h3>Defining the <code>mse_options</code> Object</h3>
+<p>An <code>mse_options</code> list object is also defined to provode
+additional options to the MSE function. Critically, this list object
+defines: the number of years to project for, the length of the OM
+conditioning period, the simulation year in which to begin projecting
+recruitment using the provided recruitment function, and whether the
+estimation method should be run or not.</p>
+<p>The default values are all appropriate for this case study, and can
+be accessed using <code>setup_mse_options</code>.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>mse_options <span class="ot">&lt;-</span> <span class="fu">setup_mse_options</span>()</span></code></pre></div>
+</div>
+<div id="running-the-mse" class="section level3">
+<h3>Running the MSE</h3>
+<p>Now that all of the OMs and MPs have been appropriately defined, the
+full set of MSE simulation can be run. Here we will run each combination
+of OM and MP for 9 random simulations in parallel. The parallel
+computing overhead is handled internally by the MSE function and uses 2
+fewer than the available number of compute cores on the machine.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>nsims <span class="ot">&lt;-</span> <span class="dv">9</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>seed_list <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span>(<span class="dv">1000</span><span class="sc">*</span>nsims), nsims)</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>model_runs <span class="ot">&lt;-</span> <span class="fu">run_mse_multiple</span>(</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>    om_list, </span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>    hcr_list, </span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>    seed_list,</span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>    <span class="at">nyears=</span>nyears,</span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>    <span class="at">mse_options_list=</span>mse_options_list</span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>)</span></code></pre></div>
+<p>Depending on the number of OMs, MPs, seeds, and other options, this
+function may take several hours to complete. A relatively fast machine,
+with &gt;10 compute cores should take ~2 hours to complete all of the
+simulations as specified above.</p>
+</div>
+<div id="processing-mse-results" class="section level3">
+<h3>Processing MSE Results</h3>
+<p>The above MSE will generate results from 55 unique models (11 MPs
+across 5 HCRs), each model consisting of results for 9 simulations, with
+each simulation having lasted 100 years. The amount of output data often
+makes processing MSE results tricky. Multiple helper functions are
+provided by the package to make processing results easier.</p>
+<p>Before prcoessing output, create a data.frame that specifies which
+models in the <code>model_runs</code> used which combination of OM and
+MP object. Often this can be simply accomplished using
+<code>expand.grid</code>, as this is what is used internally by
+<code>run_mse_multiple()</code>. For readability and plotting purposes,
+it is often useful to assign each OM and HCR a human readable name in
+the same order as the objects appear in their respective lists
+(<code>om_list</code> for OMs and <code>hcr_list</code> for MPs).</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>om_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Random Recruitment&quot;</span>, <span class="st">&quot;Cyclic Recruitment&quot;</span>, <span class="st">&quot;Beverton-Holt Recruitment&quot;</span>, <span class="st">&quot;Low Recruitment&quot;</span>, <span class="st">&quot;Recruitment Crash&quot;</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>hcr_names <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;F40&quot;</span>, <span class="st">&quot;F40 +/-10%&quot;</span>, <span class="st">&quot;F40 +/-15%&quot;</span>, <span class="st">&quot;F40 +/-25%&quot;</span>, <span class="st">&quot;F50&quot;</span>, <span class="st">&quot;F40 &gt;7yo&quot;</span>, <span class="st">&quot;F40 &gt;14yo&quot;</span>, <span class="st">&quot;PFMC 40-10&quot;</span>, <span class="st">&quot;F40 15k Cap&quot;</span>, <span class="st">&quot;F40 20k Cap&quot;</span>, <span class="st">&quot;F40 25k Cap&quot;</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>extra_columns <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>    <span class="at">om =</span> om_names,</span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>    <span class="at">hcr =</span> hcr_names</span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>)</span></code></pre></div>
+<p>Five helper functions are predefined to facilitate working with
+common outputs from the MSE: spawning biomass, fishing mortality,
+recruitment, ABC and TAC, and landed catch. Each function is defined
+very similarly, taking the list of MSE output objects
+(<code>model_runs</code>) and the data.frame of OMs and HCRs that apply
+to each model (<code>extra_columns</code>). These are used internally by
+each function to assign the correct OM and HCR name to each model, and
+pull the correct data from the MSE outputs.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>ssb_data <span class="ot">&lt;-</span> <span class="fu">get_ssb_biomass</span>(model_runs, extra_columns2, sable_om<span class="sc">$</span>dem_params)</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>f_data <span class="ot">&lt;-</span> <span class="fu">get_fishing_mortalities</span>(model_runs, extra_columns2)</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>r_data <span class="ot">&lt;-</span> <span class="fu">get_recruits</span>(model_runs, extra_columns2)</span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>abctac <span class="ot">&lt;-</span> <span class="fu">get_management_quantities</span>(model_runs, extra_columns2)</span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>catch_data <span class="ot">&lt;-</span> <span class="fu">get_landed_catch</span>(model_runs, extra_columns2)</span></code></pre></div>
+<p>These helper functions return tibbles in long format that can be
+easily provided to <code>ggplot</code> for plotting or used within other
+tidyverse style data processing pipelines. A plotting function is also
+defined alongside each data processing function above, and will return a
+ggplot object that can be further modified outside of the function. For
+each plotting function, the parameter <code>v1</code> corresponds to the
+column name assigned to the “color” aesthetic, and the parameter
+<code>v2</code> corresponds to the column names to facet by. Facetting
+by mulitple variables (e.g. a facet grid) is not currently supported by
+default.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">plot_ssb</span>(ssb_data, <span class="at">v1=</span><span class="st">&quot;hcr&quot;</span>, <span class="at">v2=</span><span class="st">&quot;om&quot;</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="fu">plot_fishing_mortalities</span>(f_data, <span class="at">v1=</span><span class="st">&quot;hcr&quot;</span>, <span class="at">v2=</span><span class="st">&quot;om&quot;</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="fu">plot_recruitment</span>(r_data, <span class="at">v1=</span><span class="st">&quot;hcr&quot;</span>, <span class="at">v2=</span><span class="st">&quot;om&quot;</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="fu">plot_abc_tac</span>(abctac, <span class="at">v1=</span><span class="st">&quot;hcr&quot;</span>, <span class="at">v2=</span><span class="st">&quot;om&quot;</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="fu">plot_landed_catch</span>(catch_data, <span class="at">v1=</span><span class="st">&quot;hcr&quot;</span>, <span class="at">v2=</span><span class="st">&quot;om&quot;</span>)</span></code></pre></div>
+</div>
+<div id="computing-performance-metrics" class="section level3">
+<h3>Computing Performance Metrics</h3>
+<p>Helper functions are also provided to compute performance metrics.
+Individual functions for each performance metric are available (though
+outputs may require additional processing), or the
+<code>performance_metric_summary</code> function can be used to quickly
+compute all of them. Like with the otehr data processing functions, a
+default plotting functions for performance metrics is also
+available.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>performance_metrics <span class="ot">&lt;-</span> <span class="fu">performance_metric_summary</span>(</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>    model_runs, </span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>    extra_columns2, </span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>    sable_om<span class="sc">$</span>dem_params, </span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>)</span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a>perf_data <span class="ot">&lt;-</span> performance_metrics<span class="sc">$</span>perf_data</span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a><span class="fu">plot_performance_metric_summary</span>(perf_data)</span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
