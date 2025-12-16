@@ -258,3 +258,12 @@ scale_and_rank <- function(data, col_name){
     )
 }
 
+format <- function(data, hcr_filter, om_filter){
+    data %>% as_tibble() %>%
+            filter_hcr_om(hcrs=hcr_filter, oms=om_filter) %>%
+            drop_na() %>%
+            mutate(
+                om = factor(om, levels=om_filter),
+                hcr = factor(hcr, levels=hcr_filter)
+            )
+}
