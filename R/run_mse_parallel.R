@@ -63,6 +63,9 @@ run_mse_parallel <- function(nsims, seeds, om, hcr, mse_options, nyears, diagnos
 
     }
 
+    outputs$om <- om
+    outputs$mp <- hcr
+
     return(outputs)
 
 }
