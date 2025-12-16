@@ -379,15 +379,17 @@ get_atage_groups <- function(model_runs, extra_columns, hcr_filter, om_filter, q
 #'
 #' @example
 #'
-get_reference_points <- function(model_runs, extra_columns, hcr_filter, om_filter, seed_list){
+get_reference_points <- function(model_runs, extra_columns, rp_year, hcr_filter, om_filter){# om_list, hcr_list, seed_list){
 
     om_names <- om_filter
     hcr_names <- hcr_filter
 
+    # om_list <- lapply(model_runs, \(x) x$om)
+
     get_rps <- function(om_name, hcr_name, recruitment, prop_fs){
         om <- om_list[which(om_names == om_name)]
         hcr <- hcr_list[which(hcr_names == hcr_name)]
-        year <- 64
+        year <- rp_year
 
         om <- om[[1]]
         hcr <- hcr[[1]]
@@ -411,11 +413,13 @@ get_reference_points <- function(model_runs, extra_columns, hcr_filter, om_filte
     }
 
     avg_recruitment <- get_recruits(model_runs, extra_columns, hcr_filter, om_filter) %>%
-        group_by(sim, om) %>%
+        group_by(sim, hcr, om) %>%
+        filter_times(c(1, rp_year)) %>%
         summarise(rec=mean(rec))
 
     prop_fs_df <- get_fishing_mortalities(model_runs, extra_columns, hcr_filter, om_filter) %>%
         filter(L1 != "faa_est") %>%
+        filter_times(c(1, rp_year)) %>%
         group_by(time, sim, om, hcr, fleet) %>%
         mutate(
             prop_f = F/total_F
@@ -428,10 +432,10 @@ get_reference_points <- function(model_runs, extra_columns, hcr_filter, om_filte
 
 
     ref_pts_df <- prop_fs_df %>% 
-        left_join(avg_recruitment, by=c("sim", "om")) %>%
+        left_join(avg_recruitment, by=c("sim", "om", "hcr")) %>%
         group_by(sim, om, hcr) %>%
         reframe(rps = get_rps(om, hcr, rec, c(Fixed, Trawl))) %>%
-        mutate(rp_name = rep(c("Fref", "Fmax", "Bref", "B0"), length(hcr_filter)*length(om_filter)*length(seed_list))) %>%
+        mutate(rp_name = rep(c("Fref", "Fmax", "Bref", "B0"), length.out=n())) %>%#length(hcr_filter)*length(om_filter)*length(seed_list))) %>%
         pivot_wider(names_from="rp_name", values_from="rps") %>%
         group_by(om, hcr) %>%
         median_qi(Fref, Fmax, Bref, B0, .width=interval_widths, .simple_names=TRUE) %>%
