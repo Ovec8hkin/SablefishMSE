@@ -147,12 +147,18 @@ bevholt_regimes <- function(h, sbpr, R0s, sigRs, nyears, regime_length, starting
         }
         R0s <- R0s[regs]
         sigRs <- sigRs[regs]
+        if(length(h) > 1){
+            hs <- h[regs]
+        }else{
+            hs <- rep(h, nyears)
+        }
         # print(regs)
         # print(R0s)
         # print(sigRs)
 
         R0 <- R0s[y]
         sigR <- sigRs[y]
+        h <- hs[y]
         S0 <- sbpr*R0
         bh <- (4*R0*h*ssb)/((1-h)*R0*(S0/R0) + (5*h - 1)*ssb)
         return(
