@@ -265,3 +265,15 @@ get_saved_model_runs <- function(om_order=NULL, hcr_order=NULL){
 inf_max <- function(d){
     return(max(d[!is.infinite(d)]))
 }
+
+#' Get minimum value without considering infinite values
+#' 
+#' Wrapper around max that ignores infinite values
+#' 
+#' @param d vector of values to find maximum of
+#' 
+#' @export inf_min
+#' 
+inf_min <- function(d){
+    return(min(d[!is.infinite(d)]))
+}
