@@ -167,7 +167,7 @@ hcr_colors <- set_hcr_colors2(publication_hcrs)
 names(hcr_colors) <- all_hcr_names
 
 # Specify which subset of HCR/OM combinations to get results for
-hcr_filter <- supplementary_hcr_names#supplementary_hcr_names[c(1, 2, 3, 4, 5)]
+hcr_filter <- publication_hcr_names#supplementary_hcr_names[c(1, 2, 3, 4, 5)]
 om_filter <- publication_om_names
 
 ### Spawning Biomass and Catch Plots
@@ -314,7 +314,7 @@ yaxs <- data.frame(
     y=seq(0, 1, 0.25)
 )
 
-perf_data %>% select(om, hcr, name, scaled) %>%
+radar <- perf_data %>% select(om, hcr, name, scaled) %>%
     mutate(name=factor(
         name, 
         levels=c("Average Annual Catch", "Catch AAV", "Average Annual SSB", "Average Age", "Average Years on HCR Ramp", "Average Annual Economic Value"), 
@@ -332,7 +332,7 @@ perf_data %>% select(om, hcr, name, scaled) %>%
         labs(x="", y="")+
         ggiraphExtra::coord_radar()+
         facet_wrap(~om)+
-        guides(color=guide_legend(title="Harvest\nControl\nRule", ncol=3))+
+        guides(color=guide_legend(title="Harvest\nControl\nRule", nrow=1))+
         custom_theme+
         theme(
             axis.text.x = element_blank(),
@@ -388,7 +388,7 @@ perf_data %>% select(om, hcr, name, median) %>%
         levels=c("Average Annual Catch", "Catch AAV", "Average Annual SSB", "Average Age", "Average Years on HCR Ramp", "Average Annual Economic Value"), 
         labels=formatted_metric_names
     )) %>%
-    pivot_wider(names_from=name, values_from=median) %>%
+    pivot_wider(names_from=name, values_from=median)
 
 
 rel_performance_metrics <- performance_metric_summary(
@@ -1017,4 +1017,37 @@ ggsave("~/Desktop/kobe_scatter.jpeg", width=16, height=12, units="in")
 
 
 recruit_data <- get_recruits(model_runs, extra_columns, publication_hcrs, publication_oms)
-plot_recruitment(recruit_data, v1="hcr", v2="om")
+plot_recruitment(recruit_data %>% filter(time > common_trajectory), v1="hcr", v2="om", common_trajectory = common_trajectory)+custom_theme
+ggsave(filename=file.path(figures_dir, paste0("recruitment_supp", filetype)), width=16, height=7, units="in")
+
+
+examp_rec <- recruit_data %>% 
+    as_tibble() %>%
+    filter(time > 54, sim %in% sample(seed_list, 5)) %>%
+    mutate(
+        sim = factor(sim)
+    )
+
+mean_rec <- examp_rec %>% group_by(om) %>% summarise(r=median(rec))
+
+summ_rec <- recruit_data %>%
+    as_tibble() %>%
+    filter(time > 54) %>%
+    group_by(time, om) %>%
+    median_qi(rec, .width=interval_widths)
+
+ggplot(examp_rec) +
+    geom_line(aes(x=time, y=rec, color=om, group=sim), size=0.5, alpha=0.6)+
+    geom_line(data=summ_rec, aes(x=time, y=rec), color="black", size=1)+
+    geom_hline(data=mean_rec, aes(yintercept=r), linetype="dashed")+
+    geom_text(data=mean_rec, aes(x=120, y=115, label=round(r, 3)), size=6)+
+    # scale_y_continuous(limits=c(0, 120))+
+    scale_x_continuous(breaks=c(seq(55, 130, 20), 134), labels=c(seq(0, 75, 20), 75))+
+    guides(color="none")+
+    labs(x="Time", y="Recruitment (millions)")+
+    coord_cartesian(expand=0, ylim=c(0, 150))+
+    facet_wrap(~om, ncol=3)+
+    theme_bw()+
+    custom_theme
+
+ggsave(filename=file.path(figures_dir, paste0("recruitment_supp", filetype)), width=16, height=7, units="in")
