@@ -199,13 +199,8 @@ get_recruits <- function(model_runs, extra_columns, hcr_filter, om_filter){
 #' @example
 #'
 get_landed_catch <- function(model_runs, extra_columns, hcr_filter, om_filter){
-    group_columns <- c("time", "fleet", "sim", "L1", names(extra_columns))
-    return(
-        bind_mse_outputs(model_runs, c("land_caa"), extra_columns) %>%
-            as_tibble() %>%
-            filter(hcr %in% hcr_filter, om %in% om_filter) %>%
-            drop_na() %>%
-            group_by(across(all_of(group_columns))) %>%
+    process <- function(data){
+        data %>% group_by(across(all_of(group_columns))) %>%
             # compute fleet-based F as the maximum F across age classes
             summarise(
                 catch = sum(value)
@@ -216,11 +211,12 @@ get_landed_catch <- function(model_runs, extra_columns, hcr_filter, om_filter){
             mutate(
                 total_catch = sum(catch)
             ) %>%
-            ungroup() %>%
-            mutate(
-                om = factor(om, levels=om_filter),
-                hcr = factor(hcr, levels=hcr_filter)
-            )
+            ungroup()
+    }
+    group_columns <- c("time", "fleet", "sim", "L1", names(extra_columns)) 
+    return(
+        process_big_outputs(model_runs, c("land_caa"), extra_columns, hcr_filter, om_filter, process) %>%
+            format(hcr_filter, om_filter)
     )
 }
 
