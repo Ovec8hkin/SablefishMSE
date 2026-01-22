@@ -140,26 +140,36 @@ plot_fishing_mortalities <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALS
     return(plot)
 }
 
-plot_recruitment <- function(data, v1="hcr", v2=NA, show_est=FALSE, common_trajectory=64){
+plot_recruitment <- function(data, v1="hcr", v2=NA,v3=NA,  show_est=FALSE, common_trajectory=64){
     group_columns <- colnames(data)
     group_columns <- group_columns[! group_columns %in% c("sim", "rec")]
 
     r <- data %>%
         # summarise SSB across year and sim 
         group_by(across(all_of(group_columns))) %>%
-        median_qi(rec, .width=c(0.50, 0.80), .simple_names=FALSE) %>%
+        mean_qi(rec, .width=c(0.50, 0.80), .simple_names=FALSE) %>%
         reformat_ggdist_long(n=length(group_columns))
 
     mean_rec <- r %>% pull(median) %>% mean
 
+    hcr1 <- as.character((r %>% pull(hcr) %>% unique)[1])
+    traj_column <- ifelse(is.na(v3), v2, v3)
+    traj <- r %>% distinct(eval(rlang::parse_expr(traj_column))) %>% mutate(common=common_trajectory) %>% rename(!!traj_column := 1)
+
+    common <- r %>% left_join(traj, by=traj_column) %>% filter(hcr==hcr1) %>% group_by(om) %>% filter(time <= common)
+
+
     plot <- ggplot(r %>% filter(L1 == "naa")) + 
-        geom_lineribbon(aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=.data[[v1]]), size=0.4)+
+        # geom_lineribbon(aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=.data[[v1]]), size=0.4)+
         # geom_pointrange(data = r %>% filter(L1 == "naa_est"), aes(x=time, y=median, ymin=lower, ymax=upper, color=hcr), alpha=0.35)+
+        geom_line(aes(x=time, y=median, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
+        geom_line(data = common, aes(x=time, y=median), size=0.85)+
         geom_hline(yintercept = mean_rec, linetype="dashed") + 
         scale_fill_brewer(palette="Blues")+
         scale_color_manual(values=hcr_colors)+
         scale_y_continuous(limits=c(0, 120))+
-        coord_cartesian(expand=0)
+        coord_cartesian(expand=0)+
+        labs(x="Year", y="Recruitment (millions)", color="Harvest\nControl\nRule")+
 
     if(show_est){
         plot <- plot + geom_pointrange(data = f %>% filter(L1 == "naa_est"), aes(x=time, y=median, ymin=lower, ymax=upper, color=hcr), alpha=0.35)
@@ -661,7 +671,7 @@ plot_mse_summary <- function(model_runs, extra_columns, dem_params, hcr_filter, 
     return(plot+custom_theme)
 }
 
-plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_relative=FALSE, summary_hcr="F40", highlight=NULL){
+plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_relative=FALSE, summary_hcr="F40", highlight=NULL, colors=rank_colors){
 
     metric_minmax = perf_data %>% group_by(name) %>% summarise(min=min(lower), max=max(upper))
     axis_scalar <- c(0.9, 1.1)
@@ -698,7 +708,7 @@ plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_rel
     #     colors <- c(colors, "Other" = "grey70")
     # }
 
-    colors <- rank_colors
+    # colors <- rank_colors
     if(!is.null(highlight)){
         colors <- c(hcr_colors, "Other" = "grey70")
         colors <- colors[perf_data$color_group %>% unique]
