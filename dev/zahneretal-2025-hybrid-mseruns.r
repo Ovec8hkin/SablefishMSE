@@ -341,6 +341,46 @@ perf_data %>% select(om, hcr, name, scaled) %>%
         )
 ggsave(filename=file.path(figures_dir, paste0("radar_plots_supp", filetype)), width=16, height=7, units="in")
 
+table <- perf_data %>% filter(.width==0.50) %>%
+    mutate(scaled = round(scaled, 2)) %>%
+    mutate(
+        name=factor(
+            name, 
+            levels=c("Average Annual Catch", "Catch AAV", "Average Annual SSB", "Average Age", "Average Years on HCR Ramp", "Average Annual Economic Value"), 
+            labels=c(
+                "Average Annual\nCatch", 
+                "Catch AAV", 
+                "Average Annual\nSSB", 
+                "Average Age", 
+                "Average Years\nSSB < Bref", 
+                "Average Annual\nEconomic Value"
+            )
+
+        ),
+        hcr = factor(
+            hcr,
+            labels = c("F40", "F40\nStability\nConstraint", "F40\nHarvest\nCap", "F40\nHybrid", "F50")
+        ) 
+    ) %>%
+    ggplot()+
+        geom_tile(aes(x=hcr, y=name, fill=scaled))+
+        geom_text(aes(x=hcr, y=name, label=round(median, 2)), size=6, color="black")+
+        scale_fill_gradient(oob=scales::squish, limits=c(0.6, 1), low="white", high="#368536")+
+        scale_y_discrete(name="", position="right")+
+        scale_x_discrete(name="", position="bottom")+
+        facet_wrap(~om, nrow=1, strip.position="left")+
+        coord_cartesian(expand = 0)+
+        custom_theme+
+        guides(fill="none")+
+        theme(
+            strip.text.y = element_blank(),
+            legend.postion = "top"
+        )
+
+library(patchwork)
+radar/table + plot_layout(guides="collect") & theme(legend.position="top")
+
+ggsave(filename=file.path(figures_dir, paste0("performance_table_radar", filetype)), width=16, height=12, units="in")
 
 perf_data %>% select(om, hcr, name, median) %>%
     mutate(name=factor(
