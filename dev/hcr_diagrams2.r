@@ -181,13 +181,15 @@ ssbs <- seq(0, 300, 1)
 
 f40_hcr <- sapply(ssbs, \(x) threshold_f_hcr(x, FRPs=c(0, spr40_rp$Fref), BRPs=c(spr40_rp$Bref*0.05, spr40_rp$Bref)))
 f50_hcr <- sapply(ssbs, \(x) threshold_f_hcr(x, FRPs=c(0, spr50_rp$Fref), BRPs=c(spr50_rp$Bref*0.05, spr50_rp$Bref)))
-pfmc4010_hcr <- sapply(ssbs, \(x) threshold_f_dep_hcr(x, FRPs=c(0, sprMSY_rp$Fref), BRPs=c(0.1, 0.40), Bref=sprMSY_rp$B0))
-pfmc4010_hcr_catch <- sapply(ssbs, \(x) pfmc_catch_special(x, B0 = sprMSY_rp$B0, Fref=sprMSY_rp$Fref))
-bcsable_hcr <- sapply(ssbs, \(x) threshold_f_dep_hcr(x, FRPs=c(0, 0.055), BRPs=c(0.40, 0.60), Bref=sprMSY_rp$Bref))
+# pfmc4010_hcr <- sapply(ssbs, \(x) threshold_f_dep_hcr(x, FRPs=c(0, sprMSY_rp$Fref), BRPs=c(0.1, 0.40), Bref=sprMSY_rp$B0))
+# pfmc4010_hcr_catch <- sapply(ssbs, \(x) pfmc_catch_special(x, B0 = sprMSY_rp$B0, Fref=sprMSY_rp$Fref))
+# bcsable_hcr <- sapply(ssbs, \(x) threshold_f_dep_hcr(x, FRPs=c(0, 0.055), BRPs=c(0.40, 0.60), Bref=sprMSY_rp$Bref))
 cap15_hcr <- sapply(ssbs, \(x) threshold_cap_hcr(x, FRPs=c(0, spr40_rp$Fref), BRPs=c(spr40_rp$Bref*0.05, spr40_rp$Bref), cap=15))
 cap20_hcr <- sapply(ssbs, \(x) threshold_cap_hcr(x, FRPs=c(0, spr40_rp$Fref), BRPs=c(spr40_rp$Bref*0.05, spr40_rp$Bref), cap=20))
-cap25_hcr <- sapply(ssbs, \(x) threshold_cap_hcr(x, FRPs=c(0, spr40_rp$Fref), BRPs=c(spr40_rp$Bref*0.05, spr40_rp$Bref), cap=25))
-chrf50_hcr <- rep(spr50_rp$Fref, length(ssbs))
+# cap25_hcr <- sapply(ssbs, \(x) threshold_cap_hcr(x, FRPs=c(0, spr40_rp$Fref), BRPs=c(spr40_rp$Bref*0.05, spr40_rp$Bref), cap=25))
+hybf40_hcr <- cap20_hcr
+# hybf50_hcr <- sapply(ssbs, \(x) threshold_cap_hcr(x, FRPs=c(0, spr50_rp$Fref), BRPs=c(spr50_rp$Bref*0.05, spr50_rp$Bref), cap=20))
+# chrf50_hcr <- rep(spr50_rp$Fref, length(ssbs))
 
 hcr_df <- data.frame(
         ssb=ssbs, 
@@ -195,21 +197,23 @@ hcr_df <- data.frame(
         perc5=f40_hcr,
         perc10=f40_hcr, 
         f50=f50_hcr,
-        pfmc4010=pfmc4010_hcr, 
-        bcsable=bcsable_hcr, 
-        chr50=chrf50_hcr,
+        # pfmc4010=pfmc4010_hcr, 
+        # bcsable=bcsable_hcr, 
+        # chr50=chrf50_hcr,
         cap15=cap15_hcr,
-        cap25=cap25_hcr,
-        # cap20=cap20_hcr,
-        nofish=0
+        # cap25=cap25_hcr,
+        cap20=cap20_hcr,
+        hybrid_f40 = hybf40_hcr
+        # hybrid_f50 = hybf50_hcr
+        # nofish=0
 )
 
 hcr_df_long <- hcr_df %>% pivot_longer(2:ncol(hcr_df), names_to="hcr", values_to="F") %>%
     mutate(
         hcr=factor(
             hcr, 
-            levels=c("f40", "f50", "pfmc4010", "bcsable", "chr50", "perc5", "perc10", "cap15", "cap20", "cap25", "nofish"),
-            labels=c("F40", "F50", "PFMC 40-10", "British Columbia", "Constant F50", "F40 +/- 5%", "F40 +/- 10%", "15k Harvest Cap", "20k Harvest Cap", "25k Harvest Cap", "No Fishing")
+            levels=c("f40", "f50", "pfmc4010", "perc5", "perc10", "cap15", "cap20", "cap25", "hybrid_f40", "hybrid_f50"),
+            labels=c("NPFMC F40", "Generic F50", "PFMC 40-10", "F40 +/- 5%", "F40 +/- 10%", "15k Harvest Cap", "20k Harvest Cap", "25k Harvest Cap", "F40 Hybrid", "F50 Hybrid")
         )
     ) %>%
     rowwise() %>%
@@ -224,7 +228,9 @@ hcr_df_long <- hcr_df %>% pivot_longer(2:ncol(hcr_df), names_to="hcr", values_to
         ),
         F = F/spr40_rp$Fref,
         ssb = ssb/spr40_rp$Bref
-    )
+    ) %>%
+    pivot_longer(catch:F, names_to="type", values_to="value") %>%
+    mutate(type=factor(type, levels=c("F", "catch"), labels=c("F", "Catch")))
 
 hcr_colors <- set_hcr_colors2(hcr_df_long %>% pull(hcr) %>% unique)
 # hcr_colors["No Fishing"] <- "#F8766D"
@@ -243,10 +249,35 @@ ggplot(hcr_df_long)+
     scale_color_manual(values=hcr_colors)+
     coord_cartesian(xlim=c(0, 2.5))+
     # coord_cartesian(expand=0)+
-    facet_wrap(~hcr, nrow=2)+
-    guides(color="none", linetype=guide_legend("Unit"))+
+    # facet_wrap(~hcr, nrow=2)+
+    guides(linetype=guide_legend("Unit"))+
     custom_theme+
     theme(panel.spacing.x = unit(1, "cm"))
 ggsave(file.path(here::here(), "figures", "hcr_diagrams.jpeg"), width=14, height=8, units="in")
 
 
+# hcr_colors["No Fishing"] <- "#F8766D"
+# hcr_colors["F40"] <- "black"
+
+hcr_df_long %>%
+    filter(hcr %in% c("NPFMC F40", "F40 Hybrid")) %>%
+    
+    ggplot()+
+        geom_line(aes(x=ssb, y=value, color=hcr, linetype=type), linewidth=1, position=position_dodge(width=0.08))+
+        # geom_line(aes(x=ssb, y=catch/60, color=hcr, linetype="Catch"), linewidth=1)+
+        # geom_vline(xintercept = spr40_rp$Bref, linetype="dashed", color="grey")+
+        # geom_vline(xintercept = spr50_rp$B0, linetype="dashed", color="grey")+
+        # annotate("text", x=spr40_rp$Bref-40, y=0.11, label="B[40]", parse=TRUE, size=6)+
+        # annotate("text", x=spr40_rp$B0-40, y=0.11, label="B[100]", parse=TRUE, size=6)+
+        scale_x_continuous("Relative SSB (SSB/B40)", expand=c(0, 0), breaks = seq(0, 2.5, 0.50))+
+        scale_y_continuous("Relative Fishing Mortality (F/F40)")+
+        # scale_linetype_manual(values=c("F"="solid", "Catch"="dotdash"))+
+        scale_color_manual(values=c("black", "orange", "blue", "red"))+
+        coord_cartesian(xlim=c(0, 2.5))+
+        # coord_cartesian(expand=0)+
+        labs(color="Harvest\nControl\nRule")+
+        facet_wrap(~type, scales="free_y")+
+        guides(color="none", linetype="none")+
+        custom_theme+
+        theme(panel.spacing.x = unit(1, "cm"))
+ggsave(file.path(figures_dir, "hcr_diagrams4.jpeg"), width=10, height=6, units="in")
