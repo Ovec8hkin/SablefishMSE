@@ -99,14 +99,17 @@ total_catch <- function(
     summarise_by=c("om", "hcr"),
     summary_out=TRUE
 ){
+
+    process <- function(data){
+        data %>% filter_times(time_horizon = time_horizon) %>%
+            group_by(across(all_of(group_columns))) %>%
+            summarise(total_catch = sum(value))
+    }
     
     group_columns <- c("sim", summarise_by)
-    tot_catch <- bind_mse_outputs(model_runs, "caa", extra_columns) %>%
+    tot_catch <- process_big_outputs(model_runs, "caa", extra_columns, hcr_filter, om_filter, process) %>%#bind_mse_outputs(model_runs, "caa", extra_columns) %>%
         as_tibble() %>%
         filter_hcr_om(hcr_filter, om_filter) %>%
-        filter_times(time_horizon = time_horizon) %>%
-        group_by(across(all_of(group_columns))) %>%
-        summarise(total_catch = sum(value)) %>%
         round_to_zero("total_catch") %>%
         relativize_performance(
             rel_column = "hcr",
@@ -114,7 +117,7 @@ total_catch <- function(
             rel_value = relative,
             grouping=group_columns
         )
-
+    
     if(!is.null(extra_filter)){
         tot_catch <- tot_catch %>% filter(eval(extra_filter))
     }
