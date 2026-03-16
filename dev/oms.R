@@ -17,7 +17,7 @@ rp <- calculate_ref_points(
     ret = joint_selret$ret[,,1,,drop=FALSE],
     avg_rec = mean(hist_recruits)/2,
     spr_target = 0.40,
-    hyperallometry = 3
+    hyperallometry = 1
 )
 ref_naa <- compute_naapr(
     nages=30,
