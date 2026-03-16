@@ -16,13 +16,12 @@ rp <- calculate_ref_points(
     sel =  joint_selret$sel[,,1,,drop=FALSE],
     ret = joint_selret$ret[,,1,,drop=FALSE],
     avg_rec = mean(hist_recruits)/2,
-    spr_target = 0.40
+    spr_target = 0.40,
+    hyperallometry = 3
 )
 ref_naa <- compute_naapr(
     nages=30,
     mort = dp_y$mort[,,1,],
-    mat = dp_y$mat[,,1,],
-    waa = dp_y$waa[,,1,],
     sel =  joint_selret$sel[,,1,,drop=FALSE],
     ret = joint_selret$ret[,,1,,drop=FALSE],
     F = rp$Fref
@@ -30,8 +29,6 @@ ref_naa <- compute_naapr(
 ref_naa0 <- compute_naapr(
     nages=30,
     mort = dp_y$mort[,,1,],
-    mat = dp_y$mat[,,1,],
-    waa = dp_y$waa[,,1,],
     sel =  joint_selret$sel[,,1,,drop=FALSE],
     ret = joint_selret$ret[,,1,,drop=FALSE],
     F = 0
