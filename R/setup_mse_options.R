@@ -12,7 +12,9 @@ setup_mp_options <- function(){
         list(
             hcr = setup_hcr_options(),
             ref_points = list(
-                spr_target = 0.40
+                spr_target = 0.40,
+                rp_start_age = 1,
+                rp_hyperallometry=1
             ),
             management = list(
                 abc_tac_reduction = 1,

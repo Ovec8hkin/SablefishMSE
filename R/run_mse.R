@@ -269,7 +269,9 @@ run_mse <- function(om, mp, mse_options, nyears_input=NA, seed=1120, file_suffix
                     sel =  joint_selret$sel[,,1,,drop=FALSE],
                     ret = joint_selret$ret[,,1,,drop=FALSE],
                     avg_rec = mean(rec)/2,
-                    spr_target = mp$ref_points$spr_target
+                    spr_target = mp$ref_points$spr_target,
+                    start_age = mp$ref_points$rp_start_age,
+                    hyperallometry = mp$ref_points$rp_hyperallometry
                 )
 
                 naa_proj[is.na(naa_proj)] <- 0
@@ -280,15 +282,13 @@ run_mse <- function(om, mp, mse_options, nyears_input=NA, seed=1120, file_suffix
 
                 hcr_out <- do.call(mp$hcr$func, hcr_parameters)
                 if(mp$hcr$units != "F"){
-                    hcr_out <- afscOM::find_F(
-                        f_guess=0.10,
+                    hcr_out <- afscOM::findF_multifleet(
+                        target_catch = hcr_out,
                         naa = naa_proj,
                         waa = dp_y$waa,
                         mort = dp_y$mort,
-                        selex = joint_selret$sel,
-                        ret = joint_selret$ret,
-                        dmr = afscOM::subset_matrix(dp_y$dmr[,,,,1,drop=FALSE], 1, d=5, drop=TRUE),
-                        prov_catch = hcr_out
+                        selex = dp_y$sel,
+                        f_guess=0.01
                     )
                 }
 
@@ -299,7 +299,7 @@ run_mse <- function(om, mp, mse_options, nyears_input=NA, seed=1120, file_suffix
                     hcr_F = hcr_out, 
                     naa = naa_proj, 
                     recruitment = mean(rec)/2, 
-                    joint_sel = joint_selret$sel, 
+                    joint_sel = array(joint_selret$sel, dim=dim(dem_params$sel[y,,,,1,drop=FALSE])), 
                     dem_params = dp_y,
                     hist_abc = abc[y2,1,1,1],
                     hcr_options = mp$hcr$extra_options,

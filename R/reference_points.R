@@ -1,4 +1,4 @@
-compute_naapr <- function(nages, mort, mat, waa, sel, ret, F){
+compute_naapr <- function(nages, mort, sel, ret, F){
     naa <- rep(NA, nages)
     naa[1] <- 1
     zaa <- mort + sel*ret*F
@@ -24,9 +24,9 @@ compute_naapr <- function(nages, mort, mat, waa, sel, ret, F){
 #'
 #' @example
 #'
-compute_sbpr <- function(nages, mort, mat, waa, sel, ret, F){
-    naa <- compute_naapr(nages, mort, mat, waa, sel, ret, F)
-    ssb <- sum(naa*mat*waa, na.rm = TRUE)
+compute_sbpr <- function(nages, mort, mat, waa, sel, ret, F, start_age=1, hyperallometry=1){
+    naa <- compute_naapr(nages, mort, sel, ret, F)
+    ssb <- sum(naa[start_age:nages]*mat[start_age:nages]*(waa[start_age:nages]^hyperallometry), na.rm = TRUE)
     return(ssb)
 }
 
@@ -48,9 +48,9 @@ compute_sbpr <- function(nages, mort, mat, waa, sel, ret, F){
 #'
 #' @example
 #'
-compute_spr <- function(nages, mort, mat, waa, sel, ret, F){
-    ssb_unfished <- compute_sbpr(nages, mort, mat, waa, sel, ret, F=0)
-    ssb_fished   <- compute_sbpr(nages, mort, mat, waa, sel, ret, F)
+compute_spr <- function(nages, mort, mat, waa, sel, ret, F, start_age=1, hyperallometry=1){
+    ssb_unfished <- compute_sbpr(nages, mort, mat, waa, sel, ret, F=0, start_age=1, hyperallometry=hyperallometry)
+    ssb_fished   <- compute_sbpr(nages, mort, mat, waa, sel, ret, F, start_age=1, hyperallometry=hyperallometry)
     return(ssb_fished/ssb_unfished)
 }
 
@@ -71,7 +71,7 @@ compute_spr <- function(nages, mort, mat, waa, sel, ret, F){
 #'
 #' @example
 #'
-spr_x <- function(nages, mort, mat, waa, sel, ret, target_x=0.35){
+spr_x <- function(nages, mort, mat, waa, sel, ret, target_x=0.35, start_age=1, hyperallometry=1){
     range <- vector(length=2)
     range[1] <- 0
     range[2] <- 2
@@ -79,7 +79,7 @@ spr_x <- function(nages, mort, mat, waa, sel, ret, target_x=0.35){
     i <- 1
     for(i in 1:n.iter) {
       midpoint <- mean(range)
-      spr <- compute_spr(nages, mort, mat, waa, sel, ret, F=midpoint)
+      spr <- compute_spr(nages, mort, mat, waa, sel, ret, F=midpoint, start_age=1, hyperallometry=hyperallometry)
       if(spr > target_x) {
         range[1] <- midpoint
         range[2] <- range[2]
@@ -110,8 +110,8 @@ spr_x <- function(nages, mort, mat, waa, sel, ret, target_x=0.35){
 #'
 #' @example
 #'
-compute_bx <- function(nages, mort, mat, waa, sel, ret, F, avg_rec){
-  return(avg_rec*compute_sbpr(nages, mort, mat, waa, sel, ret, F))
+compute_bx <- function(nages, mort, mat, waa, sel, ret, F, avg_rec, start_age=1, hyperallometry=1){
+  return(avg_rec*compute_sbpr(nages, mort, mat, waa, sel, ret, F, start_age=start_age, hyperallometry=hyperallometry))
 }
 
 #' Calculate NPFMC groundfish reference points
@@ -161,16 +161,16 @@ calculate_npfmc_ref_points <- function(nages, mort, mat, waa, sel, ret, avg_rec)
 #'
 #' @example
 #'
-calculate_ref_points <- function(nages, mort, mat, waa, sel, ret, avg_rec, spr_target){
+calculate_ref_points <- function(nages, mort, mat, waa, sel, ret, avg_rec, spr_target, start_age=1, hyperallometry=1){
   if(length(spr_target) == 1){
     spr_target = rep(spr_target, 2)
   }
 
-  Fmax <- spr_x(nages, mort, mat, waa, sel, ret, target_x=0.35) # this is F_OFL which can't be eclipsed
-  Fref <- spr_x(nages, mort, mat, waa, sel, ret, target_x=spr_target[1])
+  Fmax <- spr_x(nages, mort, mat, waa, sel, ret, target_x=0.35, start_age = start_age, hyperallometry=hyperallometry) # this is F_OFL which can't be eclipsed
+  Fref <- spr_x(nages, mort, mat, waa, sel, ret, target_x=spr_target[1], start_age = start_age, hyperallometry=hyperallometry)
 
-  f2 <- spr_x(nages, mort, mat, waa, sel, ret, target_x=spr_target[2])
-  Bref <- compute_bx(nages, mort, mat, waa, sel, ret, F=f2, avg_rec=avg_rec)
-  B0 <- compute_bx(nages, mort, mat, waa, sel, ret, F=0, avg_rec=avg_rec)
+  f2 <- spr_x(nages, mort, mat, waa, sel, ret, target_x=spr_target[2], start_age = start_age, hyperallometry=hyperallometry)
+  Bref <- compute_bx(nages, mort, mat, waa, sel, ret, F=f2, avg_rec=avg_rec, start_age = start_age, hyperallometry=hyperallometry)
+  B0 <- compute_bx(nages, mort, mat, waa, sel, ret, F=0, avg_rec=avg_rec, start_age = start_age, hyperallometry=hyperallometry)
   return(list(Fmax=Fmax, Fref=Fref, Bref=Bref, B0=B0))
 }
