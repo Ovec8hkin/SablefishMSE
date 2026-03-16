@@ -7,13 +7,13 @@ library(reshape2)
 library(SpatialSablefishAssessment)
 library(tictoc)
 library(doParallel)
-
+library(afscOM)
 # Change to wherever your local copy of afscOM is
 library(devtools)
-afscOM_dir <- "~/Desktop/Projects/afscOM"
+# afscOM_dir <- "~/Desktop/Projects/afscOM"
 sablefishMSE_dir <- here::here()
 
-devtools::load_all(afscOM_dir)
+# devtools::load_all(afscOM_dir)
 
 lapply(list.files("R", full.names = TRUE), source)
 
@@ -149,7 +149,7 @@ supplementary_om_names <- all_om_names[match(supplementary_oms, all_oms)]
 # metric_names <- c("Annual Catch", "Catch AAV", "Average SSB", "Average Age", "Proportion of Years SSB < B35*")
 
 # mse_runs <- get_saved_model_runs(om_order=all_oms, hcr_order=all_hcrs)
-mse_runs <- readRDS(file.path(here::here(), "data", "zahneretal2025_hybrid_mseruns_FINAL.RDS"))
+mse_runs <- readRDS(file.path(here::here(), "data", "zahneretal2025_hybrid_mseruns_FINAL2.RDS"))
 model_runs <- mse_runs$model_runs
 extra_columns <- mse_runs$extra_columns2
 extra_columns <- extra_columns %>% 
@@ -167,7 +167,7 @@ hcr_colors <- set_hcr_colors2(publication_hcrs)
 names(hcr_colors) <- all_hcr_names
 
 # Specify which subset of HCR/OM combinations to get results for
-hcr_filter <- publication_hcr_names#supplementary_hcr_names[c(1, 2, 3, 4, 5)]
+hcr_filter <- publication_hcr_names#[c(1, 2, 3, 4, 5)]
 om_filter <- publication_om_names
 
 ### Spawning Biomass and Catch Plots
@@ -253,7 +253,7 @@ performance_metrics <- performance_metric_summary(
     extra_columns, 
     dem_params = sable_om$dem_params, 
     ref_naa = ref_naa,
-    hcr_filter=publication_hcr_names,
+    hcr_filter=hcr_filter,
     om_filter=om_filter,
     interval_widths=interval_widths,
     time_horizon = time_horizon, 
