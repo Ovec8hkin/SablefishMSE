@@ -1112,18 +1112,6 @@ average_annual_dynamic_value <- function(
     summarise_by=c("om", "hcr"),
     summary_out=TRUE
 ){
-    
-    compute_dynamic_value <- function(landings, min_price_age, max_price_age, breakpoints=c(15, 30)){
-        if(landings < breakpoints[1]){
-            return(max_price_age)
-        }else if(landings >= breakpoints[1] & landings <= breakpoints[2]){
-            return(
-                min_price_age + (breakpoints[2]-landings)/(breakpoints[2]-breakpoints[1])*(max_price_age-min_price_age)
-            )
-        }else{
-            return(min_price_age)
-        }
-    }
 
     process <- function(data){
         data %>% filter_times(time_horizon = time_horizon) %>%
