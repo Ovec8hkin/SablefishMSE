@@ -76,7 +76,7 @@ age_structure_hcr <- function(ref_pts, naa, dem_params, avgrec, ref_naa, desired
 }
 
 mp_agestruct_061 <- setup_mp_options()
-mp_agestruct_061$name <- "AS | ref=0.6 | exp=1"
+mp_agestruct_061$name <- "AS | ref=0.6 | adj=1"
 mp_agestruct_061$hcr$func <- age_structure_hcr
 mp_agestruct_061$hcr$extra_pars <- list(
     ref_naa = ref_naa0,
@@ -88,7 +88,7 @@ mp_agestruct_061$hcr$units = "F"
 mp_agestruct_061$management$tac_land_reduction <- 1
 
 mp_agestruct_041 <- setup_mp_options()
-mp_agestruct_041$name <- "AS | ref=0.4 | exp=1"
+mp_agestruct_041$name <- "AS | ref=0.4 | adj=1"
 mp_agestruct_041$hcr$func <- age_structure_hcr
 mp_agestruct_041$hcr$extra_pars <- list(
     ref_naa = ref_naa0,
@@ -100,7 +100,7 @@ mp_agestruct_041$hcr$units = "F"
 mp_agestruct_041$management$tac_land_reduction <- 1
 
 mp_agestruct_065 <- setup_mp_options()
-mp_agestruct_065$name <- "AS | ref=0.6 | exp=5"
+mp_agestruct_065$name <- "AS | ref=0.6 | adj=5"
 mp_agestruct_065$hcr$func <- age_structure_hcr
 mp_agestruct_065$hcr$extra_pars <- list(
     ref_naa = ref_naa0,
@@ -112,7 +112,7 @@ mp_agestruct_065$hcr$units = "F"
 mp_agestruct_065$management$tac_land_reduction <- 1
 
 mp_agestruct_045 <- setup_mp_options()
-mp_agestruct_045$name <- "AS | ref=0.4 | exp=5"
+mp_agestruct_045$name <- "AS | ref=0.4 | adj=5"
 mp_agestruct_045$hcr$func <- age_structure_hcr
 mp_agestruct_045$hcr$extra_pars <- list(
     ref_naa = ref_naa0,
@@ -149,7 +149,7 @@ mp_sprhyper$hcr$extra_pars <- list(
 #' 
 
 set.seed(895)
-nsims <- 60
+nsims <- 200
 seed_list <- sample(1:(100*nsims), nsims)  # Draw 10 random seeds
 
 mse_options_base <- setup_mse_options()
@@ -157,7 +157,7 @@ mse_options <- mse_options_base
 mse_options$n_spinup_years <- 54
 mse_options$recruitment_start_year <- 54
 mse_options$n_proj_years <- 75
-mse_options$run_estimation <- FALSE
+mse_options$run_estimation <- TRUE
 mse_options_list <- listN(mse_options)
 
 
@@ -173,7 +173,7 @@ model_runs <- run_mse_multiple(
     nyears=100,
     mse_options_list=mse_options_list,
     diagnostics = FALSE,
-    save=FALSE
+    save=TRUE
 )
 
 # toc()
@@ -212,9 +212,6 @@ interval_widths <- c(0.50, 0.80)
 common_trajectory <- 54
 time_horizon <- c(55, 129)
 
-hcr_colors <- set_hcr_colors2(publication_hcrs)
-names(hcr_colors) <- all_hcr_names[1:11]
-
 hcr_colors <- c("black", "red", "blue", "darkgreen", "purple", "#888888")
 names(hcr_colors) <- publication_hcrs
 # Specify which subset of HCR/OM combinations to get results for
@@ -252,10 +249,34 @@ plot_ssb_catch(
         linetype="dashed", 
         color="grey50"
     )+
+    ggh4x:::facetted_pos_scales(
+        y = list(
+            scale_y_continuous(limits=c(0, 60), breaks=seq(0, 60, 10)),
+            scale_y_continuous(limits=c(0, 300), breaks=seq(0, 300, 50))
+        )
+    )+
     guides(color=guide_legend("Harvest\nControl\nRule", ncol = 3))
     
 
-ggsave(filename=file.path("~/Desktop/", "ssb_catch.jpeg"), width=16*(3/3), height=10, units="in")
+ggsave(filename=file.path(figures_dir, "ssb_catch.jpeg"), width=16*(3/3), height=10, units="in")
+
+
+econ_data <- get_dynamic_economic_value(NULL, extra_columns, hcr_filter, om_filter)
+plot_econ_value(econ_data, v1="hcr", v2="om", time_horizon=time_horizon)+
+    scale_y_continuous("Relative Economic Value", limits=c(0, 12), breaks=seq(0, 12, 2))+
+    guides(color=guide_legend("Harvest\nControl\nRule"))
+
+ggsave(filename=file.path(figures_dir, "econ_value.jpeg"), width=16*(3/3), height=8, units="in")
+
+abi_data <- get_abi(NULL, extra_columns, ref_naa0, hcr_filter, om_filter)
+plot_average_age(abi_data, v1="hcr", v2="om", time_horizon=time_horizon)+
+    scale_y_continuous("ABI0", limits=c(0, 2), breaks=seq(0, 2, 0.25))+
+    geom_hline(yintercept=0.40, linetype="dashed")+
+    geom_hline(yintercept=0.60, linetype="dashed")+
+    geom_hline(yintercept=1.0, linetype="dashed")+
+    guides(color=guide_legend("Harvest\nControl\nRule"))
+
+ggsave(filename=file.path(figures_dir, "abi.jpeg"), width=16*(3/3), height=8, units="in")
 
 
 ### Performance Metrics -----------------
@@ -263,7 +284,7 @@ ggsave(filename=file.path("~/Desktop/", "ssb_catch.jpeg"), width=16*(3/3), heigh
 metric_names <- c("Annual Catch", "Catch AAV", "SSB", "Average Age", "Dynamic Annual Value")
 
 performance_metrics <- performance_metric_summary(
-    model_runs, 
+    NULL, 
     extra_columns, 
     dem_params = sable_om$dem_params, 
     ref_naa = ref_naa,
@@ -283,7 +304,8 @@ perf_data <- performance_metrics$perf_data %>%
             name, 
             levels=metric_names, 
             labels=c("Average Annual Catch", "Catch AAV", "Average Annual SSB", "Average Age", "Average Annual Economic Value")
-        )
+        ),
+        om = factor(om, levels=publication_oms)
     ) %>%
     filter(hcr != "No Fishing") %>%
     group_by(.width, om, name) %>%
@@ -294,7 +316,7 @@ formatted_metric_names <- c(
     "Average Annual\nCatch", 
     "Catch\nAAV", 
     "Average Annual\nSSB", 
-    "Average Age",
+    "Average\nAge",
     "Average Annual\nEconomic Value"
 )
 
@@ -350,11 +372,10 @@ table <- perf_data %>% filter(.width==0.50) %>%
                 "Average Age", 
                 "Average Annual\nEconomic Value"
             )
-
         ),
         hcr = factor(
             hcr,
-            labels = c("F40", "F40\nFully\nMature", "F40\nHyper\nSPR", "AS ref=0.6 |\nadj=0.01", "AS ref=0.4 |\nadj=0.01", "AS ref=0.4 |\nadj=0.05")
+            labels = c("F40", "F40\nFully\nMature", "F40\nHyper\nSPR", "AS_0.6_\n0.01", "AS_0.4_\n0.01", "AS_0.4_\n0.05")
         ) 
     ) %>%
     ggplot()+
@@ -374,7 +395,7 @@ table <- perf_data %>% filter(.width==0.50) %>%
 
 library(patchwork)
 radar/table + plot_layout(guides="collect") & theme(legend.position="top")
-ggsave(filename=file.path("~/Desktop/performance_table_radar_supp.jpeg"), width=22, height=12, units="in")
+ggsave(filename=file.path(figures_dir, "performance.jpeg"), width=18, height=14, units="in")
 
 rel_performance_metrics <- performance_metric_summary(
     model_runs, 
@@ -594,164 +615,6 @@ agg_perf_data <- full_performance_metrics$perf_data %>%
     mutate(om="Aggregated") %>%
     select(om, hcr, name, median) 
 
-
-### Waterfall Plots -------------------
-#######################################
-
-rect_width = 0.7
-
-pdata <- perf_data %>% ungroup() %>% filter(.width == 0.50) %>% select(om, hcr, name, median) %>%
-    add_row(
-        om = c("Crash Recruitment"),
-        name = "Crash Time",
-        hcr = "No Fishing",
-        median = 0,
-    ) %>%
-    add_row(
-        om = c("Beverton-Holt Regime Recruitment"),
-        name = "Crash Time",
-        hcr = "No Fishing",
-        median = 0,
-    ) %>%
-    bind_rows(agg_perf_data) %>%
-    mutate(name=factor(name, levels=c("Average Annual Catch", "Catch AAV", "Average Annual SSB", "Average Age", "Crash Time", "Recovery Time"), labels=c("Average Annual Catch", "Catch AAV", "Average Annual SSB", "Average Age", "Crash Time", "Recovery Time"))) %>%
-    mutate(om=factor(om, levels=c(publication_oms, "Aggregated"), labels=c(publication_oms, "Aggregated")))
-
-no_fishing <- pdata %>% filter(hcr == "No Fishing") %>% mutate(hcr = "No Fishing F40")
-
-waterfall_data <- pdata %>%
-    bind_rows(no_fishing) %>%
-    arrange(
-        factor(hcr, levels=c(
-            "No Fishing F40",
-            "F40",
-            "F40 +10% Up",
-            "F40 Harvest Cap",
-            "F40 Hybrid",
-            "No Fishing",
-            "F50",
-            "F50 +10% Up",
-            "F50 Harvest Cap",
-            "F50 Hybrid"
-        )),
-    ) %>%
-    mutate(base=ifelse(grepl("F40", hcr), "F40", "F50")) %>%
-    group_by(base, om, name) %>%
-    mutate(
-        waterfall = median - lag(median),
-        waterfall = ifelse(is.na(waterfall), median, waterfall),
-        waterfall = round(waterfall, 4),
-        improvement = case_when(
-            name %in% c("Catch AAV", "Recovery Time", "Proportion of Years with Low SSB") & waterfall <= 0 ~ TRUE,
-            !(name %in% c("Catch AAV", "Recovery Time", "Proportion of Years with Low SSB")) & waterfall >= 0 ~ TRUE,
-            TRUE ~ FALSE
-        ),
-        ymin = median,
-        ymax = lag(median),
-        ymax = ifelse(is.na(ymax), 0, ymax)
-    ) %>% 
-    ungroup() %>%
-    filter(!(om %in% c("Random Recruitment", "Beverton-Holt Regime Recruitment") & name %in% c("Crash Time", "Recovery Time"))) %>%
-    group_by(om, name) %>% 
-    mutate(
-        x = row_number(),
-        x = ifelse(base=="F50", x+1, x)
-    ) %>%
-    ungroup() %>%
-    # print(n=50)
-    mutate(
-        text_y = c(
-            5, 0.01, 310, 11, # Random - No Fishing F40
-            5, 0.01, 380, 11, # Regime - No Fishing
-            5, 0.01, 250, 11, 12, 5, # Crash - No Fishing
-            5, 0.01, 310, 11, 12, 12, # Agg - No Fishing
-            29, 0.032, 70, 5, # Random - F40
-            30, 0.052, 80, 5, # Regime - F40
-            26, 0.041, 60, 5, 9.5, 16, # Crash - F40
-            29, 0.040, 70, 5, 9.5, 16, # Agg - No Fishing
-            20, 0.018, 160, 9, # Random - F40 10%
-            21, 0.025, 170, 9, # Regime - F40 10%
-            12, 0.025, 135, 9, 9.5, 7, # Crash - F40 10%
-            19, 0.025, 160, 9, 9.5, 7, # Agg - No Fishing
-            16, 0.00, 80, 5, # Random - F40 Cap
-            16, 0.00, 230, 5, # Regime - F40 Cap
-            25, 0.006, 70, 5, 9.5, 15, # Crash - F40 Cap
-            16, 0.006, 70, 5, 9.5, 15, # Agg - No Fishing
-            23, 0.0105, 190, 10, # Random - F40 Hybrid
-            23, 0.0125, 130, 10, # Regime - F40 Hybrid
-            14, 0.021, 155, 10, 9.5, 7, # Crash - F40 Hybrid
-            23, 0.014, 200, 10, 9.5, 7, # Agg - No Fishing
-            5, 0.01, 310, 11, # Random - No Fishing F50
-            5, 0.01, 380, 11, # Regime - No Fishing
-            5, 0.01, 250, 11, 12, 5, # Crash - No Fishing
-            5, 0.01, 310, 11, 12, 12, # Agg - No Fishing
-            25, 0.032, 90, 5, # Random - F50
-            29, 0.052, 100, 5, # Regime - F50
-            21, 0.039, 60, 5, 13, 5.5, # Crash - F50
-            26, 0.038, 90, 5, 13, 5.5, # Agg - No Fishing
-            18, 0.018, 180, 9, # Random - F50 10%
-            18.5, 0.025, 210, 9, # Regime - F50 10%
-            9, 0.021, 160, 9, 13, 6.5, # Crash - F50 10%
-            16, 0.02, 200, 9, 13, 6.5, # Agg - No Fishing
-            16, 0.005, 90, 5, # Random - F50 Cap
-            16, 0.005, 100, 5, # Regime - F50 Cap
-            25, 0.01, 70, 5, 13, 12.5, # Crash - F50 Cap
-            23, 0.007, 100, 5, 13, 12.5, # Agg - No Fishing
-            23, 0.0115, 200, 10, # Random - F50 Hybrid
-            23, 0.0165, 250, 10, # Regime - F50 Hybrid
-            9, 0.01, 195, 10, 13, 6.5, # Crash - F50 Hybrid
-            16, 0.02, 200, 10, 13, 6.5 # Agg - No Fishing
-        )
-    )
-
-ggplot(
-    waterfall_data
-)+
-    geom_rect(aes(
-        xmin = x - rect_width/2,
-        xmax = x + rect_width/2,
-        ymin = ymin,
-        ymax = ymax,
-        fill = !improvement
-    ))+
-    geom_text(
-        aes(
-            x=x, 
-            y=text_y,
-            label=ifelse(waterfall > 0, paste0("+",round(waterfall,3)), round(waterfall, 3)) 
-        ), 
-        size=4.5
-    )+
-    geom_line(
-        aes(x=x, y=median, group=base),
-        linetype="dashed"
-    )+
-    geom_vline(xintercept=6, linetype="dashed")+
-    scale_x_continuous(
-        breaks = seq(1,11,1),
-        labels = c(
-            "No Fishing", "F40", "F40 +10% Up", "F40 Harvest Cap", "F40 Hyrbid", "",
-            "No Fishing", "F50", "F50 +10% Up", "F50 Harvest Cap", "F50 Hybrid"
-        )
-    )+
-    scale_fill_manual(values=c("#0091ff", "#ce4a4a"), labels = c("Yes", "No"))+
-    facet_grid(name~om, scales="free_y")+
-    ggh4x::facetted_pos_scales(
-        y = list(
-            scale_y_continuous(, limits=c(-1, 35)),
-            scale_y_continuous(limits=c(-0.002, 0.06)),
-            scale_y_continuous(limits=c(-10, 400)),
-            scale_y_continuous(limits=c(-0.5, 15)),
-            scale_y_continuous(limits=c(-0.5, 15)),
-            scale_y_continuous(limits=c(-0.5, 20))
-        )
-    )+
-    labs(fill="Improvement", y="", x="Management Strategy")+
-    custom_theme+
-    theme(
-        axis.text.x = element_text(angle=45, vjust = 1, hjust=1)
-    )
-ggsave(filename=file.path(figures_dir, paste0("waterfall_age", filetype)), width=22, height=12, units="in")
 
 ### Aggregate Performance --------------
 #########################################
