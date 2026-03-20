@@ -13,43 +13,6 @@
 #'
 #' @example
 #'
-# get_ssb_biomass <- function(model_runs, extra_columns, dem_params, hcr_filter, om_filter){
-#     group_columns <- c("time", "sim", "L1", names(extra_columns))
-#     return(
-#         bind_mse_outputs(model_runs, c("naa", "naa_est"), extra_columns) %>% 
-#             as_tibble() %>%
-#             filter_hcr_om(hcr_filter, om_filter) %>%
-#             drop_na() %>%
-#             # join WAA and maturity-at-age for computing SSB
-#             left_join(
-#                 melt(dem_params$waa, value.name="weight"), 
-#                 by=c("time", "age", "sex")
-#             ) %>%
-#             left_join(
-#                 melt(dem_params$mat, value.name="maturity"), 
-#                 by=c("time", "age", "sex")
-#             ) %>%
-#             drop_na() %>%
-#             # compute derived quantities
-#             mutate(
-#                 biomass = value*weight,
-#                 spbio = value*weight*maturity
-#             ) %>%
-#             # SSB is females only
-#             filter(sex == "F") %>%
-#             # summarise SSB across year and sim 
-#             group_by(across(all_of(group_columns))) %>%
-#             summarise(
-#                 spbio=sum(spbio),
-#                 biomass=sum(biomass)
-#             ) %>%
-#             mutate(
-#                 om = factor(om, levels=om_filter),
-#                 hcr = factor(hcr, levels=hcr_filter)
-#             )
-#     )
-# }
-
 get_ssb_biomass <- function(model_runs, extra_columns, dem_params, hcr_filter, om_filter){
     process <- function(data){
         data %>%
@@ -79,18 +42,6 @@ get_ssb_biomass <- function(model_runs, extra_columns, dem_params, hcr_filter, o
     }
 
     group_columns <- c("time", "sim", "L1", names(extra_columns))
-
-    # dem_params$waa <- array(
-    #     dem_params$waa[,,,1], 
-    #     dim=c(dim(dem_params$waa)[1:3], dim(dem_params$waa)[4]+1),
-    #     dimnames=c(dimnames(dem_params$waa)[1:3], list("region"=c("Alaska")))
-    # )
-
-    # dem_params$mat <- array(
-    #     dem_params$mat[,,,1], 
-    #     dim=c(dim(dem_params$mat)[1:3], dim(dem_params$mat)[4]+1),
-    #     dimnames=c(dimnames(dem_params$mat)[1:3], list("region"=c("Alaska")))
-    # )
 
     return(
         process_big_outputs(model_runs, c("naa", "naa_est"), extra_columns, hcr_filter, om_filter, process) %>%
@@ -132,26 +83,6 @@ get_fishing_mortalities <- function(model_runs, extra_columns, hcr_filter, om_fi
     group_columns <- c("time", "fleet", "sim", "L1", names(extra_columns))
     
     return(
-        # bind_mse_outputs(model_runs, c("faa", "faa_est"), extra_columns) %>% 
-        #     as_tibble() %>%
-        #     filter(hcr %in% hcr_filter, om %in% om_filter) %>%
-        #     drop_na() %>%
-        #     group_by(across(all_of(group_columns))) %>%
-        #     # compute fleet-based F as the maximum F across age classes
-        #     summarise(
-        #         F = max(value)
-        #     ) %>%
-        #     ungroup() %>%
-        #     group_by(across(all_of(group_columns[-2]))) %>%
-        #     # total F is the sum of fleet-based Fs
-        #     mutate(
-        #         total_F = sum(F)
-        #     ) %>%
-        #     ungroup() %>%
-        #     mutate(
-        #         om = factor(om, levels=om_filter),
-        #         hcr = factor(hcr, levels=hcr_filter)
-        #     )
         process_big_outputs(model_runs, c("faa", "faa_est"), extra_columns, hcr_filter, om_filter, process) %>% 
             format(hcr_filter, om_filter)
     )
