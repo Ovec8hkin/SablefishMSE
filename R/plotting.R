@@ -256,6 +256,79 @@ plot_landed_catch <- function(data, v1="hcr", v2=NA, v3=NA, by_fleet=FALSE, comm
 
 }
 
+plot_econ_value <- function(data, v1="hcr", v2=NA, v3=NA, common_trajectory=54, time_horizon=NULL, interval_widths=c(0.50, 0.80), base_hcr="F40", relative=NA){
+    group_columns <- colnames(data)
+    group_columns <- group_columns[! group_columns %in% c("sim", "total_value")]
+    d <- data %>% distinct(.keep_all=TRUE)
+
+    if(!is.null(time_horizon)){
+        d <- d %>% filter_times(time_horizon)
+    }
+
+    # Relativize to specific HCR
+    hcrs <- d %>% distinct(hcr) %>% pull
+    if(!is.na(relative) && relative %in% hcrs){
+        d <- d %>% 
+            relativize_performance(
+                rel_column="hcr", 
+                value_column="total_value", 
+                rel_value=relative, 
+                grouping=c("sim", group_columns)
+            )
+    }
+
+    # Plot spawning biomass from OM and EM
+    d <- d %>%
+        group_by(across(all_of(group_columns))) %>%
+        median_qi(total_value, .width=interval_widths, .simple_names=FALSE) %>%
+        # Reformat ggdist tibble into long format
+        reformat_ggdist_long(n=length(group_columns))
+
+    plot <- plot_timeseries(d, v1, v2, v3, common_trajectory, interval_widths, base_hcr, ylab="Economic Value")
+    if(!is.na(relative)){
+        plot <- plot+geom_hline(yintercept=1, linetype="dashed")
+    }
+
+    return(plot)
+}
+
+plot_average_age <- function(data, v1="hcr", v2=NA, v3=NA, common_trajectory=54, time_horizon=NULL, interval_widths=c(0.50, 0.80), base_hcr="F40", relative=NA){
+    group_columns <- colnames(data)
+    group_columns <- group_columns[! group_columns %in% c("sim", "avg_age")]
+    d <- data %>% distinct(.keep_all=TRUE)
+
+    if(!is.null(time_horizon)){
+        d <- d %>% filter_times(time_horizon)
+    }
+
+    # Relativize to specific HCR
+    hcrs <- d %>% distinct(hcr) %>% pull
+    if(!is.na(relative) && relative %in% hcrs){
+        d <- d %>% 
+            relativize_performance(
+                rel_column="hcr", 
+                value_column="avg_age", 
+                rel_value=relative, 
+                grouping=c("sim", group_columns)
+            )
+    }
+
+    # Plot spawning biomass from OM and EM
+    d <- d %>%
+        # Compute quantiles of SSB distribution
+        group_by(across(all_of(group_columns))) %>%
+        median_qi(avg_age, .width=interval_widths, .simple_names=FALSE) %>%
+        # Reformat ggdist tibble into long format
+        reformat_ggdist_long(n=length(group_columns))
+
+    plot <- plot_timeseries(d, v1, v2, v3, common_trajectory, interval_widths, base_hcr, ylab="Average Age (Years)")
+    if(!is.na(relative)){
+        plot <- plot+geom_hline(yintercept=1, linetype="dashed")
+    }
+
+    return(plot)
+}
+
 plot_ssb_catch <- function(ssb_data, catch_data, v1="hcr", v2=NA, v3=NA, common_trajectory=64, base_hcr="F40", flip_facet=FALSE, highlight=NULL){
 
     group_columns <- colnames(ssb_data)
@@ -941,3 +1014,34 @@ custom_theme <- ggplot2::theme_bw()+ggplot2::theme(
     legend.text = ggplot2::element_text(size=14),
     legend.position = "bottom"
 )
+
+plot_timeseries <- function(data, v1="hcr", v2=NA, v3=NA, common_trajectory=54, interval_widths=c(0.50, 0.80), base_hcr="F40", ylab=""){
+
+    hcr1 <- as.character((data %>% pull(hcr) %>% unique)[1])
+
+    traj_column <- ifelse(is.na(v3), v2, v3)
+    traj <- data %>% distinct(eval(rlang::parse_expr(traj_column))) %>% mutate(common=common_trajectory) %>% rename(!!traj_column := 1)
+
+    common <- data %>% left_join(traj, by=traj_column) %>% filter(hcr==hcr1) %>% group_by(eval(rlang::parse_expr(v2))) %>% filter(time <= common)
+
+    base_hcr_d <- data %>% filter(hcr == base_hcr)
+
+    plot <- ggplot(data) + 
+        geom_line(data = base_hcr_d, aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
+        geom_line(aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
+        geom_line(data = common, aes(x=time, y=median), size=0.85)+
+        geom_vline(data=common, aes(xintercept=common), linetype="dashed")+
+        scale_fill_brewer(palette="Greys")+
+        scale_color_manual(values=hcr_colors)+
+        labs(x="Year", y=ylab)+
+        coord_cartesian(expand=0)+
+        guides(color=guide_legend(title="Management \n Strategy", nrow=2), fill="none")
+
+    if(!is.na(v2) && is.na(v3)){
+        plot <- plot + facet_wrap(~.data[[v2]])+guides(fill="none")
+    }else if(!is.na(v2) && !is.na(v3)){
+        plot <- plot + facet_grid(rows=vars(.data[[v2]]), cols=vars(.data[[v3]]))+guides(fill="none")
+    }
+    
+    return(plot+custom_theme)
+}

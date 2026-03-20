@@ -270,6 +270,116 @@ get_management_quantities <- function(model_runs, extra_columns, hcr_filter, om_
     )
 }
 
+#' Get Timeseries of Dynamic Economic Value
+#' 
+#' Process MSE simulations for dynamic economic value (Goethel et al. 2025).
+#' Economic value calculated as a linear adjustment in price by size grade
+#' between a max price achieved at low total landings and a min price achieved
+#' at high total landings. Value is calculated only for the Fixed gear fleet. 
+#'
+#' @param model_runs list of completed MSE simulation objects
+#' @param extra_columns additional columns to append to output
+#' @param hcr_filter vector of HCR names to process (must match names in `extra_columns`)
+#' @param om_filter vector of OM names to process (must match names in `extra_columns`)
+#'
+#' @export get_dynamic_economic_value
+#'
+get_dynamic_economic_value <- function(model_runs, extra_columns, hcr_filter, om_filter){
+    process <- function(data){
+        data %>%
+            group_by(across(all_of(c("time", group_columns)))) %>%
+            mutate(tot_catch = sum(value)) %>%
+            filter(fleet == "Fixed") %>%
+            left_join(
+                reshape2::melt(price_data_low) %>% rename(min_price=value),
+                by = c("age", "sex")
+            ) %>%
+            left_join(
+                reshape2::melt(price_data_max) %>% rename(max_price=value),
+                by = c("age", "sex")
+            ) %>%
+            rowwise() %>%
+            mutate(
+                dyn_price = compute_dynamic_value(tot_catch, min_price, max_price)
+            ) %>%
+            group_by(across(all_of(c("time", "region", group_columns)))) %>%
+            summarise(total_value = sum(dyn_price*value))
+    }
+
+    group_columns <- c("sim", "om", "hcr")
+
+    price_age_f_low <- c(0.597895623, 1.320303448, 1.320303448, 1.856562267, 2.610111345, 2.610111345, 6.01401531, 6.01401531, 6.01401531, 6.01401531, 6.01401531, 6.01401531, 6.01401531, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875)
+    price_age_m_low <- c(0.597895623, 0.597895623, 1.320303448, 1.320303448, 1.856562267, 1.856562267, 1.856562267, 1.856562267, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345, 2.610111345)
+    price_data_low <- matrix(c(price_age_f_low, price_age_m_low), nrow=length(price_age_f_low), ncol=2)
+    dimnames(price_data_low) <- list("age"=2:31, "sex"=c("F", "M"))
+
+    price_age_f_max <- c(7.917460094, 8.40756497, 8.40756497, 9.944657109, 11.46480347, 11.46480347, 12.97470389, 12.97470389, 12.97470389, 12.97470389, 12.97470389, 12.97470389, 12.97470389, 14.86275658, 14.86275658, 14.86275658, 14.86275658, 14.86275658, 14.86275658, 14.86275658, 14.86275658, 14.86275658, 14.86275658, 14.86275658, 14.86275658, 14.86275658, 14.86275658, 14.86275658, 14.86275658, 14.86275658)
+    price_age_m_max <- c(7.917460094, 7.917460094, 8.40756497, 8.40756497, 9.944657109, 9.944657109, 9.944657109, 9.944657109, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347, 11.46480347)
+    price_data_max <- matrix(c(price_age_f_max, price_age_m_max), nrow=length(price_age_f_max), ncol=2)
+    dimnames(price_data_max) <- list("age"=2:31, "sex"=c("F", "M"))
+    
+    max_price <- max(c(price_age_f_max, price_age_m_max))
+    price_data_low <- price_data_low/price_data_max
+    price_data_max <- price_data_max/max_price
+    price_data_low <- price_data_max*price_data_low
+
+    return(
+        process_big_outputs(model_runs, c("land_caa"), extra_columns, hcr_filter, om_filter, process) %>%
+            format(hcr_filter, om_filter)
+    )
+
+}
+
+#' Get Average Population Age Timeseries
+#' 
+#' Process MSE simulations for average age of an individual fish
+#' in the population. This is distinct from the performance metric
+#' of the same name in that include both male and female fish in the
+#' calculation of average age.
+#' 
+#' @param model_runs list of completed MSE simulation objects
+#' @param extra_columns additional columns to append to output
+#' @param hcr_filter vector of HCR names to process (must match names in `extra_columns`)
+#' @param om_filter vector of OM names to process (must match names in `extra_columns`)
+#'
+#' @export get_average_age
+#'
+get_average_age <- function(model_runs, extra_columns, hcr_filter, om_filter){
+    process <- function(data){
+        data %>% filter_times(time_horizon=time_horizon) %>%
+            ungroup() %>%
+            group_by(time, sim, age, hcr, om, region) %>%
+            summarise(value = sum(value)) %>%
+            group_by(time, sim, hcr, om, region) %>%
+            summarise(
+                avg_age = compute_average_age(value, 2:31)
+            )
+    }
+
+    return(
+        process_big_outputs(model_runs, c("naa"), extra_columns, hcr_filter, om_filter, process) %>%
+            format(hcr_filter, om_filter)
+    )
+}
+
+get_abi <- function(model_runs, extra_columns, ref_naa, hcr_filter, om_filter){
+    process <- function(data){
+        data %>% filter_times(time_horizon=time_horizon) %>%
+            ungroup() %>%
+            group_by(time, sim, age, hcr, om, region) %>%
+            summarise(value = sum(value)) %>%
+            group_by(time, sim, hcr, om, region) %>%
+            summarise(
+                avg_age = abi(value, ref=ref_naa, threshold=0.90, start_age=2)
+            )
+    }
+
+    return(
+        process_big_outputs(model_runs, c("naa"), extra_columns, hcr_filter, om_filter, process) %>%
+            format(hcr_filter, om_filter)
+    )
+}
+
 get_numbers_at_age <- function(model_runs, extra_columns, hcr_filter, om_filter){
     group_columns <- c("time", "class", "sim", "L1", names(extra_columns))
     return(
