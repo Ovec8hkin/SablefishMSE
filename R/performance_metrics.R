@@ -1129,11 +1129,11 @@ average_annual_dynamic_value <- function(
             rowwise() %>%
             mutate(
                 dyn_price = compute_dynamic_value(tot_catch, min_price, max_price)
-            ) #%>%
-            # group_by(across(all_of(c("time", group_columns)))) %>%
-            # summarise(total_value = sum(dyn_price*value))
-            # group_by(across(all_of(group_columns))) %>%
-            # summarise(dyn_annual_value = mean(total_value))
+            ) %>%
+            group_by(across(all_of(c("time", group_columns)))) %>%
+            summarise(total_value = sum(dyn_price*value)) %>%
+            group_by(across(all_of(group_columns))) %>%
+            summarise(dyn_annual_value = mean(total_value))
     }
 
     price_age_f_low <- c(0.597895623, 1.320303448, 1.320303448, 1.856562267, 2.610111345, 2.610111345, 6.01401531, 6.01401531, 6.01401531, 6.01401531, 6.01401531, 6.01401531, 6.01401531, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875, 7.435514875)
@@ -1172,10 +1172,10 @@ average_annual_dynamic_value <- function(
         # mutate(
         #     dyn_price = compute_dynamic_value(tot_catch, min_price, max_price)
         # ) %>%
-        group_by(across(all_of(c("time", group_columns)))) %>%
-        summarise(total_value = sum(dyn_price*value)) %>%
-        group_by(across(all_of(group_columns))) %>%
-        summarise(dyn_annual_value = mean(total_value)) %>%
+        # group_by(across(all_of(c("time", group_columns)))) %>%
+        # summarise(total_value = sum(dyn_price*value)) %>%
+        # group_by(across(all_of(group_columns))) %>%
+        # summarise(dyn_annual_value = mean(total_value)) %>%
         relativize_performance(
             rel_column = "hcr",
             value_column = "dyn_annual_value",
