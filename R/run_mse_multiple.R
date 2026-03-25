@@ -34,7 +34,7 @@ run_mse_multiple <- function(om_list, hcr_list, seed_list, mse_options_list, nye
     nsims <- length(seed_list)
 
     max_sims <- 66
-    nsim_iters <- ifelse(nsims < max_sims, 1, round(nsims / max_sims)+1)
+    nsim_iters <- ifelse(nsims < max_sims, 1, ceiling(nsims / max_sims))
 
     m <- 1
     counter <- 0
@@ -53,7 +53,7 @@ run_mse_multiple <- function(om_list, hcr_list, seed_list, mse_options_list, nye
             mse_objects[[ifelse(nsim_iters > 1, j, i)]] <- mse_run
 
             print(save)
-            if(save || nsim_iters>1){
+            if((save || nsim_iters>1) && opt$run_estimation){
                 # Going to save files by HCR
                 filename <- file.path(here::here(), "data", "active", paste0("mse_runs_", sub("/", "", sub(" ", "_", tolower(hcr$name))), "_",counter,".RDS"))
                 obj <- listN(mse_objects, om, hcr, mse_options_list, seeds)
