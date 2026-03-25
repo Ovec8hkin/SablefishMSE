@@ -41,6 +41,84 @@ om_crash2$recruitment$pars$R0 <- c(15, 3.5)
 om_crash2$recruitment$pars$regime_length <- c(25, 30)
 om_crash2$name <- "Crash Recruitment"
 
+age_structure_hcr <- function(ref_pts, naa, dem_params, avgrec, ref_naa, desired_abi, adjustment, cutoff_age){
+    # Compute spawning biomass
+    nages <- afscOM::get_model_dimensions(dem_params$sel)$nages
+    a <- cutoff_age-1
+    ssb <- apply(naa[,,1,]*dem_params$waa[,,1,,drop=FALSE]*dem_params$mat[,,1,,drop=FALSE], 1, sum)
+
+    abi_y <- abi(naa[,,1,], ref_naa, threshold = 0.90, start_age = cutoff_age)
+
+    # adj <- ifelse(abi_y < desired_abi, 1/adjustment, adjustment)
+
+    abi_adjustment <- ifelse(
+        abi_y < desired_abi,
+        (1+(((abi_y-desired_abi)/desired_abi)))/adjustment,
+        (1+(((abi_y-desired_abi)/desired_abi)/adjustment))
+    )
+    # abi_adjustment <- (abi_y/desired_abi)^adjustment
+    abi_adjustment <- min(2, abi_adjustment)  # Limit adjustment factor between 0.01 and 2
+
+    abi_adjustment <- ifelse(ssb <= ref_pts$Bref, 1, abi_adjustment)
+
+    # Compute B40%
+    Fmax <- ref_pts$Fref*abi_adjustment
+    
+    f <- npfmc_tier3_F(ssb, ref_pts$Bref, Fmax)
+    
+    return(f)
+}
+
+mp_agestruct_061 <- setup_mp_options()
+mp_agestruct_061$name <- "AS | ref=0.6 | adj=1"
+mp_agestruct_061$hcr$func <- age_structure_hcr
+mp_agestruct_061$hcr$extra_pars <- list(
+    ref_naa = ref_naa0,
+    desired_abi = 0.6,
+    adjustment = 1,
+    cutoff_age = 3
+)
+mp_agestruct_061$hcr$units = "F"
+mp_agestruct_061$management$tac_land_reduction <- 1
+
+mp_agestruct_041 <- setup_mp_options()
+mp_agestruct_041$name <- "AS | ref=0.4 | adj=1"
+mp_agestruct_041$hcr$func <- age_structure_hcr
+mp_agestruct_041$hcr$extra_pars <- list(
+    ref_naa = ref_naa0,
+    desired_abi = 0.4,
+    adjustment = 1,
+    cutoff_age = 3
+)
+mp_agestruct_041$hcr$units = "F"
+mp_agestruct_041$management$tac_land_reduction <- 1
+
+mp_agestruct_045 <- setup_mp_options()
+mp_agestruct_045$name <- "AS | ref=0.4 | adj=5"
+mp_agestruct_045$hcr$func <- age_structure_hcr
+mp_agestruct_045$hcr$extra_pars <- list(
+    ref_naa = ref_naa0,
+    desired_abi = 0.4,
+    adjustment = 5,
+    cutoff_age = 3
+)
+mp_agestruct_045$hcr$units = "F"
+mp_agestruct_045$management$tac_land_reduction <- 1
+
+
+mp_fullmat <- mp_f40
+mp_fullmat$name <- "F40 Fully Mature"
+mp_fullmat$ref_points$rp_start_age <- 13
+mp_fullmat$hcr$extra_pars <- list(
+    cutoff_age = 14
+)
+
+mp_sprhyper <- mp_f40
+mp_sprhyper$name <- "F40 Hyperallometric SPR"
+mp_sprhyper$ref_points$rp_hyperallometry <- 3
+mp_sprhyper$hcr$extra_pars <- list(
+    hyperallometry = 3
+)
 
 mp_f40_hybrid <- mp_f40
 mp_f40_hybrid$hcr$extra_options$max_stability <- mp_10perc_up$hcr$extra_options$max_stability
@@ -73,10 +151,16 @@ om_list <- listN(om_bh_recruit, om_crash2)
 hcr_list <- listN(
     mp_f40,
     mp_f50,
-    mp_10perc,
+    mp_5perc
+    mp_10perc_up,
     mp_15cap,
     mp_25cap,
-    mp_f40_hybrid
+    mp_f40_hybrid,
+    mp_fullmat,
+    mp_sprhyper,
+    mp_agestruct_041,
+    mp_agestruct_061,
+    mp_agestruct_065
 )
 
 # tic()
@@ -99,19 +183,23 @@ figures_dir <- file.path(here::here(), "figures/hybrid_hcrs")#file.path(here::he
 width_small <- 12
 height_small <- 8
 
+base_hcrs <- c("F40", "F50", "F40 +/- 5%", "F40 +/- 10% Up", "15k Harvest Cap", "25k Harvest Cap", "F40 Hybrid")
+base_hcr_names <- c("F40", "F50", "F40 5% Stability Constraint", "F40 15k Harvest Cap", "F40 Hybrid")
 
-stakeholder_hcrs <- c("F40", "F50", "F40 +/- 10% Up", "15k Harvest Cap", "25k Harvest Cap", "F40 Hybrid")
-stakeholder_oms <- c("Beverton-Holt Recruitment", "Crash Recruitment")
+as_hcrs <- c("F40", "F40 Fully Mature", "F40 Hyperallometric SPR", "AS | ref=0.4 | adj=1", "AS | ref=0.6 | adj=1")
+as_hcr_names <- c("F40", "F40 Fully Mature", "F40 Hyper SPR", "AS_0.4_0.01", "AS_0.6_0.01")
 
+oms <- c("Beverton-Holt Recruitment", "Low Regime Recruitment", "Crash Recruitment")
+om_names <- c("Beverton-Holt", "Regimes", "Crash")
 
-mse_runs <- get_saved_model_runs(om_order=stakeholder_oms, hcr_order=stakeholder_hcrs)
+mse_runs <- get_saved_model_runs(om_order=oms, hcr_order=unique(c(base_hcrs, as_hcrs)))
 # mse_runs <- readRDS(file.path(here::here(), "data", "zahneretal2025_hybrid_mseruns_FINAL2.RDS"))
 model_runs <- mse_runs$model_runs
 extra_columns <- mse_runs$extra_columns2
 extra_columns <- extra_columns %>% 
     mutate(
-        om = factor(om, levels = stakeholder_oms, labels = stakeholder_oms),
-        hcr = factor(hcr, levels = stakeholder_hcrs, labels = stakeholder_hcrs)
+        om = factor(om, levels = oms, labels = om_names),
+        hcr = factor(hcr, levels = c(base_hcrs, as_hcrs), labels = c(base_hcr_names, as_hcr_names))
     )
 
 
@@ -119,12 +207,11 @@ interval_widths <- c(0.50, 0.80)
 common_trajectory <- 54
 time_horizon <- c(55, 129)
 
-hcr_colors <- set_hcr_colors2(stakeholder_hcrs)
-names(hcr_colors) <- stakeholder_hcrs
+hcr_filter <- as_hcr_names
+om_filter <- om_names
 
-# Specify which subset of HCR/OM combinations to get results for
-hcr_filter <- stakeholder_hcrs#[c(1, 2, 3, 4, 5)]
-om_filter <- stakeholder_oms
+hcr_colors <- set_hcr_colors2(hcr_filter)
+names(hcr_colors) <- hcr_filter
 
 
 ### Spawning Biomass and Catch Plots
@@ -134,8 +221,8 @@ catch_data <- get_landed_catch(model_runs, extra_columns, hcr_filter=hcr_filter,
 rp_data <- expand.grid(hcr=hcr_filter, om=om_filter, L1=c("caa", "naa")) 
 rp_data <- rp_data %>%
     mutate(
-        hcr = factor(hcr, levels=stakeholder_hcrs, labels=stakeholder_hcrs),
-        om = factor(om, levels=stakeholder_oms, labels=stakeholder_oms),
+        hcr = factor(hcr)#, levels=stakeholder_hcrs, labels=stakeholder_hcrs),
+        om = factor(om)#, levels=stakeholder_oms, labels=stakeholder_oms),
         L1 = factor(L1, labels=c("Landed Catch", "SSB")),
         RP = case_when(
             L1 == "Landed Catch" ~ 18538/1000, #mean(assessment$t.series[,"Catch_HAL"]+assessment$t.series[,"Catch_TWL"]),
@@ -155,6 +242,12 @@ plot_ssb_catch(
         aes(yintercept=RP), 
         linetype="dashed", 
         color="grey50"
+    )+
+    ggh4x::facetted_pos_scales(
+        y = list(
+            scale_y_continuous(limits=c(0, 60), breaks=seq(0, 60, 10)),
+            scale_y_continuous(limits=c(0, 300), breaks=seq(0, 300, 50))
+        )
     )+
     guides(color=guide_legend("Harvest\nControl\nRule", nrow = 1))
 
