@@ -693,7 +693,7 @@ average_abi <- function(
 
     out <- avg_abi
     if(summary_out){
-        avg_abi <- avg_abi %>%
+        out <- avg_abi %>%
             group_by(across(all_of(summarise_by))) %>%
             median_qi(avg_abi, .width=interval_widths, .simple_names=FALSE)
     }
