@@ -298,6 +298,17 @@ get_average_age <- function(model_runs, extra_columns, hcr_filter, om_filter){
     )
 }
 
+#' Get Average ABI Timeseries
+#' 
+#' Process MSE simulations for average population ABI (Griffiths et al. 2023). 
+#' 
+#' @param model_runs list of completed MSE simulation objects
+#' @param extra_columns additional columns to append to output
+#' @param hcr_filter vector of HCR names to process (must match names in `extra_columns`)
+#' @param om_filter vector of OM names to process (must match names in `extra_columns`)
+#'
+#' @export get_abi
+#'
 get_abi <- function(model_runs, extra_columns, ref_naa, hcr_filter, om_filter){
     process <- function(data){
         data %>% filter_times(time_horizon=time_horizon) %>%
