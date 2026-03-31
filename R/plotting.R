@@ -1133,8 +1133,9 @@ plot_timeseries <- function(data, v1="hcr", v2=NA, v3=NA, common_trajectory=54, 
 
     if(!is.na(v2) && is.na(v3)){
         plot <- plot + facet_wrap(~.data[[v2]])+guides(fill="none")
+        plot <- plot + scale_y_continuous(limits=c(0, max(data %>% pull(median))*1.2))
     }else if(!is.na(v2) && !is.na(v3)){
-        plot <- plot + facet_grid(rows=vars(.data[[v2]]), cols=vars(.data[[v3]]))+guides(fill="none")
+        plot <- plot + facet_grid(rows=vars(.data[[v2]]), cols=vars(.data[[v3]]), scales="free_y")+guides(fill="none")
     }
     
     return(plot+custom_theme)
