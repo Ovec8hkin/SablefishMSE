@@ -1,4 +1,20 @@
-plot_ssb <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALSE, common_trajectory=64, base_hcr="F40", highlight=NULL){
+#' Plot Trajectory of Spawning Biomass
+#' 
+#' Plot median trajectory of SSB across all simulations as a line plot.
+#' 
+#' @param data tibble output from `get_ssb_biomass()`
+#' @param v1 variable to map to color (e.g. "hcr")
+#' @param v2 variable to facet by (e.g. "om")
+#' @param v3 variable to facet by in addition to v2 (e.g. "om")
+#' @param show_est whether to show estimated SSB from EM as point ranges
+#' @param common_trajectory year to plot vertical dashed line to indicate where MSE projection period begins
+#' @param base_hcr HCR to plot as a thicker line for reference (must match names in `extra_columns`)
+#' @param relative whether to relativize SSB to a specific HCR (must match names in `extra_columns`)
+#' @param highlight vector of HCRs to highlight with color (must match names in `extra_columns`)
+#' 
+#' @export plot_ssb
+#' 
+plot_ssb <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALSE, common_trajectory=64, base_hcr="F40", relative=NA, highlight=NULL){
     group_columns <- colnames(data)
     group_columns <- group_columns[! group_columns %in% c("sim", "spbio", "biomass")]
     # Plot spawning biomass from OM and EM
@@ -99,7 +115,22 @@ plot_relative_ssb <- function(data, v1="hcr", v2=NA, common_trajectory=64, base_
 
 }
 
-plot_fishing_mortalities <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALSE, common_trajectory=64){
+#' Plot Trajectory of Fishing Mortality
+#' 
+#' Plot median trajectory of total fishing mortality across all simulations as a line plot.
+#' 
+#' @param data tibble output from `get_fishing_mortalities()`
+#' @param v1 variable to map to color (e.g. "hcr")
+#' @param v2 variable to facet by (e.g. "om")
+#' @param v3 variable to facet by in addition to v2 (e.g. "om")
+#' @param show_est whether to show estimated SSB from EM as point ranges
+#' @param common_trajectory year to plot vertical dashed line to indicate where MSE projection period begins
+#' @param base_hcr HCR to plot as a thicker line for reference (must match names in `extra_columns`)
+#' @param highlight vector of HCRs to highlight with color (must match names in `extra_columns`)
+#' 
+#' @export plot_fishing_mortalities
+#' 
+plot_fishing_mortalities <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALSE, common_trajectory=64, interval_widths=c(0.50, 0.80), base_hcr="F40", highlight=NULL){
     # Plot fishing mortality rates from OM and EM
     group_columns <- colnames(data)
     group_columns <- group_columns[! group_columns %in% c("sim", "F", "total_F")]
@@ -140,7 +171,22 @@ plot_fishing_mortalities <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALS
     return(plot)
 }
 
-plot_recruitment <- function(data, v1="hcr", v2=NA,v3=NA,  show_est=FALSE, common_trajectory=64){
+#' Plot Trajectory of Recruitment
+#' 
+#' Plot median trajectory of recruitment across all simulations as a line plot.
+#' 
+#' @param data tibble output from `get_recruits()`
+#' @param v1 variable to map to color (e.g. "hcr")
+#' @param v2 variable to facet by (e.g. "om")
+#' @param v3 variable to facet by in addition to v2 (e.g. "om")
+#' @param show_est whether to show estimated SSB from EM as point ranges
+#' @param common_trajectory year to plot vertical dashed line to indicate where MSE projection period begins
+#' @param base_hcr HCR to plot as a thicker line for reference (must match names in `extra_columns`)
+#' @param highlight vector of HCRs to highlight with color (must match names in `extra_columns`)
+#' 
+#' @export plot_recruitment
+#' 
+plot_recruitment <- function(data, v1="hcr", v2=NA,v3=NA,  show_est=FALSE, common_trajectory=64, interval_widths=c(0.50, 0.80), base_hcr="F40", highlight=NULL){
     group_columns <- colnames(data)
     group_columns <- group_columns[! group_columns %in% c("sim", "rec")]
 
@@ -182,6 +228,20 @@ plot_recruitment <- function(data, v1="hcr", v2=NA,v3=NA,  show_est=FALSE, commo
     return(plot)
 }
 
+#' Plot Trajectory of Landed Catch
+#' 
+#' Plot median trajectory of total landed catch across all simulations as a line plot.
+#' 
+#' @param data tibble output from `get_landed_catch()`
+#' @param v1 variable to map to color (e.g. "hcr")
+#' @param v2 variable to facet by (e.g. "om")
+#' @param v3 variable to facet by in addition to v2 (e.g. "om")
+#' @param common_trajectory year to plot vertical dashed line to indicate where MSE projection period begins
+#' @param base_hcr HCR to plot as a thicker line for reference (must match names in `extra_columns`)
+#' @param highlight vector of HCRs to highlight with color (must match names in `extra_columns`)
+#' 
+#' @export plot_landed_catch
+#' 
 plot_landed_catch <- function(data, v1="hcr", v2=NA, v3=NA, by_fleet=FALSE, common_trajectory=64, base_hcr="F40", highlight=NULL){
     group_columns <- colnames(data)
     group_columns <- group_columns[! group_columns %in% c("sim", "catch", "total_catch")]
@@ -200,63 +260,24 @@ plot_landed_catch <- function(data, v1="hcr", v2=NA, v3=NA, by_fleet=FALSE, comm
         )
     }
     
-    hcr1 <- as.character((c %>% pull(hcr) %>% unique)[1])
-    traj_column <- ifelse(is.na(v3), v2, v3)
-    traj <- c %>% distinct(eval(rlang::parse_expr(traj_column))) %>% mutate(common=common_trajectory) %>% rename(!!traj_column := 1)
-
-    if(by_fleet){
-        c <- c %>% filter(name == "catch")
-    }else{
-        c <- c %>% filter(name == "total_catch")
-    }
-
-    common <- c %>% left_join(traj, by=traj_column) %>% filter(hcr==hcr1) %>% group_by(om) %>% filter(time <= common)
-
-    base_hcr_c <- c %>% filter(hcr == base_hcr)
-
-    colors <- hcr_colors
-    sizes <- rep(0.85, length(colors))
-    names(sizes) <- names(colors)
-    if(!is.null(highlight)){
-        colors <- hcr_colors[highlight]
-        colors <- c(colors, "Other" = "grey70")
-
-        sizes <- c(rep(1.2, length(highlight)), 0.85)
-        names(sizes) <- c(highlight, "Other")
-    }
-
-    plot <- ggplot(c %>% filter(time > common_trajectory-1))+
-        geom_lineribbon(data = base_hcr_c, aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
-        geom_line(aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group, size=color_group))+
-        geom_line(
-            data = c %>% filter(color_group != "Other", time > common_trajectory-1), 
-            aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group, size=color_group)
-        )+
-        geom_line(data = common, aes(x=time, y=median), size=0.85)+
-        geom_vline(data=common, aes(xintercept=common), linetype="dashed")+ 
-        scale_fill_brewer(palette="Blues")+
-        scale_color_manual(values=colors)+
-        scale_size_manual(values=sizes)+    
-        # scale_y_continuous(limits=c(0, 60))+
-        labs(x="Year", y="Catch (mt)", color="Management \n Strategy")+
-        coord_cartesian(expand=0, ylim=c(0, 60))+
-        guides(color=guide_legend(title="Management \n Strategy", nrow=2), fill="none", size="none")
-
-    if(!is.na(v2) && is.na(v3)){
-        plot <- plot + facet_wrap(~.data[[v2]])+guides(fill="none")
-    }else if(!is.na(v2) && !is.na(v3)){
-        plot <- plot + facet_grid(rows=vars(.data[[v2]]), cols=vars(.data[[v3]]))+guides(fill="none")
-    }
-    
-    # if(by_fleet){
-    #     plot <- plot + facet_wrap(~fleet)
-    # }
-
-    return(plot+custom_theme)
-
-}
-
-plot_econ_value <- function(data, v1="hcr", v2=NA, v3=NA, common_trajectory=54, time_horizon=NULL, interval_widths=c(0.50, 0.80), base_hcr="F40", relative=NA){
+#' Plot Trajectory of Dynamic Economic Value
+#' 
+#' Plot median trajectory of economic value for the fixed gear fleet across 
+#' all simulations as a line plot. See `get_dynamic_economic_value()` for 
+#' details on how economic value is calculated.
+#' 
+#' @param data tibble output from `get_dynamic_economic_value()`
+#' @param v1 variable to map to color (e.g. "hcr")
+#' @param v2 variable to facet by (e.g. "om")
+#' @param v3 variable to facet by in addition to v2 (e.g. "om")
+#' @param common_trajectory year to plot vertical dashed line to indicate where MSE projection period begins
+#' @param base_hcr HCR to plot as a thicker line for reference (must match names in `extra_columns`)
+#' @param relative whether to relativize economic value to a specific HCR (must match names in `extra_columns`)
+#' @param highlight vector of HCRs to highlight with color (must match names in `extra_columns`)
+#' 
+#' @export plot_dynamic_economic_value
+#' 
+plot_dynamic_economic_value <- function(data, v1="hcr", v2=NA, v3=NA, common_trajectory=54, interval_widths=c(0.50, 0.80), base_hcr="F40", highlight=NULL, relative=NA){
     group_columns <- colnames(data)
     group_columns <- group_columns[! group_columns %in% c("sim", "total_value")]
     d <- data %>% distinct(.keep_all=TRUE)
@@ -292,7 +313,22 @@ plot_econ_value <- function(data, v1="hcr", v2=NA, v3=NA, common_trajectory=54, 
     return(plot)
 }
 
-plot_average_age <- function(data, v1="hcr", v2=NA, v3=NA, common_trajectory=54, time_horizon=NULL, interval_widths=c(0.50, 0.80), base_hcr="F40", relative=NA){
+#' Plot Trajectory of Average Population Age
+#' 
+#' Plot median trajectory of average population age across all simulations as a line plot.
+#' 
+#' @param data tibble output from `get_average_age()`
+#' @param v1 variable to map to color (e.g. "hcr")
+#' @param v2 variable to facet by (e.g. "om")
+#' @param v3 variable to facet by in addition to v2 (e.g. "om")
+#' @param common_trajectory year to plot vertical dashed line to indicate where MSE projection period begins
+#' @param base_hcr HCR to plot as a thicker line for reference (must match names in `extra_columns`)
+#' @param relative whether to relativize average age to a specific HCR (must match names in `extra_columns`)
+#' @param highlight vector of HCRs to highlight with color (must match names in `extra_columns`)
+#' 
+#' @export plot_average_age
+#' 
+plot_average_age <- function(data, v1="hcr", v2=NA, v3=NA, common_trajectory=54, time_horizon=NULL, interval_widths=c(0.50, 0.80), base_hcr="F40", highlight=NULL, relative=NA){
     group_columns <- colnames(data)
     group_columns <- group_columns[! group_columns %in% c("sim", "avg_age")]
     d <- data %>% distinct(.keep_all=TRUE)
@@ -329,6 +365,21 @@ plot_average_age <- function(data, v1="hcr", v2=NA, v3=NA, common_trajectory=54,
     return(plot)
 }
 
+#' Plot Trajectories of Spawning Biomass and Landed Catch
+#' 
+#' Plot median trajectory of total landed catch and SSB across all simulations as line plots.
+#' 
+#' @param ssb_data tibble output from `get_ssb_biomass()`
+#' @param catch_data tibble output from `get_landed_catch()`
+#' @param v1 variable to map to color (e.g. "hcr")
+#' @param v2 variable to facet by (e.g. "om")
+#' @param v3 variable to facet by in addition to v2 (e.g. "om")
+#' @param common_trajectory year to plot vertical dashed line to indicate where MSE projection period begins
+#' @param base_hcr HCR to plot as a thicker line for reference (must match names in `extra_columns`)
+#' @param highlight vector of HCRs to highlight with color (must match names in `extra_columns`)
+#' 
+#' @export plot_ssb_catch
+#' 
 plot_ssb_catch <- function(ssb_data, catch_data, v1="hcr", v2=NA, v3=NA, common_trajectory=64, base_hcr="F40", flip_facet=FALSE, highlight=NULL){
 
     group_columns <- colnames(ssb_data)
@@ -529,7 +580,21 @@ plot_atage_density_ternary <- function(data, col_names){
 
 # }
 
-plot_abc_tac <- function(data, v1="hcr", v2=NA, common_trajectory=64, base_hcr="F40"){
+#' Plot Trajectories of ABC, TAC, Expected Landings, and Attainment
+#' 
+#' Plot median trajectory of management quantitoes across all simulations as line plots.
+#' 
+#' @param data tibble output from `get_management_quantities()`
+#' @param v1 variable to map to color (e.g. "hcr")
+#' @param v2 variable to facet by (e.g. "om")
+#' @param v3 variable to facet by in addition to v2 (e.g. "om")
+#' @param common_trajectory year to plot vertical dashed line to indicate where MSE projection period begins
+#' @param base_hcr HCR to plot as a thicker line for reference (must match names in `extra_columns`)
+#' @param highlight vector of HCRs to highlight with color (must match names in `extra_columns`)
+#' 
+#' @export plot_ssb_catch
+#' 
+plot_abc_tac <- function(data, v1="hcr", v2=NA, common_trajectory=64, interval_widths=c(0.50, 0.80), base_hcr="F40", highlight=NULL){
     group_columns <- colnames(data)
     group_columns <- group_columns[! group_columns %in% c("sim", "value")]
 
@@ -1015,7 +1080,24 @@ custom_theme <- ggplot2::theme_bw()+ggplot2::theme(
     legend.position = "bottom"
 )
 
-plot_timeseries <- function(data, v1="hcr", v2=NA, v3=NA, common_trajectory=54, interval_widths=c(0.50, 0.80), base_hcr="F40", ylab=""){
+#' Generialize Timeseries Plotting Function
+#' 
+#' General function for plotting timeseries of management quantities (e.g. SSB, catch, ABC, TAC) 
+#' with options for faceting and highlighting specific HCRs.
+#' 
+#' @param data tibble summarised with `median_qi()` and reformatted with `reformat_ggdist_long()`
+#' @param v1 variable to map to color (e.g. "hcr")
+#' @param v2 variable to facet by (e.g. "om")
+#' @param v3 variable to facet by in addition to v2 (e.g. "om")
+#' @param common_trajectory year to plot vertical dashed line to indicate where MSE projection period begins
+#' @param interval_widths vector of credible interval widths to plot (e.g. c(0.50, 0.80))
+#' @param base_hcr HCR to plot as a thicker line for reference (must match names in `extra_columns`)
+#' @param highlight vector of HCRs to highlight with color (must match names in `extra_columns`)
+#' @param ylab label for y-axis
+#' 
+#' @export plot_timeseries
+#' 
+plot_timeseries <- function(data, v1="hcr", v2=NA, v3=NA, common_trajectory=54, interval_widths=c(0.50, 0.80), base_hcr="F40", ylab="", highlight=NULL){
 
     hcr1 <- as.character((data %>% pull(hcr) %>% unique)[1])
 
