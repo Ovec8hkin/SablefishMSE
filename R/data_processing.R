@@ -169,7 +169,16 @@ get_landed_catch <- function(model_runs, extra_columns, hcr_filter, om_filter){
 #' @example
 #'
 get_management_quantities <- function(model_runs, extra_columns, hcr_filter, om_filter, spinup_years=64){
-    cols <- c("time", "sim", "value", "L1", names(extra_columns))
+
+    process <- function(data){
+        data %>%
+            drop_na() %>%
+            select(group_cols) %>%
+            pivot_wider(names_from=L1, values_from=value) %>%
+            mutate(attainment = exp_land/tac) 
+    }
+
+    group_cols <- c("time", "sim", "value", "L1", names(extra_columns))
 
     hist_abcs <- c(44200, 37100, 33400, 28800, 25200, 25000, 28800, 25300, 19600, 17200, 16800, 15900, 17200, 16900, 17300, 20900, 23000, 21000, 21000, 20100, 18000, 16100, 15200, 16000, 17200, 16200, 13700, 13700, 11800, 13100, 15000, 15100, 22000, 29600, 34500, 40500)
     hist_tacs <- c(18000, 19300, 17300, 14500, 14800, 13500, 21400, 27700, 36400, 32200, 33200, 28800, 25200, 25000, 28800, 25300, 19400, 16800, 16800, 15400, 17200, 16900, 17300, 20900, 22600, 21000, 20700, 20100, 18000, 16100, 15200, 16000, 17200, 16200, 13700, 13700, 11800, 13100, 15000, 15100, 18300, 26100, 34500, 39600)
@@ -184,13 +193,9 @@ get_management_quantities <- function(model_runs, extra_columns, hcr_filter, om_
     mutate(attainment = exp_land/tac) %>%
     pivot_longer(abc:attainment, names_to="L1", values_to="value")
 
-    mgmt <- bind_mse_outputs(model_runs, c("abc", "tac", "exp_land"), extra_columns) %>%
+    mgmt <- process_big_outputs(model_runs, c("abc", "tac", "exp_land"), extra_columns, hcr_filter, om_filter, process) %>%
                 as_tibble() %>%
-                filter(hcr %in% hcr_filter, om %in% om_filter) %>%
-                drop_na() %>%
-                select(cols) %>%
-                pivot_wider(names_from=L1, values_from=value) %>%
-                mutate(attainment = exp_land/tac) %>%
+                filter_hcr_om(hcr_filter, om_filter) %>%
                 pivot_longer(abc:attainment, names_to="L1", values_to="value") 
 
     return(
