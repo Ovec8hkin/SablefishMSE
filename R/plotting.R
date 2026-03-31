@@ -17,6 +17,7 @@
 plot_ssb <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALSE, common_trajectory=64, base_hcr="F40", relative=NA, highlight=NULL){
     group_columns <- colnames(data)
     group_columns <- group_columns[! group_columns %in% c("sim", "spbio", "biomass")]
+    
     # Plot spawning biomass from OM and EM
     d <- data %>%
         select(-c("biomass")) %>%
@@ -35,55 +36,12 @@ plot_ssb <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALSE, common_trajec
         )
     }
 
-    hcr1 <- as.character((d %>% pull(hcr) %>% unique)[1])
-
-    traj_column <- ifelse(is.na(v3), v2, v3)
-    traj <- d %>% distinct(eval(rlang::parse_expr(traj_column))) %>% mutate(common=common_trajectory) %>% rename(!!traj_column := 1)
-
-    common <- d %>% left_join(traj, by=traj_column) %>% filter(L1=="naa", hcr==hcr1) %>% group_by(om) %>% filter(time <= common)
-
-    base_hcr_d <- d %>% filter(L1 == "naa", hcr == base_hcr)
-
-    colors <- hcr_colors
-    sizes <- rep(0.85, length(colors))
-    names(sizes) <- names(colors)
-    if(!is.null(highlight)){
-        colors <- hcr_colors[highlight]
-        colors <- c(colors, "Other" = "grey70")
-
-        sizes <- c(rep(1.2, length(highlight)), 0.85)
-        names(sizes) <- c(highlight, "Other")
-    }
-
-    plot <- ggplot(d %>% filter(L1 == "naa")) + 
-        geom_lineribbon(data = base_hcr_d, aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group), size=0.85)+
-        geom_line(aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group, size=color_group))+
-        geom_line(
-            data = d %>% filter(color_group != "Other", time > common_trajectory-1, L1 == "naa"), 
-            aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group, size=color_group)
-        )+
-        geom_line(data = common, aes(x=time, y=median), size=0.85)+
-        geom_vline(data=common, aes(xintercept=common), linetype="dashed")+
-        # geom_hline(yintercept=121.4611, linetype="dashed")+
-        scale_fill_brewer(palette="Blues")+
-        scale_color_manual(values=colors)+
-        scale_size_manual(values=sizes)+
-        scale_y_continuous(limits=c(0, 500))+
-        labs(x="Year", y="SSB")+
-        coord_cartesian(expand=0)+
-        guides(color=guide_legend(title="Management \n Strategy", nrow=2), fill="none", size="none")
-
+    plot <- plot_timeseries(d  %>% filter(L1 == "naa"), v1, v2, v3, common_trajectory, interval_widths, base_hcr, ylab="SSB (1000s mt)", highlight=highlight)
     if(show_est){
         plot <- plot + geom_pointrange(data = d %>% filter(L1 == "naa_est"), aes(x=time, y=median, ymin=lower, ymax=upper, color=hcr), alpha=0.35)
     }
 
-    if(!is.na(v2) && is.na(v3)){
-        plot <- plot + facet_wrap(vars(.data[[v2]]))+guides(fill="none")
-    }else if(!is.na(v2) && !is.na(v3)){
-        plot <- plot + facet_grid(rows=vars(.data[[v2]]), cols=vars(.data[[v3]]))+guides(fill="none")
-    }
-
-    return(plot+custom_theme)
+    return(plot)
 }
 
 plot_relative_ssb <- function(data, v1="hcr", v2=NA, common_trajectory=64, base_hcr="No Fishing"){
@@ -141,31 +99,15 @@ plot_fishing_mortalities <- function(data, v1="hcr", v2=NA, v3=NA, show_est=FALS
         reformat_ggdist_long(n=length(group_columns)) %>%
         filter(name == "total_F")
 
-    hcr1 <- as.character((f %>% pull(hcr) %>% unique)[1])
-    traj_column <- ifelse(is.na(v3), v2, v3)
-    traj <- f %>% distinct(eval(rlang::parse_expr(traj_column))) %>% mutate(common=common_trajectory) %>% rename(!!traj_column := 1)
-
-    common <- f %>% left_join(traj, by=traj_column) %>% filter(hcr==hcr1) %>% group_by(om) %>% filter(time <= common)
-
-
-    plot <- ggplot(f %>% filter(time > common_trajectory-1)) + 
-        geom_lineribbon(aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=.data[[v1]]))+
-        geom_line(data = common, aes(x=time, y=median), size=0.85)+
-        geom_vline(data=common, aes(xintercept=common), linetype="dashed")+
-        scale_fill_brewer(palette="Blues")+
-        scale_color_manual(values=hcr_colors)+
-        scale_y_continuous(limits=c(0, 0.20))+
-        coord_cartesian(expand=0)+
-        guides(fill="none")
-
-    if(show_est){
-        plot <- plot + geom_pointrange(data = f %>% filter(L1 == "faa_est"), aes(x=time, y=median, ymin=lower, ymax=upper, color=hcr), alpha=0.35)
+    if(!is.null(highlight)){
+        f <- f %>% mutate(
+            color_group = ifelse(hcr %in% highlight, color_group, "Other")
+        )
     }
 
-    if(!is.na(v2) && is.na(v3)){
-        plot <- plot + facet_wrap(~.data[[v2]])+guides(fill="none")
-    }else if(!is.na(v2) && !is.na(v3)){
-        plot <- plot + facet_grid(rows=vars(.data[[v2]]), cols=vars(.data[[v3]]))+guides(fill="none")
+    plot <- plot_timeseries(f  %>% filter(L1 == "faa"), v1, v2, v3, common_trajectory, interval_widths, base_hcr, ylab="Fishing Mortality", highlight=highlight)
+    if(show_est){
+        plot <- plot + geom_pointrange(data = f %>% filter(L1 == "faa_est"), aes(x=time, y=median, ymin=lower, ymax=upper, color=hcr), alpha=0.35)
     }
 
     return(plot)
@@ -198,31 +140,16 @@ plot_recruitment <- function(data, v1="hcr", v2=NA,v3=NA,  show_est=FALSE, commo
 
     mean_rec <- r %>% pull(median) %>% mean
 
-    hcr1 <- as.character((r %>% pull(hcr) %>% unique)[1])
-    traj_column <- ifelse(is.na(v3), v2, v3)
-    traj <- r %>% distinct(eval(rlang::parse_expr(traj_column))) %>% mutate(common=common_trajectory) %>% rename(!!traj_column := 1)
-
-    common <- r %>% left_join(traj, by=traj_column) %>% filter(hcr==hcr1) %>% group_by(om) %>% filter(time <= common)
-
-
-    plot <- ggplot(r %>% filter(L1 == "naa")) + 
-        # geom_lineribbon(aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=.data[[v1]]), size=0.4)+
-        # geom_pointrange(data = r %>% filter(L1 == "naa_est"), aes(x=time, y=median, ymin=lower, ymax=upper, color=hcr), alpha=0.35)+
-        geom_line(aes(x=time, y=median, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
-        geom_line(data = common, aes(x=time, y=median), size=0.85)+
-        geom_hline(yintercept = mean_rec, linetype="dashed") + 
-        scale_fill_brewer(palette="Blues")+
-        scale_color_manual(values=hcr_colors)+
-        scale_y_continuous(limits=c(0, 120))+
-        coord_cartesian(expand=0)+
-        labs(x="Year", y="Recruitment (millions)", color="Harvest\nControl\nRule")+
-
-    if(show_est){
-        plot <- plot + geom_pointrange(data = f %>% filter(L1 == "naa_est"), aes(x=time, y=median, ymin=lower, ymax=upper, color=hcr), alpha=0.35)
+    if(!is.null(highlight)){
+        r <- r %>% mutate(
+            color_group = ifelse(hcr %in% highlight, color_group, "Other")
+        )
     }
 
-    if(!is.na(v2)){
-        plot <- plot + facet_wrap(~.data[[v2]])
+    plot <- plot_timeseries(r %>% filter(L1 == "naa"), v1, v2, v3, common_trajectory, interval_widths, base_hcr, ylab="Recruits (millions)", highlight=highlight)+
+        geom_hline(yintercept = mean_rec, linetype="dashed")
+    if(show_est){
+        plot <- plot + geom_pointrange(data = f %>% filter(L1 == "naa_est"), aes(x=time, y=median, ymin=lower, ymax=upper, color=hcr), alpha=0.35)
     }
 
     return(plot)
@@ -247,8 +174,9 @@ plot_landed_catch <- function(data, v1="hcr", v2=NA, v3=NA, by_fleet=FALSE, comm
     group_columns <- group_columns[! group_columns %in% c("sim", "catch", "total_catch")]
 
     c <- data %>%
+        select(-c("catch")) %>%
         group_by(across(all_of(group_columns))) %>%
-        median_qi(catch, total_catch, .width=c(0.50, 0.80), .simple_names=TRUE) %>%
+        median_qi(total_catch, .width=c(0.50, 0.80), .simple_names=TRUE) %>%
         reformat_ggdist_long(n=length(group_columns)) %>%
         mutate(
             color_group = as.character(hcr) 
@@ -260,6 +188,12 @@ plot_landed_catch <- function(data, v1="hcr", v2=NA, v3=NA, by_fleet=FALSE, comm
         )
     }
     
+    plot <- plot_timeseries(c, v1, v2, v3, common_trajectory, interval_widths, base_hcr, ylab="Landings (1000s mt)", highlight=highlight)
+
+    return(plot)
+
+}
+
 #' Plot Trajectory of Dynamic Economic Value
 #' 
 #' Plot median trajectory of economic value for the fixed gear fleet across 
@@ -282,10 +216,6 @@ plot_dynamic_economic_value <- function(data, v1="hcr", v2=NA, v3=NA, common_tra
     group_columns <- group_columns[! group_columns %in% c("sim", "total_value")]
     d <- data %>% distinct(.keep_all=TRUE)
 
-    if(!is.null(time_horizon)){
-        d <- d %>% filter_times(time_horizon)
-    }
-
     # Relativize to specific HCR
     hcrs <- d %>% distinct(hcr) %>% pull
     if(!is.na(relative) && relative %in% hcrs){
@@ -305,7 +235,13 @@ plot_dynamic_economic_value <- function(data, v1="hcr", v2=NA, v3=NA, common_tra
         # Reformat ggdist tibble into long format
         reformat_ggdist_long(n=length(group_columns))
 
-    plot <- plot_timeseries(d, v1, v2, v3, common_trajectory, interval_widths, base_hcr, ylab="Economic Value")
+    if(!is.null(highlight)){
+        d <- d %>% mutate(
+            color_group = ifelse(hcr %in% highlight, color_group, "Other")
+        )
+    }
+
+    plot <- plot_timeseries(d, v1, v2, v3, common_trajectory, interval_widths, base_hcr, highlight, ylab="Economic Value")
     if(!is.na(relative)){
         plot <- plot+geom_hline(yintercept=1, linetype="dashed")
     }
@@ -357,7 +293,13 @@ plot_average_age <- function(data, v1="hcr", v2=NA, v3=NA, common_trajectory=54,
         # Reformat ggdist tibble into long format
         reformat_ggdist_long(n=length(group_columns))
 
-    plot <- plot_timeseries(d, v1, v2, v3, common_trajectory, interval_widths, base_hcr, ylab="Average Age (Years)")
+    if(!is.null(highlight)){
+        d <- d %>% mutate(
+            color_group = ifelse(hcr %in% highlight, color_group, "Other")
+        )
+    }
+
+    plot <- plot_timeseries(d, v1, v2, v3, common_trajectory, interval_widths, base_hcr, highlight, ylab="Average Age (Years)")
     if(!is.na(relative)){
         plot <- plot+geom_hline(yintercept=1, linetype="dashed")
     }
@@ -607,28 +549,13 @@ plot_abc_tac <- function(data, v1="hcr", v2=NA, common_trajectory=64, interval_w
         median_qi(value, .width=c(0.50, 0.80), .simple_names=FALSE) %>%
         reformat_ggdist_long(n=length(group_columns))
     
-    hcr1 <- as.character((q %>% pull(hcr) %>% unique)[1])
-    traj_column <- v2
-    traj <- q %>% distinct(eval(rlang::parse_expr(traj_column))) %>% mutate(common=common_trajectory) %>% rename(!!traj_column := 1)
-
-    common <- q %>% left_join(traj, by=traj_column) %>% filter(hcr==hcr1) %>% group_by(eval(rlang::parse_expr(v2))) %>% filter(time <= common)
-
-    base_hcr_q <- q %>% filter(hcr == base_hcr)
-
-    plot <- ggplot(q %>% filter(time > common_trajectory-1))+
-        geom_lineribbon(data = base_hcr_q, aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
-        geom_line(aes(x=time, y=median, ymin=lower, ymax=upper, group=interaction(.data[[v1]], L1), color=.data[[v1]]), size=0.85)+
-        geom_line(data = common, aes(x=time, y=median), size=0.85)+
-        geom_vline(data=common, aes(xintercept=common), linetype="dashed")+
-        scale_fill_brewer(palette="Blues")+
-        scale_color_manual(values=hcr_colors)+
-        coord_cartesian(expand=0)
-
-    if(!is.na(v2)){
-        plot <- plot + facet_grid(rows=vars(L1), cols=vars(.data[[v2]]), scales="free_y")
-    }else{
-        plot <- plot + facet_wrap(~L1, scales="free_y")
+    if(!is.null(highlight)){
+        q <- q %>% mutate(
+            color_group = ifelse(hcr %in% highlight, color_group, "Other")
+        )
     }
+
+    plot <- plot_timeseries(q, v1, v2="L1", v3="om", common_trajectory, interval_widths, base_hcr, ylab="Quantity", highlight=highlight)
 
     plot <- plot + ggh4x::facetted_pos_scales(
             y = list(
@@ -639,7 +566,7 @@ plot_abc_tac <- function(data, v1="hcr", v2=NA, common_trajectory=64, interval_w
             )
         )
 
-    return(plot+custom_theme)
+    return(plot)
 }
 
 plot_phase_diagram <- function(data, ref_pts, v1="hcr", v2=NA, common_trajectory=64){
