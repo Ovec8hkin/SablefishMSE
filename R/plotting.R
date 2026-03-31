@@ -1108,13 +1108,25 @@ plot_timeseries <- function(data, v1="hcr", v2=NA, v3=NA, common_trajectory=54, 
 
     base_hcr_d <- data %>% filter(hcr == base_hcr)
 
+    colors <- hcr_colors
+    sizes <- rep(0.85, length(colors))
+    names(sizes) <- names(colors)
+    if(!is.null(highlight)){
+        colors <- hcr_colors[highlight]
+        colors <- c(colors, "Other" = "grey70")
+
+        sizes <- c(rep(1.2, length(highlight)), 0.85)
+        names(sizes) <- c(highlight, "Other")
+    }
+
     plot <- ggplot(data) + 
         geom_line(data = base_hcr_d, aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
         geom_line(aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
         geom_line(data = common, aes(x=time, y=median), size=0.85)+
         geom_vline(data=common, aes(xintercept=common), linetype="dashed")+
         scale_fill_brewer(palette="Greys")+
-        scale_color_manual(values=hcr_colors)+
+        scale_color_manual(values=colors)+
+        scale_size_manual(values=sizes)+
         labs(x="Year", y=ylab)+
         coord_cartesian(expand=0)+
         guides(color=guide_legend(title="Management \n Strategy", nrow=2), fill="none")
