@@ -95,7 +95,7 @@ regime_recruits <- function(mus, cvs, nyears, regime_length, starting_regime, se
 #' @param R0 unfished recruitment
 #' @param S0 unfished spawning biomass
 #'
-#' @export beverton_holt
+#' @export beverton_holt_recruits
 #'
 #' @examples
 #' \dontrun{
@@ -103,7 +103,7 @@ regime_recruits <- function(mus, cvs, nyears, regime_length, starting_regime, se
 #'  bevholt(ssb=185) # 23.43891
 #' }
 #'
-beverton_holt <- function(h, R0, S0, sigR, seed){
+beverton_holt_recruits <- function(h, R0, S0, sigR, seed){
     # note that the set.seed() call needs to happen
     # outside of the returned function, or else there
     # will be no random variability in recruitment draws
@@ -131,9 +131,9 @@ beverton_holt <- function(h, R0, S0, sigR, seed){
 #' @param starting_regime regime to start with (0 = first regime, 1 = second regime)
 #' @param seed random seed for reproducability
 #'
-#' @export bevholt_regimes
+#' @export bevholt_regime_recruits
 #'
-bevholt_regimes <- function(h, sbpr, R0s, sigRs, nyears, regime_length, starting_regime, seed){
+bevholt_regime_recruits <- function(h, sbpr, R0s, sigRs, nyears, regime_length, starting_regime, seed){
     set.seed(seed)
     function(ssb, y){
         regs <- rep(NA, nyears)
@@ -182,17 +182,17 @@ bevholt_regimes <- function(h, sbpr, R0s, sigRs, nyears, regime_length, starting
 #' @param nyears total number of years to resample
 #' @param seed random seed for reproducability
 #'
-#' @export recruits_crash
+#' @export crash_recruits
 #'
 #' @example
 #'
-recruits_crash <- function(crash_start_year, crash_length, crash_value, hist_recruits, nyears, seed){
+crash_recruits <- function(crash_start_year, crash_length, crash_value, hist_recruits, nyears, seed){
     rec <- resample_recruits(hist_recruits, nyears, seed)
     rec[crash_start_year:(crash_start_year+crash_length-1)] <- rlnorm(crash_length, log(crash_value), sdlog=0.1)
     return(rec)
 }
 
-retro_recruitment <- function(hist_recruits, nyears, seed, sim_func, ...){
+retrospective_recruits <- function(hist_recruits, nyears, seed, sim_func, ...){
     rec <- rep(NA, nyears)
     rec[1:length(hist_recruits)] <- hist_recruits
     rec[(length(hist_recruits)+1):nyears] <- do.call(sim_func, c(list(hist_recruits=hist_recruits), list(nyears=nyears), list(seed=seed), list(...)))#rlnorm(nyears-length(rec[!is.na(rec)]), meanlog=log(15), sdlog=0.20)
