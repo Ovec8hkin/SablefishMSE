@@ -689,54 +689,20 @@ plot_hcr_phase_diagram <- function(data, ref_pts, v1="hcr", v2=NA, common_trajec
 
 }
 
-plot_mse_summary <- function(model_runs, extra_columns, dem_params, hcr_filter, om_filter, common_trajectory=64){
-    all_data <- bind_rows(
-        get_ssb_biomass(model_runs, extra_columns, dem_params, hcr_filter, om_filter) %>% select(time, sim, L1, om, hcr, value=spbio),
-        get_management_quantities(model_runs, extra_columns, hcr_filter, om_filter, spinup_years = common_trajectory),
-        get_landed_catch(model_runs, extra_columns, hcr_filter, om_filter) %>% select(time, sim, L1, om, hcr, value=total_catch),
-        get_fishing_mortalities(model_runs, extra_columns, hcr_filter, om_filter) %>% select(time, sim, L1, om, hcr, value=total_F)
-    )
 
-    ad <- all_data %>% 
-        filter(L1 %in% c("tac", "faa", "naa", "land_caa")) %>%
-        group_by(time, L1, om, hcr) %>%
-        median_qi(value, .width = interval_widths) %>%
-        reformat_ggdist_long(n=4) %>%
-        mutate(
-            L1 = factor(
-                L1,
-                levels = c("tac", "land_caa", "faa", "naa"),
-                labels = c("TAC", "Catch", "Fishing Mortality", "Spawning Biomass")
-            )
-        )
-    
-    hcr1 <- as.character((ad %>% pull(hcr) %>% unique)[1])
-    traj <- ad %>% distinct(om) %>% mutate(common=common_trajectory)
-
-    common <- ad %>% left_join(traj, by="om") %>% filter(hcr==hcr1) %>% group_by(om) %>% filter(time <= common)
-
-    plot <- ggplot(ad %>% filter(time > common_trajectory-1), aes(x=time, y=median, color=hcr))+
-        geom_line(size=0.85)+
-        geom_line(data = common, aes(x=time, y=median), size=0.85, color="black")+
-        geom_vline(data=common, aes(xintercept=common), linetype="dashed")+
-        facet_grid(cols=vars(om), rows=vars(L1), scales="free_y")+
-        facetted_pos_scales(
-            y = list(
-                scale_y_continuous(limits=c(0, 50), breaks=seq(0, 50, 10)),
-                scale_y_continuous(limits=c(0, 60), breaks=seq(0, 60, 15)),
-                scale_y_continuous(limits=c(0, 0.2), breaks=seq(0, 0.20, 0.05)),
-                scale_y_continuous(limits=c(0, 320, breaks=seq(0, 320, 50)))
-            )
-        )+
-        scale_x_continuous(limits=c(0, ad %>% pull(time) %>% max))+
-        scale_color_manual(values=hcr_colors)+
-        labs(y="", x="Year", color="Management \n Strategy")+
-        coord_cartesian(expand=0)
-
-    return(plot+custom_theme)
-}
-
-plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_relative=FALSE, summary_hcr="F40", highlight=NULL, colors=rank_colors){
+#' Plot Summary of Performance Metrics
+#' 
+#' Plot summary of performance metrics across all simulation as point intervals.
+#' 
+#' @param perf_data tibble output from `performance_metric_summary()`
+#' @param v1 variable to map to y-axis (e.g. "hcr")
+#' @param v2 variable to facet by (e.g. "om")
+#' @param is_relative whether the performance metrics have been relativized to a specific HCR
+#' @param highlight vector of HCRs to highlight with color (must match names in `extra_columns`)
+#' 
+#' @export plot_performance_metric_summary
+#' 
+plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_relative=FALSE, highlight=NULL){
 
     metric_minmax = perf_data %>% group_by(name) %>% summarise(min=min(lower), max=max(upper))
     axis_scalar <- c(0.9, 1.1)
@@ -765,15 +731,7 @@ plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_rel
             color_group = ifelse(hcr %in% highlight, color_group, "Other")
         )
     }
-    # perf_data <- perf_data %>% mutate(color_group = factor(color_group))
-
-    # colors <- rank_colors
-    # if(!is.null(highlight)){
-    #     colors <- rank_colors[highlight]
-    #     colors <- c(colors, "Other" = "grey70")
-    # }
-
-    # colors <- rank_colors
+    
     if(!is.null(highlight)){
         colors <- c(hcr_colors, "Other" = "grey70")
         colors <- colors[perf_data$color_group %>% unique]
@@ -784,9 +742,6 @@ plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_rel
     plot <- ggplot(perf_data)+
                 geom_vline(data=summary, aes(xintercept = median), color="grey50", linetype="dashed")+
                 scale_shape_discrete()+
-                scale_color_manual(values=colors)+
-                # scale_color_manual(values=hcr_colors)+
-                # facet_wrap(vars(name), scales="free_x")+
                 labs(y="", x="", shape="OM", color="Relative MS Order")+
                 coord_cartesian(expand=0)+
                 guides(shape="none", color=guide_legend(nrow=1))+
@@ -805,31 +760,6 @@ plot_performance_metric_summary <- function(perf_data, v1="hcr", v2="om", is_rel
         plot <- plot + 
                     geom_pointinterval(aes(x=median, xmin=lower, xmax=upper, y=.data[[v1]], color=.data[[color_var]]), point_size=3, position="dodge")+
                     facet_wrap(~name, scales="free_x")
-    }
-
-    if(!is_relative){
-        plot <- plot + 
-                ggh4x::facetted_pos_scales(
-                    x = list(
-                        scale_x_continuous(limits=c(0, 55)),
-                        scale_x_continuous(limits=c(0, 0.08), breaks=c(0, 0.025, 0.05, 0.075)),
-                        # scale_x_continuous(limits=c(0, 1), breaks=c(0, 0.50, 1.0)),
-                        scale_x_continuous(limits=c(0, 550), breaks=c(0, 150, 300, 450)),
-                        scale_x_continuous(limits=c(0, 15)),
-                        scale_x_continuous(limits=c(0, 1), breaks=seq(0, 1, 0.2))
-                    )
-                )
-    }else{
-        plot <- plot + ggh4x::facetted_pos_scales(
-                x = list(
-                    scale_x_continuous(limits=c(0, 2)),
-                    scale_x_continuous(limits=c(0, 1.25)),
-                    scale_x_continuous(limits=c(0, 3.5)),
-                    scale_x_continuous(limits=c(0, 2)),
-                    scale_x_continuous(limits=c(0, 1.25)),
-                    scale_x_continuous(limits=c(0.5, 1.25))
-                )
-            )
     }
 
     return(plot+custom_theme)
