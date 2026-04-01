@@ -14,11 +14,11 @@ setup_mp_options <- function(){
             ref_points = list(
                 spr_target = 0.40,
                 rp_start_age = 1,
-                rp_hyperallometry=1
+                rp_hyperallometry = 1
             ),
             management = list(
                 abc_tac_reduction = 1,
-                tac_land_reduciton = 1
+                tac_land_reduction = 1
             ),
             survey_frequency = 1,
             assessment_frequency = 1
