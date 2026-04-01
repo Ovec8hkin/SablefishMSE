@@ -8,7 +8,6 @@
 #'
 #' @param naa numbers-at-age vector
 #'
-#' @export shannon_diversity
 #'
 #' @example
 #'
@@ -42,7 +41,6 @@ compute_average_age <- function(naa, ages){
 #' @param naa numbers-at-age vector
 #' @param mat maturity-at-age vector
 #'
-#' @export prop_mature
 #'
 #' @example
 #'
@@ -60,7 +58,6 @@ prop_mature <- function(naa, mat){
 #' @param naa numbers-at-age vector
 #' @param mat maturity-at-age vector
 #'
-#' @export prop_fully_mature
 #'
 #' @example
 #'

@@ -927,6 +927,9 @@ rank_colors_large <- c(
     "#004166"
 )
 
+#' Custom GGPlot2 theme
+#'
+#' @export custom_theme
 custom_theme <- ggplot2::theme_bw()+ggplot2::theme(
     panel.spacing.y = ggplot2::unit(0.5, "cm"),
     panel.grid.minor = ggplot2::element_blank(),

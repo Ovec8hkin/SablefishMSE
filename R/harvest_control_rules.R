@@ -87,7 +87,6 @@ threshold_f <- function(x, f_min, f_max, lrp, urp){
 #' @param lrp value of x below which f_min applies
 #' @param urp value of x above which f_max applies
 #'
-#' @export as_scalar_threshold_f
 #'
 #' @example
 #'

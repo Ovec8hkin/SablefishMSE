@@ -20,7 +20,6 @@ compute_naapr <- function(nages, mort, sel, ret, F){
 #' @param ret total retention-at-age vector
 #' @param F instantenous fishing mortality rate
 #'
-#' @export
 #'
 #' @example
 #'
@@ -44,7 +43,6 @@ compute_sbpr <- function(nages, mort, mat, waa, sel, ret, F, start_age=1, hypera
 #' @param ret total retention-at-age vector
 #' @param F instantenous fishing mortality rate
 #'
-#' @export
 #'
 #' @example
 #'
@@ -67,7 +65,6 @@ compute_spr <- function(nages, mort, mat, waa, sel, ret, F, start_age=1, hyperal
 #' @param ret total retention-at-age vector
 #' @param target_x desired SPR proportion
 #'
-#' @export
 #'
 #' @example
 #'
@@ -106,7 +103,6 @@ spr_x <- function(nages, mort, mat, waa, sel, ret, target_x=0.35, start_age=1, h
 #' @param F instantenous fishing mortality rate
 #' @param avg_rec average recruitment
 #'
-#' @export
 #'
 #' @example
 #'
@@ -128,7 +124,6 @@ compute_bx <- function(nages, mort, mat, waa, sel, ret, F, avg_rec, start_age=1,
 #' @param avg_rec average recruitment
 #'
 #' @return list of F40, F35, and B40
-#' @export calculate_npfmc_ref_points
 #'
 #' @example
 #'

@@ -42,7 +42,6 @@ calculate_joint_selret <- function(sel, ret, prop_fs=c(0.50, 0.50)){
 #' @param model_runs list of completed MSE model runs (the output of `run_mse_multiple`)
 #' @param large_event_thresh threshold value for declaring a recruitment event "large"
 #'
-#' @export 
 #'
 #' @example
 #'
@@ -164,7 +163,6 @@ generate_annual_frequency <- function(frequency, len){
 #' @param om_order vector of correct order of OMs (used to set OM factor level)
 #' @param hcr_order vector of correct order of HCRs (used to set HCR factor level)
 #'
-#' @export get_saved_model_runs
 #'
 #' @example
 #'
@@ -260,7 +258,6 @@ get_saved_model_runs <- function(om_order=NULL, hcr_order=NULL){
 #' 
 #' @param d vector of values to find maximum of
 #' 
-#' @export inf_max
 #' 
 inf_max <- function(d){
     return(max(d[!is.infinite(d)]))
@@ -272,7 +269,6 @@ inf_max <- function(d){
 #' 
 #' @param d vector of values to find maximum of
 #' 
-#' @export inf_min
 #' 
 inf_min <- function(d){
     return(min(d[!is.infinite(d)]))

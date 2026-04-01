@@ -360,7 +360,6 @@ get_numbers_at_age <- function(model_runs, extra_columns, hcr_filter, om_filter)
 #' @param summarise whether to summarise across simualtions or not
 #' @param make_segments whether to generate data.frame of segment for use in plotting 
 #'
-#' @export get_atage_groups
 #'
 #' @example
 #'
@@ -428,7 +427,6 @@ get_atage_groups <- function(model_runs, extra_columns, hcr_filter, om_filter, q
 #' @param om_filter vector of OM names to process (must match names in `extra_columns`)
 #' @param seed_list simulation seeds used in `model_runs`
 #'
-#' @export get_reference_points
 #'
 #' @example
 #'
@@ -514,7 +512,6 @@ get_reference_points <- function(model_runs, extra_columns, rp_year, hcr_filter,
 #' @param hcr_filter vector of HCR names to process (must match names in `extra_columns`)
 #' @param om_filter vector of OM names to process (must match names in `extra_columns`)
 #'
-#' @export get_b40_timeseries
 #'
 #' @example
 #'
@@ -586,7 +583,6 @@ get_b40_timeseries <- function(model_runs, extra_columns, hcr_filter, om_filter)
 #' @param hcr_filter vector of HCR names to process (must match names in `extra_columns`)
 #' @param om_filter vector of OM names to process (must match names in `extra_columns`)
 #'
-#' @export get_phaseplane_data
 #'
 #' @example
 #'
@@ -615,7 +611,6 @@ get_phaseplane_data <- function(model_runs, extra_columns, dem_params, hcr_filte
 #' @param hcr_filter vector of HCR names to process (must match names in `extra_columns`)
 #' @param om_filter vector of OM names to process (must match names in `extra_columns`)
 #'
-#' @export get_hcrphase_data
 #'
 #' @example
 #'
@@ -650,7 +645,6 @@ get_hcrphase_data <- function(model_runs, extra_columns, dem_params, hcr_filter,
 #' @param hcr_filter vector of HCR names to process (must match names in `extra_columns`)
 #' @param om_filter vector of OM names to process (must match names in `extra_columns`)
 #'
-#' @export get_phaseplane_catch_data
 #'
 #' @example
 #'

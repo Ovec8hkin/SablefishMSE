@@ -14,7 +14,6 @@
 #' begin talking effect at phase_ins/2 before each breakpoints value and
 #' end at phase_ins/2 after each breakpoint value.
 #'
-#' @export stairstep_attainment
 #'
 #' @example \dontrun{
 #'    TAC <- 25000
