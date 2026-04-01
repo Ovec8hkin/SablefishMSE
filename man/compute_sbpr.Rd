@@ -4,7 +4,17 @@
 \alias{compute_sbpr}
 \title{Compute Spawning Biomass per Recruit (SBPR)}
 \usage{
-compute_sbpr(nages, mort, mat, waa, sel, ret, F)
+compute_sbpr(
+  nages,
+  mort,
+  mat,
+  waa,
+  sel,
+  ret,
+  F,
+  start_age = 1,
+  hyperallometry = 1
+)
 }
 \arguments{
 \item{nages}{number of ages in age structure}

@@ -4,7 +4,17 @@
 \alias{compute_spr}
 \title{Compute Spawning Potential Ratio (SPR)}
 \usage{
-compute_spr(nages, mort, mat, waa, sel, ret, F)
+compute_spr(
+  nages,
+  mort,
+  mat,
+  waa,
+  sel,
+  ret,
+  F,
+  start_age = 1,
+  hyperallometry = 1
+)
 }
 \arguments{
 \item{nages}{number of ages in age structure}

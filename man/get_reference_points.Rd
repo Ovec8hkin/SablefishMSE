@@ -4,13 +4,7 @@
 \alias{get_reference_points}
 \title{Get Reference Points from MSE Simulations}
 \usage{
-get_reference_points(
-  model_runs,
-  extra_columns,
-  hcr_filter,
-  om_filter,
-  seed_list
-)
+get_reference_points(model_runs, extra_columns, rp_year, hcr_filter, om_filter)
 }
 \arguments{
 \item{model_runs}{list of completed MSE simulations}

@@ -4,7 +4,18 @@
 \alias{compute_bx}
 \title{Compute average SSB under a level of F}
 \usage{
-compute_bx(nages, mort, mat, waa, sel, ret, F, avg_rec)
+compute_bx(
+  nages,
+  mort,
+  mat,
+  waa,
+  sel,
+  ret,
+  F,
+  avg_rec,
+  start_age = 1,
+  hyperallometry = 1
+)
 }
 \arguments{
 \item{nages}{number of ages in age structure}

@@ -4,7 +4,17 @@
 \alias{spr_x}
 \title{Find F that yields a given SPR%}
 \usage{
-spr_x(nages, mort, mat, waa, sel, ret, target_x = 0.35)
+spr_x(
+  nages,
+  mort,
+  mat,
+  waa,
+  sel,
+  ret,
+  target_x = 0.35,
+  start_age = 1,
+  hyperallometry = 1
+)
 }
 \arguments{
 \item{nages}{number of ages in age structure}

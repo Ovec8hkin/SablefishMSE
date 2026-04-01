@@ -4,7 +4,18 @@
 \alias{calculate_ref_points}
 \title{Calculate SPR Based Reference Points}
 \usage{
-calculate_ref_points(nages, mort, mat, waa, sel, ret, avg_rec, spr_target)
+calculate_ref_points(
+  nages,
+  mort,
+  mat,
+  waa,
+  sel,
+  ret,
+  avg_rec,
+  spr_target,
+  start_age = 1,
+  hyperallometry = 1
+)
 }
 \arguments{
 \item{nages}{number of ages in age structure}

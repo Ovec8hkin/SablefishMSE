@@ -4,7 +4,7 @@
 \alias{get_saved_model_runs}
 \title{Load Saved MSE Model Runs from Disk}
 \usage{
-get_saved_model_runs(om_order = NULL, hcr_order = NULL)
+get_saved_model_runs(om_filter = NULL, hcr_filter = NULL)
 }
 \arguments{
 \item{om_order}{vector of correct order of OMs (used to set OM factor level)}
