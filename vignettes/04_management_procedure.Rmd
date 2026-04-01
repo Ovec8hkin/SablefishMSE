@@ -79,14 +79,14 @@ Several MP/HCR objects are provided with the `SablefishMSE` package:
 ##### Custom Harvest Control Rule Functions
 Custom HCR functions can be easily developed and used within the MSE simulation loop. All HCR functions must accept, at minimum, the same four function arguments:
 
-- `ref_pts` - a list object containing computed values of reference points
+- `ref_pts` - a list object containing computed values of reference points (see next section on "Defining a Reference Point Object")
 - `naa` - an array of numbers-at-age (will be dimension `[1, nages, nsexes, nregions]`)
 - `dem_params` - a list of demographic parameters (will be dimension `[1, nages, nsexes, nregion, nfleets]`)
 - `avgrec` - average recruitment across the simulation
 
 All four of these arguments must be accepted by any custom HCR function, even if they are not used. Additional arguments can also be accepted, and their values specified in the `hcr$extra_pars` list (the four arguments listed above __DO NOT__ need to be specified in the `extra_pars` list, as they will be passed to the HCR function automatically within the MSE simulation loop). Note that custom HCR functions __CAN NOT__ make use of internal state variables from the MSE except for numbers-at-age.
 
-Below is an example of a custom HCR that recommends a fishing mortality of 10% when $\text{SSB} >= 100$mt and a fishing mortality of 1% when $\text{SSB} < 100$mt.
+Below is an example of a custom HCR that recommends a fishing mortality of 10% when $\text{SSB} >= 100,000$mt and a fishing mortality of 1% when $\text{SSB} < 100,000$mt.
 ```{r, stepwise_hcr_example, eval=FALSE}
 
 # the four required function arguemnts are present
@@ -116,14 +116,15 @@ average_age <- function(naa, ages){
     return(weighted.mean(ages, naa))
 }
 
+# The maximum fishing mortality rate in a threshold HCR is a function of the average age of the population relative to a reference average age. If the average age is above the reference average age, the maximum fishing mortality rate is not increased, but if the average age is below the reference average age, the maximum fishing mortality rate is reduced proportionately to how much lower the average age is relative to the reference average age.
 avgage_threshold_f <- function(ref_pts, naa, dem_params, ref_naa, ages){
     # Calculate ssb as naa*waa*mat (female only) in units of 1,000s tons
     ssb <- apply(naa[,,1,]*dem_params$waa[,,1,,drop=FALSE]*dem_params$mat[,,1,,drop=FALSE], 1, sum)
     as_stat <- average_age(naa, ages)/average_age(ref_naa, ages)
-    as_scalar <- threshold_f(as_stat, f_min=0, f_max=1, lrp=0, urp=1)
+    as_scalar <- ifelse(as_stat > 1, 1, as_stat) # if average age is above the reference average age, do not increase F
 
-    x <- ssb/ref_pts$B40
-    f_max <- ref_pts$F40*as_scalar
+    x <- ssb/ref_pts$Bref
+    f_max <- ref_pts$Fref*as_scalar
     f_min <- 0
     lrp <- 0
     urp <- 1
@@ -154,6 +155,26 @@ mp <- setup_mp_options()
 mp$hcr <- hcr
 ```
 
+
+### Defining a Reference Point Object
+`SablefishMSE` calculates annual reference points using spawning potential ratio (SPR) methods. A target SPR level can be set by the `mp$ref_pts$spr_target` parameter. The parameter can be either a single value, or a vector of two values. If two values are supplied, the first value corresponds to the fishing mortality reference point and the second value corresponds to the biological reference point.
+
+The MSE simulation loop reference point function, `calculate_ref_points`, computes and returns 4 values:
+
+- `Fmax` - a maximum permissible fishing mortality rate corresponding to the fishing mortality that yields $\text{SPR}=0.35$.
+- `Fref` - the fishing mortality rate that yields $\text{SPR}=\text{spr_target}$
+- `Bref` - the spawning biomass resulting from fishing at `Fref`
+- `B0` - the spawning biomass resulting from fishing at `F=0.0`
+
+The two biological reference points, `Bref` and `B0` are calculated using the average recruitment across the entire simulation.
+
+Two additional options can be specified in the `mp$ref_pts` object:
+
+- `rp_start_age` - the age at which individuals start contributing to the reference point calculations. By default, `rp_start_age=1`, such that all age classes contribute to the reference point calculation.
+- `rp_hyperallometry` - a hyperallometric scaling exponent that is applied to weight-at-age within the reference point calculation. This functionally converts reference points to be in terms of spawning output (egg production) as opposed to biomass, by approximating a non-isometric fecundity relationship (whereby $\text{Fecundity} \propto \text{Weight}^{\beta}$). By Default, `rp_hyperallometry=1`, inidcating an isometric relationship ebtween weight and fecundity. 
+
+
+
 ### Defining a Management Object
 `SablefishMSE` applies HCR functions at the level of Acceptable Biological Catch (ABC), consistent with how the North Pacific Fisheries Management Council utilizes HCRs to manage groundfish fisheries in Alaska. Total Allowable Catch (TAC), the management quantity that constrains the maximum catch that can be removed the population annually, is subsequently constrained such that $\text{TAC} <= \text{ABC}$. Finally, landed catch is further constrained such that $\text{Catch} <= \text{TAC}$, to reflect that the entire TAC is not taken in every year.
 
@@ -164,15 +185,17 @@ The amount by which the ABC is reduced to yield a TAC, and the amount by which t
 
 Both the `abc_tac_reduction` and `tac_land_reduction` parameters are, by default, set to 1, such that the $\text{ABC} = \text{TAC} = \text{Catch}$. If set to a single value, the same multiplicative factor is applied in every year of the simulation.
 
-### Defining a Reference Point Object
-`SablefishMSE` calculates annual reference points using spawning potential ratio (SPR) methods. A target SPR level can be set by the `mp$ref_pts$spr_target` parameter. The parameter can be either a single value, or a vector of two values. If two values are supplied, the first value corresponds to the fishing mortality reference point and the second value corresponds to the biological reference point.
+#### Order of Operations for Management Module
+The management module handles calculating reference points, applying the HCR function, calculating an ABC, and eventually outputting a catch level for the following years OM timestep, the exact order of operations is as follow:
 
-The MSE simulation loop reference point function, `calculate_ref_points`, computes and returns 4 values:
+1. Calculate SPR based reference points (Fmax, Fref, Bref, B0) using the average recruitment across the entire simulation and the numbers-at-age in the current year of the simulation.
+2. Apply the HCR function to calculate a recommended fishing mortality rate or catch level for the following year of the simulation. This is `F_\text{ABC}`.
+3. If the HCR function outputs in fishing mortality units, calculate the corresponding catch level using the Baranov catch equation. This is $\text{ABC}$.
+4. Apply stability constraints to the ABC if specified in the `mp$hcr$extra_options` list.
+5. Apply the `abc_tac_reduction` to calculate the $\text{TAC}$ for the following year of the simulation.
+6. Apply harvest caps constraints to the TAC is specified in the `mp$hcr$extra_options` list.
+7. Apply the `tac_land_reduction` to calculate the level of realized landings for the following year of the simulation.
 
-- `Fmax` - a maximum permissible fishing mortality rate corresponding to the fishing mortality that yields $\text{SPR}=0.50$.
-- `Fref` - the fishing mortality rate that yields $\text{SPR}=\text{spr_target}$
-- `Bref` - the spawning biomass resulting from fishing at `Fref`
-- `B0` - the spawning biomass resulting from fishing at `F=0.0`
 
-The two biological reference points, `Bref` and `B0` are calculated using the average recruitment across the entire simulation.
-
+### Survey and Assessment Frequency
+The frequency with which scientific survey data is generated and made available to the estimation method is controllable through the `mp$survey_frequency` parameter. The frequency with which stock assessments are performed and used to update reference points and HCR recommendations is controllable through the `mp$assessment_frequency` parameter. Both parameters should be set to a single integer value, indicating the number of years between surveys and assessments, respectively. By default, both parameters are set to 1, such that surveys and assessments occur every year of the simulation.

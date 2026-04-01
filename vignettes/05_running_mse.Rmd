@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-Once an operating model (OM) object, a recruitment object, and a management procedure (MP) object have all been appropriately defined, the MSE simulation loop can be almost be initiated. 
+Once an operating model (OM) object, a recruitment object, and a management procedure (MP) object have all been appropriately defined, the MSE simulation loop can almost be initiated. 
 
 ### MSE Options
 A list of MSE options must be defined to control internal aspects of the MSE simulation loop, primarily how long to run the MSE for. The MSE options object requires the following inputs:
@@ -64,8 +64,38 @@ run_mse_multiple(
     # List of MSE options to run
     mse_options_list = list(options)
     seed_list = sample(1:1000, 10),
-    nyears=1
+    nyears=1,
+    diagnostics = FALSE,
+    save = FALSE
 )
 ```
 
-`run_mse_multiple` will run all combinations of OMs, MPs, and MSE Options provided in their respective lists, each for the number of simulations provided in `seed_list`. 
+`run_mse_multiple` will run all combinations of OMs, MPs, and MSE Options provided in their respective lists, each for the number of simulations provided in `seed_list`.
+
+The `diagnostics` parameter controls whether to return observation data and estimation method output objects in addition to the standard set of MSE output arrays. By default, `diagnostics=FALSE` to save memory.
+
+The `save` parameter controls whether to save the output of MSE simulation to disk. By default, `save=FALSE` to avoid saving large MSE output objects, but often needs to be turned on when running many combinations of OMs, MPs, and simulation seeds. The default location of saved outputs is "./data/active/".
+
+### Example
+
+For example, the following code will run 10 simulations of a population under the `om1` and `om2` operating models, and managed using the `mp_f40` and `mp_f50` management procedures. All simulations will use the same set of default model options, estimation method diagnostics will not be returned, and MSE outputs will be saved to disk:
+
+```{r, example, eval=FALSE}
+om_list = afscOM::listN(om1, om2)
+mp_list = afscOM::listN(mp_f40, mp_f50)
+
+mse_options <- setup_mse_options()
+
+seed_list <- sample(1:1000, 10)
+
+model_runs <- run_mse_multiple(
+    om_list = om_list,
+    hcr_list = mp_list,
+    seed_list = sample(1:1000, 10),
+    mse_options_list = list(mse_options),
+    nyears=100,
+    diagnostics = FALSE,
+    save = TRUE
+)
+
+```
