@@ -23,12 +23,23 @@
 #' Random Recruitment OM Object
 #' 
 #' An operating model object that will generate future
-#' recruitment by randomly resampling from teh historical
+#' recruitment by randomly resampling from the historical
 #' recruitment timeseries
 #' 
 #' @format An operating model object
 #' 
 "om_rand_recruit"
+
+
+#' Beverton-Holt Recruitment OM Object
+#' 
+#' An operating model object that will generate future
+#' recruitment through application of a Beverton-Holt
+#' stock recruit function.
+#' 
+#' @format An operating model object
+#' 
+"om_bh_recruit"
 
 #' Cylic Recruitment OM Object
 #' 
@@ -53,7 +64,7 @@
 #' 
 "om_crash_recruit"
 
-# F40 Managament Procedure
+# F40 Management Procedure
 #'
 #' An example management procedure that replicates
 #' the NPFMC F40 harvest control rule policy that
@@ -64,7 +75,16 @@
 #' 
 "mp_f40"
 
-# Harvest Cap Managament Procedure
+# F50 Management Procedure
+#'
+#' An example management procedure that uses
+#' SPR_50% reference points.
+#' 
+#' @format A management procedure object.
+#' 
+"mp_f40"
+
+# Harvest Cap Management Procedure
 #'
 #' An example management procedure that applies
 #' a 25,000 mt cap on annual harvest to the 
@@ -74,7 +94,7 @@
 #' 
 "mp_25cap"
 
-# Stability Constraint Managament Procedure
+# Stability Constraint Management Procedure
 #'
 #' An example management procedure that applied
 #' a symmetric 5% stability constraint to the
