@@ -136,7 +136,21 @@ process_big_outputs <- function(model_runs, var, extra_columns, hcr_filter, om_f
    
 }
 
-
+#' Relativize Performance Values to a Specific Referecnce HCR
+#' 
+#' Convert raw performance metric values to relative performance values by dividing
+#' by the performance metric value for a specific reference HCR. This allows for
+#' easier comparison of performance across HCRs, as the relative performance values 
+#' will be on a common scale.
+#' 
+#' @param data a tibble of performance metric data
+#' @param rel_column the name of the column containing HCR names
+#' @param value_column the name of the column containing performance metric values
+#' @param rel_value the name of the reference HCR to relativize to
+#' @param grouping a vector of column names to group by when relativizing (e.g. "om", "time", "sim")
+#' 
+#' @export relativize_performance
+#' 
 relativize_performance <- function(data, rel_column, value_column, rel_value, grouping){
     if(is.null(rel_value)){
         return(data)
