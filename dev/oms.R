@@ -69,7 +69,7 @@ om_cylic_recruit$recruitment$pars <- list(
 # B-H recruitment
 om_bh_recruit <- sable_om
 om_bh_recruit$name <- "Beverton-Holt Recruitment"
-om_bh_recruit$recruitment$func <- beverton_holt
+om_bh_recruit$recruitment$func <- beverton_holt_recruits
 om_bh_recruit$recruitment$pars <- list(
     h = 0.85, # could do 0.80
     R0 = 15,
@@ -101,22 +101,10 @@ om_high_recruit$recruitment$pars <- list(
     starting_regime = 0
 )
 
-#OM6: Crash recruitment
-om_crash_recruit <- sable_om
-om_crash_recruit$name <- "Crash Recruitment"
-om_crash_recruit$recruitment$func <- recruits_crash
-om_crash_recruit$recruitment$pars <- list(
-    crash_start_year = (nyears-64)/2,
-    crash_length = 20,
-    crash_value = min(hist_recruits),
-    hist_recruits = hist_recruits,
-    nyears = 10*nyears
-)
-
-# OM7: B-H recruitment
+# OM7: B-H Regime recruitment
 om_bhcyclic_recruit <- sable_om
 om_bhcyclic_recruit$name <- "Beverton-Holt Cyclic Recruitment"
-om_bhcyclic_recruit$recruitment$func <- bevholt_regimes
+om_bhcyclic_recruit$recruitment$func <- bevholt_regime_recruits
 om_bhcyclic_recruit$recruitment$pars <- list(
     h = 0.85,
     sbpr = sbpr,
@@ -127,10 +115,24 @@ om_bhcyclic_recruit$recruitment$pars <- list(
     starting_regime = 0
 )
 
+# OM8: B-H Regime recruitment with lower R0s
+om_cycle_low <- om_bhcyclic_recruit
+om_cycle_low$recruitment$pars$h <- c(0.85,0.85)
+om_cycle_low$recruitment$pars$R0 <- c(50, 5.5)
+om_cycle_low$recruitment$pars$regime_length <- c(5, 20)
+om_cycle_low$name <- "Low Regime Recruitment"
+
+# OM9: BH Crash Recruitment
+om_crash <- om_bhcyclic_recruit
+om_crash$recruitment$pars$h <- c(0.85, 0.85)
+om_crash$recruitment$pars$R0 <- c(15, 3.5)
+om_crash$recruitment$pars$regime_length <- c(25, 30)
+om_crash$name <- "Crash Recruitment"
+
 # Immediate Recruitment Crash
 om_immcrash_recruit <- sable_om
 om_immcrash_recruit$name <- "Immediate Crash Recruitment"
-om_immcrash_recruit$recruitment$func <- recruits_crash
+om_immcrash_recruit$recruitment$func <- crash_recruits
 om_immcrash_recruit$recruitment$pars <- list(
     crash_start_year = 1,
     crash_length = 20,
