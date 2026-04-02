@@ -124,6 +124,15 @@
     <loc>/reference/beverton_holt.html</loc>
   </url>
   <url>
+    <loc>/reference/beverton_holt_recruits.html</loc>
+  </url>
+  <url>
+    <loc>/reference/bevholt_regime_recruits.html</loc>
+  </url>
+  <url>
+    <loc>/reference/bevholt_regimes.html</loc>
+  </url>
+  <url>
     <loc>/reference/bind_mse_outputs.html</loc>
   </url>
   <url>
@@ -142,10 +151,49 @@
     <loc>/reference/calculate_ref_points.html</loc>
   </url>
   <url>
+    <loc>/reference/compute_average_abi.html</loc>
+  </url>
+  <url>
     <loc>/reference/compute_average_age.html</loc>
   </url>
   <url>
+    <loc>/reference/compute_average_annual_catch_variation.html</loc>
+  </url>
+  <url>
+    <loc>/reference/compute_average_annual_dynamic_value.html</loc>
+  </url>
+  <url>
+    <loc>/reference/compute_average_annual_value.html</loc>
+  </url>
+  <url>
+    <loc>/reference/compute_average_catch.html</loc>
+  </url>
+  <url>
+    <loc>/reference/compute_average_proportion_biomass_old.html</loc>
+  </url>
+  <url>
+    <loc>/reference/compute_average_proportion_catch_large.html</loc>
+  </url>
+  <url>
+    <loc>/reference/compute_average_ssb.html</loc>
+  </url>
+  <url>
+    <loc>/reference/compute_biomass_crash_time.html</loc>
+  </url>
+  <url>
+    <loc>/reference/compute_biomass_recovery_time.html</loc>
+  </url>
+  <url>
     <loc>/reference/compute_bx.html</loc>
+  </url>
+  <url>
+    <loc>/reference/compute_performance_metric_summary.html</loc>
+  </url>
+  <url>
+    <loc>/reference/compute_prop_low_biomass.html</loc>
+  </url>
+  <url>
+    <loc>/reference/compute_prop_years_catch.html</loc>
   </url>
   <url>
     <loc>/reference/compute_sbpr.html</loc>
@@ -154,7 +202,19 @@
     <loc>/reference/compute_spr.html</loc>
   </url>
   <url>
+    <loc>/reference/compute_topsis.html</loc>
+  </url>
+  <url>
+    <loc>/reference/compute_total_catch.html</loc>
+  </url>
+  <url>
     <loc>/reference/constant_F.html</loc>
+  </url>
+  <url>
+    <loc>/reference/crash_recruits.html</loc>
+  </url>
+  <url>
+    <loc>/reference/custom_theme.html</loc>
   </url>
   <url>
     <loc>/reference/extend_3darray_last_dim.html</loc>
@@ -178,13 +238,22 @@
     <loc>/reference/generate_annual_frequency.html</loc>
   </url>
   <url>
+    <loc>/reference/get_abi.html</loc>
+  </url>
+  <url>
     <loc>/reference/get_atage_groups.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get_average_age.html</loc>
   </url>
   <url>
     <loc>/reference/get_b40_timeseries.html</loc>
   </url>
   <url>
     <loc>/reference/get_big_recruitment_filter.html</loc>
+  </url>
+  <url>
+    <loc>/reference/get_dynamic_economic_value.html</loc>
   </url>
   <url>
     <loc>/reference/get_fishing_mortalities.html</loc>
@@ -226,10 +295,67 @@
     <loc>/reference/inf_max.html</loc>
   </url>
   <url>
+    <loc>/reference/inf_min.html</loc>
+  </url>
+  <url>
+    <loc>/reference/mp_25cap.html</loc>
+  </url>
+  <url>
+    <loc>/reference/mp_5perc.html</loc>
+  </url>
+  <url>
+    <loc>/reference/mp_f40.html</loc>
+  </url>
+  <url>
     <loc>/reference/npfmc_tier3_F.html</loc>
   </url>
   <url>
+    <loc>/reference/om_bh_recruit.html</loc>
+  </url>
+  <url>
+    <loc>/reference/om_bhcyclic_recruit.html</loc>
+  </url>
+  <url>
+    <loc>/reference/om_crash_recruit.html</loc>
+  </url>
+  <url>
+    <loc>/reference/om_rand_recruit.html</loc>
+  </url>
+  <url>
     <loc>/reference/performance_metric_summary.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_abc_tac.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_average_age.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_dynamic_economic_value.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_fishing_mortalities.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_landed_catch.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_performance_metric_summary.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_recruitment.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_ssb.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_ssb_catch.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plot_timeseries.html</loc>
+  </url>
+  <url>
+    <loc>/reference/process_big_outputs.html</loc>
   </url>
   <url>
     <loc>/reference/prop_fully_mature.html</loc>
@@ -253,6 +379,9 @@
     <loc>/reference/regime_recruits.html</loc>
   </url>
   <url>
+    <loc>/reference/relativize_performance.html</loc>
+  </url>
+  <url>
     <loc>/reference/resample_recruits.html</loc>
   </url>
   <url>
@@ -274,6 +403,9 @@
     <loc>/reference/sable_om.html</loc>
   </url>
   <url>
+    <loc>/reference/sablefish_assessment_data.html</loc>
+  </url>
+  <url>
     <loc>/reference/scale_and_rank.html</loc>
   </url>
   <url>
@@ -281,6 +413,9 @@
   </url>
   <url>
     <loc>/reference/setup_mp_options.html</loc>
+  </url>
+  <url>
+    <loc>/reference/setup_mse_options.html</loc>
   </url>
   <url>
     <loc>/reference/shannon_diversity.html</loc>

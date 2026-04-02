@@ -29,26 +29,25 @@ document.addEventListener('DOMContentLoaded', function(e) {
 </script>
 
 <style type="text/css">
-code{white-space: pre-wrap;}
-span.smallcaps{font-variant: small-caps;}
-span.underline{text-decoration: underline;}
-div.column{display: inline-block; vertical-align: top; width: 50%;}
-div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-ul.task-list{list-style: none;}
-</style>
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 
 <style type="text/css">
-code {
-white-space: pre;
-}
-.sourceCode {
-overflow: visible;
-}
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
 </style>
 <style type="text/css" data-origin="pandoc">
-html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -64,54 +63,55 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-{ counter-reset: source-line 0; }
+  { counter-reset: source-line 0; }
 pre.numberSource code > span
-{ position: relative; left: -4em; counter-increment: source-line; }
+  { position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-{ content: counter(source-line);
-position: relative; left: -1em; text-align: right; vertical-align: baseline;
-border: none; display: inline-block;
--webkit-touch-callout: none; -webkit-user-select: none;
--khtml-user-select: none; -moz-user-select: none;
--ms-user-select: none; user-select: none;
-padding: 0 4px; width: 4em;
-color: #aaaaaa;
-}
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-{ }
+  {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } 
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.at { color: #7d9029; } 
-code span.bn { color: #40a070; } 
-code span.bu { color: #008000; } 
-code span.cf { color: #007020; font-weight: bold; } 
-code span.ch { color: #4070a0; } 
-code span.cn { color: #880000; } 
-code span.co { color: #60a0b0; font-style: italic; } 
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.do { color: #ba2121; font-style: italic; } 
-code span.dt { color: #902000; } 
-code span.dv { color: #40a070; } 
-code span.er { color: #ff0000; font-weight: bold; } 
-code span.ex { } 
-code span.fl { color: #40a070; } 
-code span.fu { color: #06287e; } 
-code span.im { color: #008000; font-weight: bold; } 
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.kw { color: #007020; font-weight: bold; } 
-code span.op { color: #666666; } 
-code span.ot { color: #007020; } 
-code span.pp { color: #bc7a00; } 
-code span.sc { color: #4070a0; } 
-code span.ss { color: #bb6688; } 
-code span.st { color: #4070a0; } 
-code span.va { color: #19177c; } 
-code span.vs { color: #4070a0; } 
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -341,160 +341,84 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<p>The <code>SablefishMSE</code> package makes use of the
-<code>afscOM</code> package for defining the operating model (OM)
-component of the MSE simulation loop. As such, defining OMs to use
-within the MSE framework is identical to the process of defining a model
-with <code>afscOM</code>.</p>
+<p>The <code>SablefishMSE</code> package makes use of the <code>afscOM</code> package for defining the operating model (OM) component of the MSE simulation loop. As such, defining OMs to use within the MSE framework is identical to the process of defining a model with <code>afscOM</code>.</p>
 <div id="an-introduction-to-afscom" class="section level3">
 <h3>An Introduction to <code>afscOM</code></h3>
-<p><code>afscOM</code> is a age-structured, multi-sex, multi-fleet,
-spatially explicit fisheries model that can be parameterized to elicit a
-range of complex population dyanmics. Users can define how specific
-demographic parameters (e.g. natural mortality, weight-at-age,
-selectivity) change across time, age, sex, space, or by fleet, and the
-model internally projects a population with such demographic
-characteristics forwards in time. Observation processes can additionally
-be defined allowing the users to simulate observations (with associated
-error levels) from the population at each time step.</p>
-<p>For more information on the <code>afscOM</code> package, including
-examples and additional documentation, please see the <a href="https://benwilliams-noaa.github.io/afscOM">package
-documentation</a>.</p>
+<p><code>afscOM</code> is a age-structured, multi-sex, multi-fleet, spatially explicit fisheries model that can be parameterized to elicit a range of complex population dynamics. Users can define how specific demographic parameters (e.g. natural mortality, weight-at-age, selectivity) change across time, age, sex, space, or by fleet, and the model internally projects a population with such demographic characteristics forwards in time. Observation processes can additionally be defined allowing the users to simulate observations (with associated error levels) from the population at each time step.</p>
+<p>For more information on the <code>afscOM</code> package, including examples and additional documentation, please see the <a href="https://benwilliams-noaa.github.io/afscOM">package documentation</a>.</p>
 </div>
 <div id="model-dimensions" class="section level3">
 <h3>Model Dimensions</h3>
-<p>Demographic parameters are defined using mutli-dimensional arrays in
-<code>afscOM</code>. All demographic parameter arrays are the same
-dimensions: <code>[nyears, nages, nsexes, nregions, nfleets]</code>
-(demographic parameters, such as natural mortality, that dont vary by
-fleet can drop the final dimension). Where:</p>
+<p>Demographic parameters are defined using mutli-dimensional arrays in <code>afscOM</code>. All demographic parameter arrays are the same dimensions: <code>[nyears, nages, nsexes, nregions, nfleets]</code> (demographic parameters, such as natural mortality, that dont vary by fleet can drop the final dimension). Where:</p>
 <ul>
 <li><code>nyears</code> - the total number of years in the model</li>
 <li><code>nages</code> - the number of ages to track</li>
 <li><code>nsexes</code> - the number of sexes to track</li>
 <li><code>nregions</code> - the number of spatial regions to track</li>
 <li><code>nfleets</code> - the number of fishing fleets to track</li>
-<li><code>nsurveys</code> - the number of scientific surveys to
-track</li>
+<li><code>nsurveys</code> - the number of scientific surveys to track</li>
 </ul>
-<p>While the <code>afscOM</code> package can simulate populations using
-any combination of the above the dimensions, the
-<code>SablefishMSE</code> package has only been tested with 30 ages, 2
-sexes, 1 spatial region, and 2 fishing fleets.</p>
+<p>While the <code>afscOM</code> package can simulate populations using any combination of the above the dimensions, the <code>SablefishMSE</code> package has only been tested with 30 ages, 2 sexes, 1 spatial region, and 2 fishing fleets.</p>
 </div>
 <div id="demographic-parameters" class="section level3">
 <h3>Demographic Parameters</h3>
-<p>The multidimensional arrays that define demographic rates MUST always
-follow the same dimension structure for <code>afscOM</code> models to
-work correctly. Biological parameters, such as natural mortality,
-maturity, and weight-at-age should all have array dimensions:
-<code>[nyears, nages, nsexes, nregions]</code>. Fishery and survey fleet
-parameters, such as selectivity, retention, and discard mortality,
-should have array dimensions:
-<code>[nyears, nages, nsexes, nregions, nfleets]</code> (for fishing
-fleets) or <code>[nyears, nages, nsexes, nregions, nsurveys]</code> (for
-survey fleets).</p>
-<p>In this structure the first index along the “sex” dimension
-(dimension 3) will correspond to parameters for females, while the
-second index will correspond to parameters for males.</p>
+<p>The multidimensional arrays that define demographic rates MUST always follow the same dimension structure for <code>afscOM</code> models to work correctly. Biological parameters, such as natural mortality, maturity, and weight-at-age should all have array dimensions: <code>[nyears, nages, nsexes, nregions]</code>. Fishery and survey fleet parameters, such as selectivity, retention, and discard mortality, should have array dimensions: <code>[nyears, nages, nsexes, nregions, nfleets]</code> (for fishing fleets) or <code>[nyears, nages, nsexes, nregions, nsurveys]</code> (for survey fleets).</p>
+<p>In this structure the first index along the “sex” dimension (dimension 3) will correspond to parameters for females, while the second index will correspond to parameters for males.</p>
 <p>Required population parameters include:</p>
 <ul>
-<li><code>mort</code>: Natural mortality
-<code>[nyears, nages, nsexes, nregions]</code></li>
-<li><code>mat</code>: Maturity
-<code>[nyears, nages, nsexes, nregions]</code></li>
-<li><code>waa</code>: Weight-at-age
-<code>[nyears, nages, nsexes, nregions]</code></li>
-<li><code>sexrat</code>: Population sex ratio
-<code>[nyears, nages, nsexes, nregions]</code></li>
-<li><code>sel</code>: Fishery selectivity
-<code>[nyears, nages, nsexes, nregions, nfleets]</code></li>
-<li><code>ret</code>: Fishery retention
-<code>[nyears, nages, nsexes, nregions, nfleets]</code></li>
-<li><code>dmr</code>: Fishery discard mortality (as an instantenous
-rate) <code>[nyears, nages, nsexes, nregions, nfleets]</code></li>
+<li><code>mort</code>: Natural mortality <code>[nyears, nages, nsexes, nregions]</code></li>
+<li><code>mat</code>: Maturity <code>[nyears, nages, nsexes, nregions]</code></li>
+<li><code>waa</code>: Weight-at-age <code>[nyears, nages, nsexes, nregions]</code></li>
+<li><code>sexrat</code>: Population sex ratio <code>[nyears, nages, nsexes, nregions]</code></li>
+<li><code>sel</code>: Fishery selectivity <code>[nyears, nages, nsexes, nregions, nfleets]</code></li>
+<li><code>ret</code>: Fishery retention <code>[nyears, nages, nsexes, nregions, nfleets]</code></li>
+<li><code>dmr</code>: Fishery discard mortality (as an instantaneous rate) <code>[nyears, nages, nsexes, nregions, nfleets]</code></li>
 </ul>
-<p>If observations are being simulated, survey selectivity must also be
-specified:</p>
+<p>If observations are being simulated, survey selectivity must also be specified:</p>
 <ul>
-<li><code>surv_sel</code>: Survey selectivity
-<code>[nyears, nages, nsexes, nregions, nsurveys]</code></li>
+<li><code>surv_sel</code>: Survey selectivity <code>[nyears, nages, nsexes, nregions, nsurveys]</code></li>
 </ul>
-<p>For spatial models (those where nregions &gt; 1), a “movement”
-demographic matrix is also required as input. Movement can be specified
-to vary by age and sex, but can not currently vary through time.</p>
+<p>For spatial models (those where nregions &gt; 1), a “movement” demographic matrix is also required as input. Movement can be specified to vary by age and sex, but can not currently vary through time.</p>
 <ul>
-<li><code>movement</code>: Movement matrix
-<code>[nregions, nregions, nages, nsexes]</code></li>
+<li><code>movement</code>: Movement matrix <code>[nregions, nregions, nages, nsexes]</code></li>
 </ul>
-<p>For additional infromation on building the demographic arrays, see
-the <a href="https://benwilliams-noaa.github.io/afscOM/articles/specifying_demographic_parameters.html"><code>afscOM</code>
-documentation</a>.</p>
+<p>For additional infromation on building the demographic arrays, see the <a href="https://benwilliams-noaa.github.io/afscOM/articles/specifying_demographic_parameters.html"><code>afscOM</code> documentation</a>.</p>
 </div>
 <div id="observation-processes" class="section level3">
 <h3>Observation Processes</h3>
-<p><code>afscOM</code> is capable of optionally simulating observations
-(with associated observation error) from the population at each
-timestep. Observation that can be simulated include:</p>
+<p><code>afscOM</code> is capable of optionally simulating observations (with associated observation error) from the population at each timestep. Observation that can be simulated include:</p>
 <ul>
 <li>age compositions</li>
 <li>relative population number indices (population indices)</li>
 <li>relative population weight indices (biomass indices)</li>
 <li>landed catch volume</li>
 </ul>
-<p>To simulate observations from the OM,
-<code>om$model_options$simulae_observations = TRUE</code> should be
-specified. Additionally, a list of observation parameters also needs to
-be defined. Required observation parameters include:</p>
+<p>To simulate observations from the OM, <code>om$model_options$simulae_observations = TRUE</code> should be specified. Additionally, a list of observation parameters also needs to be defined. Required observation parameters include:</p>
 <p>Required items in the obs_pars list are:</p>
 <ul>
-<li><code>is_survey</code>: indicates whether a given fleet is a fishing
-fleet or survey fleet (0 indicates a fishing fleet, 1 indicates a
-scientific survey)</li>
+<li><code>is_survey</code>: indicates whether a given fleet is a fishing fleet or survey fleet (0 indicates a fishing fleet, 1 indicates a scientific survey)</li>
 <li><code>qs</code>: catchability coefficients</li>
-<li><code>rpn</code>: whether to generate a relative population number
-(RPN) index (0 = no, 1 = yes)</li>
-<li><code>rpw</code>: whether to generate a relative population weight
-(RPW) index (0 = no, 1 = yes)</li>
-<li><code>rpn_cv</code>: a coefficient of variation (CV) to use when
-generating RPN observations</li>
-<li><code>rpw_cv</code>: a coefficient of variation (CV) to use when
-generating RPW observations</li>
-<li><code>acs</code>: whether to generate age composition observations
-(0 = no, 1 = yes)</li>
-<li><code>ac_samps</code>: number of samples to use when generating age
-composition observations</li>
-<li><code>ac_as_integers</code>: whether age composition observations
-should be provided as integers or proportions (0 = no, 1 = yes)</li>
-<li><code>acs_agg_sex</code>: whether age composition observations
-should be aggregated by sex (0 = no, 1 = yes)</li>
+<li><code>rpn</code>: whether to generate a relative population number (RPN) index (0 = no, 1 = yes)</li>
+<li><code>rpw</code>: whether to generate a relative population weight (RPW) index (0 = no, 1 = yes)</li>
+<li><code>rpn_cv</code>: a coefficient of variation (CV) to use when generating RPN observations</li>
+<li><code>rpw_cv</code>: a coefficient of variation (CV) to use when generating RPW observations</li>
+<li><code>acs</code>: whether to generate age composition observations (0 = no, 1 = yes)</li>
+<li><code>ac_samps</code>: number of samples to use when generating age composition observations</li>
+<li><code>ac_as_integers</code>: whether age composition observations should be provided as integers or proportions (0 = no, 1 = yes)</li>
+<li><code>acs_agg_sex</code>: whether age composition observations should be aggregated by sex (0 = no, 1 = yes)</li>
 </ul>
-<p>While not required, when used within the wider MSE simulation loop,
-the OM should always be parameterized to yield observations, so that
-observation data is available to the estimation method submodule of the
-MSE.</p>
-<p>The types of observations (RPN, RPW, age compositions, etc.)
-specified in the provided <code>sable_om$model_options$obs_pars</code>
-object should be retained when used in the MSE simulation loop to ensure
-compatability with the estimation model.</p>
+<p>While not required, when used within the wider MSE simulation loop, the OM should always be parameterized to yield observations, so that observation data is available to the estimation method submodule of the MSE.</p>
+<p>The types of observations (RPN, RPW, age compositions, etc.) specified in the provided <code>sable_om$model_options$obs_pars</code> object should be retained when used in the MSE simulation loop to ensure compatibility with the estimation model.</p>
 </div>
 <div id="the-full-operating-model-object" class="section level3">
 <h3>The Full Operating Model Object</h3>
-<p>A fully parameterized OM object, <code>sable_om</code>, is available
-through the <code>SablefishMSE</code> package. This OM object contains a
-full set of demographic parameter matrices, observation process
-parameters, and an array of initial numbers-at-age.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>sable_om <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="fu">file.path</span>(here<span class="sc">::</span><span class="fu">here</span>(), <span class="st">&quot;data&quot;</span>, <span class="st">&quot;sablefish_om_big.RDS&quot;</span>))</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>sable_om<span class="sc">$</span>dem_params</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>sable_om<span class="sc">$</span>model_options<span class="sc">$</span>obs_pars</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>sable_om<span class="sc">$</span>init_naa</span></code></pre></div>
-<p>The provided <code>sable_om</code> object defines an OM object
-compatible with <code>afscOM</code>, however, an additional component
-that defines how future recruitment is to be simulated is required for
-use within the MSE simulation loop. For more information on specifying
-future recruitment, see the <a href="02_recruitment.html">Defining
-Recruitment Functions Page</a>.</p>
+<p>A fully parameterized OM object, <code>sable_om</code>, is available through the <code>SablefishMSE</code> package. This OM object contains a full set of demographic parameter matrices, observation process parameters, and an array of initial numbers-at-age.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>sable_om <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="fu">file.path</span>(here<span class="sc">::</span><span class="fu">here</span>(), <span class="st">&quot;data&quot;</span>, <span class="st">&quot;sablefish_om_big.RDS&quot;</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>sable_om<span class="sc">$</span>dem_params</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>sable_om<span class="sc">$</span>model_options<span class="sc">$</span>obs_pars</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sable_om<span class="sc">$</span>init_naa</span></code></pre></div>
+<p>The provided <code>sable_om</code> object defines an OM object compatible with <code>afscOM</code>, however, an additional component that defines how future recruitment is to be simulated is required for use within the MSE simulation loop. For more information on specifying future recruitment, see the <a href="02_recruitment.html">Defining Recruitment Functions Page</a>.</p>
 </div>
 
 

@@ -29,26 +29,25 @@ document.addEventListener('DOMContentLoaded', function(e) {
 </script>
 
 <style type="text/css">
-code{white-space: pre-wrap;}
-span.smallcaps{font-variant: small-caps;}
-span.underline{text-decoration: underline;}
-div.column{display: inline-block; vertical-align: top; width: 50%;}
-div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-ul.task-list{list-style: none;}
-</style>
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 
 <style type="text/css">
-code {
-white-space: pre;
-}
-.sourceCode {
-overflow: visible;
-}
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
 </style>
 <style type="text/css" data-origin="pandoc">
-html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -64,54 +63,55 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-{ counter-reset: source-line 0; }
+  { counter-reset: source-line 0; }
 pre.numberSource code > span
-{ position: relative; left: -4em; counter-increment: source-line; }
+  { position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-{ content: counter(source-line);
-position: relative; left: -1em; text-align: right; vertical-align: baseline;
-border: none; display: inline-block;
--webkit-touch-callout: none; -webkit-user-select: none;
--khtml-user-select: none; -moz-user-select: none;
--ms-user-select: none; user-select: none;
-padding: 0 4px; width: 4em;
-color: #aaaaaa;
-}
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-{ }
+  {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } 
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.at { color: #7d9029; } 
-code span.bn { color: #40a070; } 
-code span.bu { color: #008000; } 
-code span.cf { color: #007020; font-weight: bold; } 
-code span.ch { color: #4070a0; } 
-code span.cn { color: #880000; } 
-code span.co { color: #60a0b0; font-style: italic; } 
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.do { color: #ba2121; font-style: italic; } 
-code span.dt { color: #902000; } 
-code span.dv { color: #40a070; } 
-code span.er { color: #ff0000; font-weight: bold; } 
-code span.ex { } 
-code span.fl { color: #40a070; } 
-code span.fu { color: #06287e; } 
-code span.im { color: #008000; font-weight: bold; } 
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.kw { color: #007020; font-weight: bold; } 
-code span.op { color: #666666; } 
-code span.ot { color: #007020; } 
-code span.pp { color: #bc7a00; } 
-code span.sc { color: #4070a0; } 
-code span.ss { color: #bb6688; } 
-code span.st { color: #4070a0; } 
-code span.va { color: #19177c; } 
-code span.vs { color: #4070a0; } 
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -341,250 +341,165 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<p>As part of the operating model (OM) list object (<code>om</code>)
-that is a required input to the MSE simulation function, users must
-specify a recruitment function as well as relevant parameter values for
-the OM to project future recruitment. Some simple recruitment functions
-are prepackaged with the model – a Beverton-Holt stock recruit function,
-a function that resamples from a historical recruitment timeseries, and
-two different functions that specify distinct recruitment regimes – but
-users are also able to specify their own custom recruitment functions,
-as necesarry.</p>
+<p>As part of the operating model (OM) list object (<code>om</code>) that is a required input to the MSE simulation function, users must specify a recruitment function as well as relevant parameter values for the OM to project future recruitment. Some simple recruitment functions are prepackaged with the model – a Beverton-Holt stock recruit function, a function that resamples from a historical recruitment timeseries, and two different functions that specify distinct recruitment regimes – but users are also able to specify their own custom recruitment functions, as necessary.</p>
 <div id="the-recruitment-object" class="section level3">
 <h3>The Recruitment Object</h3>
-<p>The recruitment list object requires two components: (1) a reference
-to an R function that specifies how future recruitment is to be
-generated, and (2) a list of parameters values to pass to said
-function.</p>
-<p>In the most simple case (as in the example below), future recruitment
-is generated from the <code>recruit_func</code> function, which simply
-returns a recruitment of “10” for the next 100 years.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>recruit_func <span class="ot">&lt;-</span> <span class="cf">function</span>(nyears){</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">rep</span>(<span class="dv">10</span>, nyears))</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>}</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>recruitment_obj <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>    <span class="co"># function from which to generate future recruitment events</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>    <span class="at">func =</span> recruit_func,</span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>    <span class="co"># extra parameters to pass to `func`</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>    <span class="at">pars =</span> <span class="fu">list</span>(</span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>        <span class="at">nyears =</span> <span class="dv">100</span></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>    )</span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>)</span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>om<span class="sc">$</span>recruitment <span class="ot">&lt;-</span> recruitment_obj</span></code></pre></div>
-<p>Recruitment functions can be as complicated as necesarry, and can
-also make use of annual population state variables, such as spawning
-biomass. Examples are more complex recruitment functions are available
-at the end of this page.</p>
+<p>The recruitment list object requires two components: (1) a reference to an R function that specifies how future recruitment is to be generated, and (2) a list of parameters values to pass to said function.</p>
+<p>In the most simple case (as in the example below), future recruitment is generated from the <code>recruit_func</code> function, which simply returns a recruitment of “10” for the next 100 years.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>recruit_func <span class="ot">&lt;-</span> <span class="cf">function</span>(nyears){</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">rep</span>(<span class="dv">10</span>, nyears))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>recruitment_obj <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># function from which to generate future recruitment events</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">func =</span> recruit_func,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># extra parameters to pass to `func`</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">pars =</span> <span class="fu">list</span>(</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">nyears =</span> <span class="dv">100</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>om<span class="sc">$</span>recruitment <span class="ot">&lt;-</span> recruitment_obj</span></code></pre></div>
+<p>Recruitment functions can be as complicated as necessary, and can also make use of annual population state variables, such as spawning biomass. Examples of more complex recruitment functions are available at the end of this page.</p>
 </div>
 <div id="provided-recruitment-functions" class="section level3">
 <h3>Provided Recruitment Functions</h3>
-<p>Five generic recruitment functions are provided as part of the
-<code>SablefishMSE</code> package. They cover four common ways to
-simulate future fisheries recruitment.</p>
+<p>Five generic recruitment functions are provided as part of the <code>SablefishMSE</code> package. They cover four common ways to simulate future fisheries recruitment.</p>
 <div id="resample-recruitment" class="section level5">
 <h5>Resample Recruitment</h5>
-<p>The first provided recruitment function generates future recruitment
-by resampling from a vector of provided values. Most often, the vector
-being resampled from is a vector of historical recruitment events, but
-can also include other values.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>func <span class="ot">&lt;-</span> resample_recruits</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="co"># vector of values to resample from</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="at">hist_recruits =</span> hist_recruits,</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="co"># number of years to generate future recruitment for</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="at">nyears =</span> nyears</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>)</span></code></pre></div>
+<p>The first provided recruitment function generates future recruitment by resampling from a vector of provided values. Most often, the vector being resampled from is a vector of historical recruitment events, but can also include other values.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>func <span class="ot">&lt;-</span> resample_recruits</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># vector of values to resample from</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">hist_recruits =</span> hist_recruits,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># number of years to generate future recruitment for</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">nyears =</span> nyears</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="beverton-holt-recruitment" class="section level5">
 <h5>Beverton-Holt Recruitment</h5>
-<p>The second provided recruitment function generates future recruitment
-via a Beverton-Holt stock recruitment relationship (Beverton and Holt,
-1957), parameterized using steepness. The Beverton-Holt function is
-defined as:</p>
-<p><span class="math inline">\(R_y =
-\frac{4hR_0\text{SSB}_{y-1}}{(1-h)S_0 +
-(5h-1)\text{SSB}_{y-1}}\)</span></p>
-<p>where <span class="math inline">\(h\)</span> is steepness, <span class="math inline">\(S_0\)</span> is unfished spawning biomass, <span class="math inline">\(R_0\)</span> is unfished recruitment, and <span class="math inline">\(\text{SSB}\)</span> is the current spawning stock
-biomass. Lognormally distributed deviations from the base stock recruit
-relationship, with recruitment variation <span class="math inline">\(\sigma_R = 1.20\)</span>, are also applied.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>func <span class="ot">&lt;-</span> beverton_holt</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    <span class="at">h =</span> <span class="fl">0.85</span>,   <span class="co"># steepness</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    <span class="at">R0 =</span> <span class="dv">15</span>,    <span class="co"># unfished recruitment</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    <span class="at">S0 =</span> <span class="dv">300</span>,   <span class="co"># unfished spawning biomass</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    <span class="at">sigR =</span> <span class="fl">1.20</span> <span class="co"># recruitment variability</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>)</span></code></pre></div>
-<p>Annual spawning biomass (SSB) is passed to the underlying
-<code>beverton_holt</code> function automatically inside the MSE
-simulation loop.</p>
+<p>The second provided recruitment function generates future recruitment via a Beverton-Holt stock recruitment relationship (Beverton and Holt, 1957), parameterized using steepness. The Beverton-Holt function is defined as:</p>
+<p><span class="math inline">\(R_y = \frac{4hR_0\text{SSB}_{y-1}}{(1-h)S_0 + (5h-1)\text{SSB}_{y-1}}\)</span></p>
+<p>where <span class="math inline">\(h\)</span> is steepness, <span class="math inline">\(S_0\)</span> is unfished spawning biomass, <span class="math inline">\(R_0\)</span> is unfished recruitment, and <span class="math inline">\(\text{SSB}\)</span> is the current spawning stock biomass. Lognormally distributed deviations from the base stock recruit relationship, with recruitment variation <span class="math inline">\(\sigma_R = 1.20\)</span>, are also applied.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>func <span class="ot">&lt;-</span> beverton_holt</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">h =</span> <span class="fl">0.85</span>,   <span class="co"># steepness</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">R0 =</span> <span class="dv">15</span>,    <span class="co"># unfished recruitment</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">S0 =</span> <span class="dv">300</span>,   <span class="co"># unfished spawning biomass</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sigR =</span> <span class="fl">1.20</span> <span class="co"># recruitment variability</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>Annual spawning biomass (SSB) is passed to the underlying <code>beverton_holt</code> function automatically inside the MSE simulation loop.</p>
 </div>
 <div id="regime-recruitment" class="section level5">
 <h5>Regime Recruitment</h5>
-<p>The third and fourth provided recruitment functions generate future
-recruitment in distinct alternating regimes. Users have the ability to
-control the length, order, and relative strength of the two regimes.</p>
-<p>The first regime recruitment function works similarly to the simpler
-<code>resample_recruits</code> function in that it resamples from
-distinct vectors of values depending on which regime is active.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>func <span class="ot">&lt;-</span> resample_regime_recruits</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>    <span class="co"># Vector of recruits to resample from in regime 1</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="at">regime1_recruits =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">25</span>, <span class="dv">1</span>)],</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    <span class="co"># Vector of recruits to resample from in regime 2</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    <span class="at">regime2_recruits =</span> <span class="fu">seq</span>(<span class="dv">60</span>, <span class="dv">100</span>, <span class="dv">10</span>),</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    <span class="co"># Total number of years to generate future recruitment for</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>    <span class="at">nyears =</span> nyears,</span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>    <span class="co"># Lengths of each regime</span></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="at">regime_length =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">5</span>),</span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>    <span class="co"># Start with the first regime</span></span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>    <span class="at">starting_regime =</span> <span class="dv">0</span></span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>)</span></code></pre></div>
-<p>The second regime recruitment function works by parameterizing two
-separate Beverton-Holt stock recruit relationships, differing in their
-value of unfished recruitment (<span class="math inline">\(R_0\)</span>).</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>func <span class="ot">&lt;-</span> bevholt_regimes</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="co"># steepness</span></span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">h =</span> <span class="fl">0.85</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="co"># spawning biomass per recruit (to calculate regime specific S0)</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    <span class="at">sbpr =</span> <span class="dv">20</span>,                </span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>    <span class="co"># Regime specfic R0</span></span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>    <span class="at">R0 =</span> <span class="fu">c</span>(<span class="fl">12.5</span>, <span class="dv">50</span>),           </span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>    <span class="co"># Regime specific recruitment variability</span></span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>    <span class="at">sigR =</span> <span class="fu">c</span>(<span class="fl">1.20</span>, <span class="fl">1.20</span>),       </span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>    <span class="co"># Total number of years to generate future recruitment for</span></span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="at">nyears =</span> nyears,            </span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="co"># Lengths of each regime</span></span>
-<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>    <span class="at">regime_length =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">5</span>),   </span>
-<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>    <span class="co"># Start with first regim</span></span>
-<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>    <span class="at">starting_regime =</span> <span class="dv">0</span></span>
-<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>)</span></code></pre></div>
+<p>The third and fourth provided recruitment functions generate future recruitment in distinct alternating regimes. Users have the ability to control the length, order, and relative strength of the two regimes.</p>
+<p>The first regime recruitment function works similarly to the simpler <code>resample_recruits</code> function in that it resamples from distinct vectors of values depending on which regime is active.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>func <span class="ot">&lt;-</span> resample_regime_recruits</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Vector of recruits to resample from in regime 1</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">regime1_recruits =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">25</span>, <span class="dv">1</span>)],</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Vector of recruits to resample from in regime 2</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">regime2_recruits =</span> <span class="fu">seq</span>(<span class="dv">60</span>, <span class="dv">100</span>, <span class="dv">10</span>),</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Total number of years to generate future recruitment for</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">nyears =</span> nyears,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Lengths of each regime</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">regime_length =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">5</span>),</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Start with the first regime</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">starting_regime =</span> <span class="dv">0</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>The second regime recruitment function works by parameterizing two separate Beverton-Holt stock recruit relationships, differing in their value of unfished recruitment (<span class="math inline">\(R_0\)</span>).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>func <span class="ot">&lt;-</span> bevholt_regimes</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># steepness</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">h =</span> <span class="fl">0.85</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># spawning biomass per recruit (to calculate regime specific S0)</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sbpr =</span> <span class="dv">20</span>,                </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Regime specfic R0</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">R0 =</span> <span class="fu">c</span>(<span class="fl">12.5</span>, <span class="dv">50</span>),           </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Regime specific recruitment variability</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">sigR =</span> <span class="fu">c</span>(<span class="fl">1.20</span>, <span class="fl">1.20</span>),       </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Total number of years to generate future recruitment for</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">nyears =</span> nyears,            </span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Lengths of each regime</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">regime_length =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">5</span>),   </span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Start with first regim</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">starting_regime =</span> <span class="dv">0</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="crash-recruitment" class="section level5">
 <h5>Crash Recruitment</h5>
-<p>The final provided recruitment fuction generates future recruitment
-through resampling, as in the “Resample Recruitment” option, but with a
-defined period where recruitment is different. This different period can
-be used to simulate a period depressed recruitment (e.g. a recruitment
-crash) or a period of amplified recruitment (e.g. a recruitment boom),
-depending on how it is parameterized. Users can specify the simulation
-year in which the alterntaive recruitment period begins, the length of
-that period, and the mean value of recruitment during that period.
-During the alternative recruitment period, lognormal deviations about
-the specified mean recruitment are applied using a <span class="math inline">\(\text{CV}=0.1\)</span>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>func <span class="ot">&lt;-</span> recruits_crash</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="co"># Start a crash period in simulation years 1</span></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    <span class="at">crash_start_year =</span> <span class="dv">1</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="co"># 20-year crash period</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    <span class="at">crash_length =</span> <span class="dv">20</span>,</span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>    <span class="co"># Use minimum historical recruitment as average crash recruitment level</span></span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>    <span class="at">crash_value =</span> <span class="fu">min</span>(hist_recruits),</span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>    <span class="co"># recruitment vector to resample from outside of the &quot;crash period&quot;</span></span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>    <span class="at">hist_recruits =</span> hist_recruits,</span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>    <span class="co"># Total number of years to generte future recruitment for</span></span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>    <span class="at">nyears =</span> nyears</span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>)</span></code></pre></div>
+<p>The final provided recruitment function generates future recruitment through resampling, as in the “Resample Recruitment” option, but with a defined period where recruitment is different. This different period can be used to simulate a period depressed recruitment (e.g. a recruitment crash) or a period of amplified recruitment (e.g. a recruitment boom), depending on how it is parameterized. Users can specify the simulation year in which the alternative recruitment period begins, the length of that period, and the mean value of recruitment during that period. During the alternative recruitment period, lognormal deviations about the specified mean recruitment are applied using a <span class="math inline">\(\text{CV}=0.1\)</span>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>func <span class="ot">&lt;-</span> recruits_crash</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>om<span class="sc">$</span>recruitment<span class="sc">$</span>pars <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Start a crash period in simulation years 1</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">crash_start_year =</span> <span class="dv">1</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 20-year crash period</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">crash_length =</span> <span class="dv">20</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Use minimum historical recruitment as average crash recruitment level</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">crash_value =</span> <span class="fu">min</span>(hist_recruits),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># recruitment vector to resample from outside of the &quot;crash period&quot;</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">hist_recruits =</span> hist_recruits,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Total number of years to generte future recruitment for</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">nyears =</span> nyears</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 </div>
 <div id="custom-recruitment-functions" class="section level3">
 <h3>Custom Recruitment Functions</h3>
 <div id="required-parameters" class="section level5">
 <h5>Required Parameters</h5>
-<p>The only required parameter for custom recruitment functions is a
-<code>seed</code> parameter, corresponding to a random seed. This is
-used to ensure that future recruitment vectors are reproducible across
-simulations. Note that while this <code>seed</code> parameter is a
-required input to the function, it does not need to be specified in the
-<code>recruitment$pars</code> list object. Instead, the MSE simulation
-loop will automatically pass the appropriate seed value to the
-recruitment function internally.</p>
+<p>The only required parameter for custom recruitment functions is a <code>seed</code> parameter, corresponding to a random seed. This is used to ensure that future recruitment vectors are reproducible across simulations. Note that while this <code>seed</code> parameter is a required input to the function, it does not need to be specified in the <code>recruitment$pars</code> list object. Instead, the MSE simulation loop will automatically pass the appropriate seed value to the recruitment function internally.</p>
 </div>
 <div id="state-independent-recruitment-functions" class="section level5">
 <h5>State-Independent Recruitment Functions</h5>
-<p>State-independent recruitment functions are those that do not require
-knowledge of the current state of the population to generate future
-recruitments. These functions have the benefit of being able to generate
-all future recruitment events before entering the simulation loop. The
-<code>resample_recruitment</code> and <code>crash_recruitment</code>
-functions are examples of such state-independent recruitment
-functions.</p>
-<p>As a extension of the provided <code>resample_recruits</code>
-functions, we provide the following example. Here, future recruitment is
-randomly resampled from a vector of historical recruitment events, with
-some weights applied, creating a new vector of recruitment for the next
-100 years.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>weighted_resample_recruitment <span class="ot">&lt;-</span> <span class="cf">function</span>(hist_recruits, nyears, weights, seed){</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>    <span class="fu">set.seed</span>(seed)</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    r <span class="ot">&lt;-</span> <span class="fu">sample</span>(hist_recruits, nyears, <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span>weights)</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="fu">return</span>(r)</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>}</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>recruitment_obj <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>    <span class="co"># function from which to generate future recruitment events</span></span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>    <span class="at">func =</span> recruit_func,</span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>    <span class="co"># extra parameters to pass to `func`</span></span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>    <span class="at">pars =</span> <span class="fu">list</span>(</span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>        <span class="at">hist_recruits =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">100</span>, <span class="dv">5</span>)</span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>        <span class="at">nyears =</span> <span class="dv">100</span>,</span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>        <span class="at">weights =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="fl">0.025</span>, <span class="dv">10</span>), <span class="fu">rep</span>(<span class="fl">0.05</span>, <span class="dv">10</span>))</span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    )</span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>)</span>
-<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a></span>
-<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>om<span class="sc">$</span>recruitment <span class="ot">&lt;-</span> recruitment_obj</span></code></pre></div>
+<p>State-independent recruitment functions are those that do not require knowledge of the current state of the population to generate future recruitments. These functions have the benefit of being able to generate all future recruitment events before entering the simulation loop. The <code>resample_recruitment</code> and <code>crash_recruitment</code> functions are examples of such state-independent recruitment functions.</p>
+<p>As a extension of the provided <code>resample_recruits</code> functions, we provide the following example. Here, future recruitment is randomly resampled from a vector of historical recruitment events, with some weights applied, creating a new vector of recruitment for the next 100 years.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>weighted_resample_recruitment <span class="ot">&lt;-</span> <span class="cf">function</span>(hist_recruits, nyears, weights, seed){</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">set.seed</span>(seed)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    r <span class="ot">&lt;-</span> <span class="fu">sample</span>(hist_recruits, nyears, <span class="at">replace=</span><span class="cn">TRUE</span>, <span class="at">prob=</span>weights)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(r)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>recruitment_obj <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># function from which to generate future recruitment events</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">func =</span> recruit_func,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># extra parameters to pass to `func`</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">pars =</span> <span class="fu">list</span>(</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">hist_recruits =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">100</span>, <span class="dv">5</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">nyears =</span> <span class="dv">100</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">weights =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="fl">0.025</span>, <span class="dv">10</span>), <span class="fu">rep</span>(<span class="fl">0.05</span>, <span class="dv">10</span>))</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>om<span class="sc">$</span>recruitment <span class="ot">&lt;-</span> recruitment_obj</span></code></pre></div>
 </div>
 <div id="state-dependent-recruitment-functions" class="section level5">
 <h5>State-Dependent Recruitment Functions</h5>
-<p>State-dependent recruitment functions are those that do require
-knowledge of the current state of the population to appropiately
-generate future recruitment. These types of recruitment functions
-commonly require knowledge of annual SSB to parameterize some
-stock-recruit relationship, such as the Beverton-Holt or Ricker curves.
-The provided <code>beverton_holt</code> and <code>bevholt_regimes</code>
-functions are good examples of such state-dependent recruitment
-functions.</p>
-<p>The primary difference between defining state-dependent and
-state-independent recruitment functions is that state-dependent
-functions must be written as a <a href="https://adv-r.hadley.nz/function-factories.html">“function
-factory”</a>. Function factories are functions that parameterize, and
-then return a reference too, another function. Here, a function factory
-is used so that the parameter values of a stock recruit relationship can
-be defined by the user external to the simulation loop, and then the
-model can calculate annual SSB internally and pass that along to the
-output of the function factory.</p>
-<p>Below is an example of creating a new Bevertin-Holt style stock
-recruit relationship, this time paramterized using <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>beverton_holt_ab <span class="ot">&lt;-</span> <span class="cf">function</span>(a, b, seed){</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>    <span class="fu">set.seed</span>(seed)</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>    <span class="cf">function</span>(ssb, y){</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>        bh <span class="ot">&lt;-</span> (a<span class="sc">*</span>ssb)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">+</span>b<span class="sc">*</span>ssb)</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>        <span class="fu">return</span>(bh)</span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>    }</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>}</span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a></span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>recruitment_obj <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>    <span class="co"># reference to the beverton_holt_ab function above</span></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>    <span class="at">func =</span> beverton_holt_ab,</span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>    <span class="co"># parameter values for &#39;a&#39;, and &#39;b&#39;</span></span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>    <span class="at">pars =</span> <span class="fu">list</span>(</span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>        <span class="at">a =</span> <span class="dv">10</span></span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>        <span class="at">b =</span> <span class="dv">5</span></span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>    )</span>
-<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>)</span>
-<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a></span>
-<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>om<span class="sc">$</span>recruitment <span class="ot">&lt;-</span> recruitment_obj</span></code></pre></div>
-<p>The MSE simulation loop will handle calculating annual SSB and
-passing that value to the function factory internally.</p>
-<p>Note the lack of any variability around the stock-recruit
-relationship in the above example. For state-dependent recruitment
-functions, recruitment stochasticity is calculated and applied
-separately by the MSE simulation loop. Annual recruitment deviations are
-distributed as <span class="math inline">\(~\mathcal{N}(0,
-\sigma_R)\)</span> and are applied multiplicatively to the output from
-the above function.</p>
+<p>State-dependent recruitment functions are those that do require knowledge of the current state of the population to appropriately generate future recruitment. These types of recruitment functions commonly require knowledge of annual SSB to parameterize some stock-recruit relationship, such as the Beverton-Holt or Ricker curves. The provided <code>beverton_holt</code> and <code>bevholt_regimes</code> functions are good examples of such state-dependent recruitment functions.</p>
+<p>The primary difference between defining state-dependent and state-independent recruitment functions is that state-dependent functions must be written as a <a href="https://adv-r.hadley.nz/function-factories.html">“function factory”</a>. Function factories are functions that parameterize, and then return a reference too, another function. Here, a function factory is used so that the parameter values of a stock recruit relationship can be defined by the user external to the simulation loop, and then the model can calculate annual SSB internally and pass that along to the output of the function factory.</p>
+<p>Below is an example of creating a new Beverton-Holt style stock recruit relationship, this time parameterized using <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>beverton_holt_ab <span class="ot">&lt;-</span> <span class="cf">function</span>(a, b, seed){</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">set.seed</span>(seed)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">function</span>(ssb, y){</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        bh <span class="ot">&lt;-</span> (a<span class="sc">*</span>ssb)<span class="sc">/</span>(<span class="dv">1</span><span class="sc">+</span>b<span class="sc">*</span>ssb)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(bh)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>recruitment_obj <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># reference to the beverton_holt_ab function above</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">func =</span> beverton_holt_ab,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># parameter values for &#39;a&#39;, and &#39;b&#39;</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">pars =</span> <span class="fu">list</span>(</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">a =</span> <span class="dv">10</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">b =</span> <span class="dv">5</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>om<span class="sc">$</span>recruitment <span class="ot">&lt;-</span> recruitment_obj</span></code></pre></div>
+<p>The MSE simulation loop will handle calculating annual SSB and passing that value to the function factory internally.</p>
+<p>Note the lack of any variability around the stock-recruit relationship in the above example. For state-dependent recruitment functions, recruitment stochasticity is calculated and applied separately by the MSE simulation loop. Annual recruitment deviations are distributed as <span class="math inline">\(~\mathcal{N}(0, \sigma_R)\)</span> and are applied multiplicatively to the output from the above function.</p>
 </div>
 </div>
 

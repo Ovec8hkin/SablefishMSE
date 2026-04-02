@@ -29,26 +29,25 @@ document.addEventListener('DOMContentLoaded', function(e) {
 </script>
 
 <style type="text/css">
-code{white-space: pre-wrap;}
-span.smallcaps{font-variant: small-caps;}
-span.underline{text-decoration: underline;}
-div.column{display: inline-block; vertical-align: top; width: 50%;}
-div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-ul.task-list{list-style: none;}
-</style>
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 
 <style type="text/css">
-code {
-white-space: pre;
-}
-.sourceCode {
-overflow: visible;
-}
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
 </style>
 <style type="text/css" data-origin="pandoc">
-html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -64,54 +63,55 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-{ counter-reset: source-line 0; }
+  { counter-reset: source-line 0; }
 pre.numberSource code > span
-{ position: relative; left: -4em; counter-increment: source-line; }
+  { position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-{ content: counter(source-line);
-position: relative; left: -1em; text-align: right; vertical-align: baseline;
-border: none; display: inline-block;
--webkit-touch-callout: none; -webkit-user-select: none;
--khtml-user-select: none; -moz-user-select: none;
--ms-user-select: none; user-select: none;
-padding: 0 4px; width: 4em;
-color: #aaaaaa;
-}
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-{ }
+  {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } 
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.at { color: #7d9029; } 
-code span.bn { color: #40a070; } 
-code span.bu { color: #008000; } 
-code span.cf { color: #007020; font-weight: bold; } 
-code span.ch { color: #4070a0; } 
-code span.cn { color: #880000; } 
-code span.co { color: #60a0b0; font-style: italic; } 
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.do { color: #ba2121; font-style: italic; } 
-code span.dt { color: #902000; } 
-code span.dv { color: #40a070; } 
-code span.er { color: #ff0000; font-weight: bold; } 
-code span.ex { } 
-code span.fl { color: #40a070; } 
-code span.fu { color: #06287e; } 
-code span.im { color: #008000; font-weight: bold; } 
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
-code span.kw { color: #007020; font-weight: bold; } 
-code span.op { color: #666666; } 
-code span.ot { color: #007020; } 
-code span.pp { color: #bc7a00; } 
-code span.sc { color: #4070a0; } 
-code span.ss { color: #bb6688; } 
-code span.st { color: #4070a0; } 
-code span.va { color: #19177c; } 
-code span.vs { color: #4070a0; } 
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -341,204 +341,124 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<p>MSEs output large amounts of data – numbers-at-age across years,
-landed catch by year, fishing mortality by year, recommended harvest
-levels by year, etc. – and this data output quickly grows as the number
-of operating models (OMs), management procedures (MPs), and simulations
-grows. <code>SablefishMSE</code> provides several wrapper functions to
-faciliate easier processing of large MSE outputs and computation of
-common derived quantities (spawning biomass, total biomass, total catch,
-etc.)</p>
+<p>MSEs output large amounts of data – numbers-at-age across years, landed catch by year, fishing mortality by year, recommended harvest levels by year, etc. – and this data output quickly grows as the number of operating models (OMs), management procedures (MPs), and simulations grows. <code>SablefishMSE</code> provides several wrapper functions to facilitate easier processing of large MSE outputs and computation of common derived quantities (spawning biomass, total biomass, total catch, etc.)</p>
 <div id="mse-output-data" class="section level3">
 <h3>MSE Output Data</h3>
-<p>All three of the MSE functions (<code>run_mse</code>,
-<code>run_mse_parallel</code>, and <code>run_mse_multiple</code>) output
-the same types of data in a similar format.</p>
+<p>All three of the MSE functions (<code>run_mse</code>, <code>run_mse_parallel</code>, and <code>run_mse_multiple</code>) output the same types of data in a similar format.</p>
 <ul>
-<li><code>run_mse</code> - data is output as a named list of
-multidimensional arrays of maximum dimension
-<code>[n_proj_years+n_spinup_years, nages, nsexes, nregions, nfleets]</code>.</li>
-<li><code>run_mse_parallel</code> - data is output as a named list of
-multidimensional arrays the same as <code>run_mse</code> but with an
-added dimension referring to the simulation</li>
-<li><code>run_mse_multiple</code> - data is output at a list of
-completed MSE simulations from <code>run_mse_parallel</code>, with each
-list element referring to one combination of OM, MP, and MSE
-option.</li>
+<li><code>run_mse</code> - data is output as a named list of multidimensional arrays of maximum dimension <code>[n_proj_years+n_spinup_years, nages, nsexes, nregions, nfleets]</code>.</li>
+<li><code>run_mse_parallel</code> - data is output as a named list of multidimensional arrays the same as <code>run_mse</code> but with an added dimension referring to the simulation</li>
+<li><code>run_mse_multiple</code> - data is output at a list of completed MSE simulations from <code>run_mse_parallel</code>, with each list element referring to one combination of OM, MP, and MSE option.</li>
 </ul>
 <div id="description-of-output-data" class="section level5">
 <h5>Description of Output Data</h5>
-<p>The following data is output with every call to <code>run_mse</code>
-and is consequently available with calls to
-<code>run_mse_parallel</code> and <code>run_mse_multiple</code>:</p>
+<p>The following data is output with every call to <code>run_mse</code> and is consequently available with calls to <code>run_mse_parallel</code> and <code>run_mse_multiple</code>:</p>
 <ul>
-<li><code>land_caa</code> - landed catch-at-age from the OM
-(<code>[nyears, nages, nsexes, nregions, nfleets]</code>)</li>
-<li><code>disc_caa</code> - discarded catch-at-age from the OM
-(<code>[nyears, nages, nsexes, nregions, nfleets]</code>)</li>
-<li><code>caa</code> - total catch-at-age (landed + discarded) from the
-OM (<code>[nyears, nages, nsexes, nregions, nfleets]</code>)</li>
-<li><code>faa</code> - fishing mortality -at-age from the OM
-(<code>[nyears, nages, nsexes, nregions, nfleets]</code>)</li>
-<li><code>faa_est</code> - fishing mortality -at-age estimated from the
-EM (<code>[nyears, nages, nsexes, nregions, nfleets]</code>)</li>
-<li><code>naa</code> - numbers-at-age from the OM
-(<code>[nyears, nages, nsexes, nregions]</code>)</li>
-<li><code>naa_est</code> - numbers-at-age estimated from the EM
-(<code>[nyears, nages, nsexes, nregions]</code>)</li>
-<li><code>hcr_f</code> - the fishing mortality recommended by the HCR
-(<code>[nyears, 1]</code>)</li>
-<li><code>abc</code> - the Acceptable Biological Catch resulting from
-applying the HCR (<code>[nyears, 1]</code>)</li>
-<li><code>tac</code> - the Total Allowable Catch resulting from applying
-the HCR and subsequent stability constraint or harvest caps
-(<code>[nyears, 1]</code>)</li>
-<li><code>exp_land</code> - the expected landings after accounting for
-partial attainment of the TAC (<code>[nyears, 1]</code>)</li>
-<li><code>global_rec_devs</code> - recruitment deviates from the OM
-(<code>[nyears, 1]</code>)</li>
+<li><code>land_caa</code> - landed catch-at-age from the OM (<code>[nyears, nages, nsexes, nregions, nfleets]</code>). Note that this is in units of weight rather than numbers.</li>
+<li><code>disc_caa</code> - discarded catch-at-age from the OM (<code>[nyears, nages, nsexes, nregions, nfleets]</code>). Note that this is in units of weight rather than numbers.</li>
+<li><code>caa</code> - total catch-at-age (landed + discarded) from the OM (<code>[nyears, nages, nsexes, nregions, nfleets]</code>). Note that this is in units of weight rather than numbers.</li>
+<li><code>faa</code> - fishing mortality -at-age from the OM (<code>[nyears, nages, nsexes, nregions, nfleets]</code>)</li>
+<li><code>faa_est</code> - fishing mortality -at-age estimated from the EM (<code>[nyears, nages, nsexes, nregions, nfleets]</code>)</li>
+<li><code>naa</code> - numbers-at-age from the OM (<code>[nyears, nages, nsexes, nregions]</code>)</li>
+<li><code>naa_est</code> - numbers-at-age estimated from the EM (<code>[nyears, nages, nsexes, nregions]</code>)</li>
+<li><code>hcr_f</code> - the fishing mortality recommended by the HCR (<code>[n_proj_years, 1]</code>)</li>
+<li><code>abc</code> - the Acceptable Biological Catch resulting from applying the HCR (<code>[n_proj_years, 1]</code>)</li>
+<li><code>tac</code> - the Total Allowable Catch resulting from applying the HCR and subsequent stability constraint or harvest caps (<code>[n_proj_years, 1]</code>)</li>
+<li><code>exp_land</code> - the expected landings after accounting for partial attainment of the TAC (<code>[n_proj_years, 1]</code>)</li>
+<li><code>global_rec_devs</code> - recruitment deviates from the OM (<code>[nyears, 1]</code>)</li>
 </ul>
-<p>Additionally, if <code>diagnostics=TRUE</code> for
-<code>run_mse_parallel</code> or <code>run_mse_multiple</code>, the
-following outputs are also available:</p>
+<p>Additionally, if <code>diagnostics=TRUE</code> for <code>run_mse_parallel</code> or <code>run_mse_multiple</code>, the following outputs are also available:</p>
 <ul>
 <li><code>survey_obs</code> - observation data generated by the OM</li>
 <li><code>model_outs</code> - completed TMB model objects</li>
 </ul>
-<p>The functions discussed below were not developed with the intent to
-be used on the <code>survey_obs</code> or <code>model_outs</code> output
-datatypes.</p>
+<p>The functions discussed below were not developed with the intent to be used on the <code>survey_obs</code> or <code>model_outs</code> output data types.</p>
 </div>
 </div>
 <div id="reading-mse-output-from-a-file" class="section level3">
 <h3>Reading MSE Output from a File</h3>
-<p>If <code>run_mse_multiple</code> is used, users can optionally
-specify <code>save=TRUE</code> to save MSE outputs to a file. These
-outputs can be read back into R using the provided
-<code>get_saved_model_runs</code> function:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>model_runs <span class="ot">&lt;-</span> <span class="fu">get_saved_model_runs</span>()</span></code></pre></div>
-</div>
-<div id="bind_mse_outputs" class="section level3">
-<h3><code>bind_mse_outputs</code></h3>
-<p>Because users will frequently deal with data of up to 8 dimensions
-(<code>[nyears, nages, nsexes, nregions, nfleets, nsims, nMPs, nOMs]</code>),
-spread across multiple list objects, a helper function has been provided
-to faciliate collating specific data outputs across all available MSE
-models: <code>bind_mse_outputs</code>.</p>
-<p>The <code>bind_mse_outputs</code> function takes a list of a
-completed MSE model runs (e.g. the output from a finished call to
-<code>run_mse_multiple</code>), a vector of outputs to collect
-(e.g. <code>naa</code>, <code>faa</code>, etc.), and a
-<code>data.frame</code> specifying additional data to append to the
-output. The function will collate the specified outputs from across the
-completed model runs into a long format <code>data.frame</code>, with
-additional columns added to specify the MP and OM the data is from.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">bind_mse_outputs</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>    <span class="at">model_runs=</span>model_runs, </span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="at">var=</span><span class="fu">c</span>(<span class="st">&quot;naa&quot;</span>),</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="at">extra_columns=</span><span class="fu">expand.grid</span>(</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>        <span class="at">om=</span><span class="fu">c</span>(<span class="st">&quot;OM1&quot;</span>, <span class="st">&quot;OM2&quot;</span>), </span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>        <span class="at">hcr=</span><span class="fu">c</span>(<span class="st">&quot;MP1&quot;</span>, <span class="st">&quot;MP2&quot;</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    )</span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>)</span></code></pre></div>
-<p>The <code>extra_columns</code> parameter allows users to specify what
-OM and MP (or HCR) each model run corresponds too. We recommended using
-<code>expand.grid</code> to do this, as it mimics how the factorial grid
-is created in <code>run_mse_multiple</code>, and ensures that the data
-is correctly associated with the OM and MP combination that generated
-it. Generally, the <code>expand.grid</code> call should also be ordered
-as: <code>om</code>, <code>hcr</code>, and <code>options</code>.</p>
+<p>If <code>run_mse_multiple</code> is used, users can optionally specify <code>save=TRUE</code> to save MSE outputs to a file. These outputs can be read back into R using the provided <code>get_saved_model_runs</code> function. Specifying the name of the OMS and MPs to read back from file as a vector will filter the files read back in to only those that match the specified OMS and MPs. If no filters are provided, all saved model runs will be read back in:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>om_filter <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;OM1&quot;</span>, <span class="st">&quot;OM2&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>hcr_filter <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;MP1&quot;</span>, <span class="st">&quot;MP2&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>model_runs <span class="ot">&lt;-</span> <span class="fu">get_saved_model_runs</span>(<span class="at">om_filter=</span>om_filter, <span class="at">hcr_filter=</span>hcr_filter)</span></code></pre></div>
+<p>This function returns a list of two objects: <code>model_runs</code>, which is a list of the MSE output data for each model run, and <code>extra_columns</code>, which is a <code>data.frame</code> containing the OM and MP names corresponding to each model run.</p>
+<p>Depending on the number of model runs being read back in, this function often takes several minutes to complete. For very large numbers of models, it is not possible to read all model runs back into R at once. In such scenarios, existing MSE processing functions (see below) can be used to process data file-by-file, and then combine and summarize across files at the end.</p>
 </div>
 <div id="existing-mse-processing-functions" class="section level3">
 <h3>Existing MSE Processing Functions</h3>
-<p>Several processing functions are available through the
-<code>SablefishMSE</code> package allowing for easy computation of
-common fisheries quantities. All functions generally accept the same
-parameters, and return a long format <code>tibble</code>.</p>
+<p>Several processing functions are available through the <code>SablefishMSE</code> package allowing for easy computation of common fisheries quantities.</p>
 <ul>
-<li><code>get_ssb_biomass</code> - calculates spawning biomass (SSB) and
-total biomass for every year across all model runs and simulations.</li>
-<li><code>get_fishing_mortalities</code> - calculates fleet-specific and
-total fishing mortality for every year across all model runs and
-simulations. Total fishing mortality is assumed to be the maximum
-age-specific fishing mortality aggregated across fleets.</li>
-<li><code>get_recruits</code> - calculates recruitment for every year
-across all model runs and simulations. This function does not handle
-recruitment deviates.</li>
-<li><code>get_landed_catch</code> - calculates fleet-specific and total
-landed catch for every year across all model runs and simulations.</li>
-<li><code>get_management_quantities</code> - aggregates ABC, TAC, and
-expected landings data for every year across all model runs and
-simulations. Historical ABC, TAC, and realized landings are hard coded
-into the function.</li>
-<li><code>get_reference_points</code> - calculates median
-<code>Fref</code>, <code>Bref</code>, <code>Fmax</code> and
-<code>B0</code> reference points across the simulation period across all
-models runs and simulations.</li>
-<li><code>get_*_phaseplane_data</code> - aggregates SSB and either
-realized fishing mortality (<code>get_phaseplane_data</code>), HCR
-recommended fishing mortality (<code>get_hcrphase_data</code>), or
-landed catch (<code>get_phaseplane_catch_data</code>) for all years
-across all model runs and simulations.</li>
+<li><code>get_ssb_biomass</code> - calculates spawning biomass (SSB) and total biomass for every year across all model runs and simulations.</li>
+<li><code>get_fishing_mortalities</code> - calculates fleet-specific and total fishing mortality for every year across all model runs and simulations. Total fishing mortality is assumed to be the maximum age-specific fishing mortality aggregated across fleets.</li>
+<li><code>get_recruits</code> - calculates recruitment for every year across all model runs and simulations. This function does not handle recruitment deviates.</li>
+<li><code>get_landed_catch</code> - calculates fleet-specific and total landed catch for every year across all model runs and simulations.</li>
+<li><code>get_dynamic_economic_value</code> - calculates annual economic value of the fixed gear fleet using a dynamic price model that assumes prices decline with total catch volume (see Goethel et al. 2025 for details on the price model).</li>
+<li><code>get_average age</code> - calculates average age of the population for every year across all model runs and simulations.</li>
+<li><code>get_abi</code> - calculates population ABI (Griffiths et al. 2023) for every year across all model runs and simulations.</li>
+<li><code>get_management_quantities</code> - aggregates ABC, TAC, and expected landings data for every year across all model runs and simulations. Historical ABC, TAC, and realized landings are hard coded into the function.</li>
 </ul>
+<!-- - `get_reference_points` - calculates median `Fref`, `Bref`, `Fmax` and `B0` reference points across the simulation period across all models runs and simulations. -->
+<p>All functions generally accept the same parameters, and return a long format <code>tibble</code>. The first two parameters, <code>model_runs</code> and <code>extra_columns</code>, are outputs of <code>get_saved_model_runs</code> and are required for all functions. If <code>model_runs=NULL</code>, the function will attempt to iteratively read in and apply the underlying the process function to, each saved model run file as appropriate. When <code>model_runs=NULL</code>, the <code>extra_columns</code> parameter must stll be provided as a <code>data.frame</code> containing the OM and MP names corresponding to each model run file; this is most easily accomplished as <code>extra_columns = expand.grid(om=om_filter, hcr=hcr_filter)</code>.</p>
+<p>The <code>om_filter</code> and <code>hcr_filter</code> parameters can be used to specify which OMs and MPs to read in and process.</p>
+<p>Additional parameters may be required for some functions.</p>
+<p>For example:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>om_filter <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;OM1&quot;</span>, <span class="st">&quot;OM2&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>hcr_filter <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;MP1&quot;</span>, <span class="st">&quot;MP2&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>mse_runs <span class="ot">&lt;-</span> <span class="fu">get_saved_model_runs</span>(<span class="at">om_filter=</span>om_filter, <span class="at">hcr_filter=</span>hcr_filter)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>model_runs <span class="ot">&lt;-</span> mse_runs<span class="sc">$</span>model_runs</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>extra_columns <span class="ot">&lt;-</span> mse_runs<span class="sc">$</span>extra_columns</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate SSB and total biomass across all model runs and simulations</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>ssb_biomass <span class="ot">&lt;-</span> <span class="fu">get_ssb_biomass</span>(<span class="at">model_runs=</span>model_runs, <span class="at">extra_columns=</span>extra_columns, om1<span class="sc">$</span>dem_params, <span class="at">om_filter=</span>om_filter, <span class="at">hcr_filter=</span>hcr_filter)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternatively, if `get_saved_model_runs` is not used</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(model_runs, extra_columns)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>mse_runs <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Itertaively read in and process each model run file as appropriate</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>ssb_biomass <span class="ot">&lt;-</span> <span class="fu">get_ssb_biomass</span>(<span class="at">model_runs=</span><span class="cn">NULL</span>, <span class="at">extra_columns=</span><span class="cn">NULL</span>, om1<span class="sc">$</span>dem_params, <span class="at">om_filter=</span>om_filter, <span class="at">hcr_filter=</span>hcr_filter)</span></code></pre></div>
 </div>
 <div id="performance-metrics" class="section level3">
 <h3>Performance Metrics</h3>
-<p>Many functions are available for calculating common and
-sablefish-specific performance metrics from MSE output data. All
-functions calculate their performance metric across the projection
-period only, and across all model runs.</p>
+<p>Many functions are available for calculating common and sablefish-specific performance metrics from MSE output data. All functions calculate their performance metric across the projection period only, and across all model runs.</p>
 <ul>
 <li><code>average_catch</code> - average annual catch</li>
-<li><code>total_catch</code> - total catch (sum of catch over all
-years)</li>
-<li><code>prop_years_catch</code> - proportion of projection years in
-which catch exceeded some threshold value</li>
-<li><code>average_ssb</code> - average annual spanwing biomass</li>
-<li><code>prop_low_biomass</code> - proportion of projection years in
-which SSB was <span class="math inline">\(&lt;0.4\text{SSB}_{1960}\)</span></li>
-<li><code>average_age</code> - average age of an individual in the
-population</li>
-<li><code>average_abi</code> - average ABI of the population (Griffiths
-et al. 2023)</li>
-<li><code>average_proportion_catch_large</code> - average annual
-proportion of the landed catch &gt;9yo</li>
-<li><code>average_proportion_biomass_old</code> - average annual
-proportion of the biomass &gt;21yo</li>
-<li><code>annual_value</code> - average annual value of the catch
-assuming a fixed relative price per age class</li>
-<li><code>dynamic_annual_value</code> - average annual value of the
-catch assuming prices fluctuate with landed catch volume</li>
-<li><code>biomass_crash_time</code> - average time required for the SSB
-to decline to <span class="math inline">\(&lt;0.20\text{SSB}_{1960}\)</span>. This metric is
-only calculated over the first 20 years of the projection period.</li>
-<li><code>biomass_recovery_time</code> - average time required for the
-SSB to recover to <span class="math inline">\(&gt;0.40\text{SSB}_{1960}\)</span>. This metric is
-calculated starting year 21 of the projection period.</li>
+<li><code>total_catch</code> - total catch (sum of catch over all years)</li>
+<li><code>prop_years_catch</code> - proportion of projection years in which catch exceeded some threshold value</li>
+<li><code>average_ssb</code> - average annual spawning biomass</li>
+<li><code>prop_low_biomass</code> - proportion of projection years in which SSB was <span class="math inline">\(&lt;0.35\text{SSB}_{1960}\)</span></li>
+<li><code>time_below_bref</code> - average number of projection years in which SSB was $&lt;B_{ref} (where <span class="math inline">\(B_{ref}\)</span> is the MP specific biomass reference point).</li>
+<li><code>average_age</code> - average age of an individual in the population</li>
+<li><code>average_abi</code> - average ABI of the population (Griffiths et al. 2023)</li>
+<li><code>average_annual_catch_variation</code> - annual year-to-year variation in catch, calculated as the average of the absolute value of the year-to-year change in catch divided by the average catch across all years</li>
+<li><code>average_proportion_catch_large</code> - average annual proportion of the landed catch &gt;9yo</li>
+<li><code>average_proportion_biomass_old</code> - average annual proportion of the biomass &gt;21yo</li>
+<li><code>annual_value</code> - average annual value of the catch assuming a fixed relative price per age class</li>
+<li><code>dynamic_annual_value</code> - average annual value of the catch assuming prices fluctuate with landed catch volume</li>
 </ul>
-<p>For additional information on any of these functions, see their
-function documentation.</p>
+<p>Two resiliency metrics can also be calculated, but should only be calculated under crash recruitment OM scenarios, as they internally rely on knowing over what years a recruitment crash occurs.</p>
+<ul>
+<li><code>biomass_crash_time</code> - average time required for the SSB to decline to <span class="math inline">\(&lt;0.175\text{SSB}_{1960}\)</span>. This metric is only calculated over the first 30 years of the projection period.</li>
+<li><code>biomass_recovery_time</code> - average time required for the SSB to recover to <span class="math inline">\(&gt;0.35\text{SSB}_{1960}\)</span>. This metric is calculated starting year 31 of the projection period.</li>
+</ul>
+<p>For additional information on any of these functions, see their function documentation.</p>
 <div id="performance_metric_summary-function" class="section level5">
 <h5><code>performance_metric_summary</code> Function</h5>
-<p>A summary function is available to compute multiple performance
-metrics and concatenate them into a single summary
-<code>data.frame</code> object:
-<code>performance_metric_summary</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">performance_metric_summary</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>    <span class="at">model_runs=</span>model_runs, </span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    <span class="at">extra_columns=</span>extra_columns, </span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    <span class="at">dem_params=</span>om<span class="sc">$</span>dem_params, </span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    <span class="at">ref_naa=</span>ref_naa,</span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    <span class="at">hcr_filter=</span><span class="fu">c</span>(<span class="st">&quot;MP1&quot;</span>, <span class="st">&quot;MP2&quot;</span>),</span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="at">om_filter=</span><span class="fu">c</span>(<span class="st">&quot;OM1&quot;</span>, <span class="st">&quot;OM2&quot;</span>),</span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    <span class="at">interval_widths=</span><span class="fu">c</span>(<span class="fl">0.50</span>, <span class="fl">0.95</span>), </span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>    <span class="co"># List of metrics to calculate</span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>    <span class="at">metric_list =</span> <span class="fu">c</span>(<span class="st">&quot;avg_catch&quot;</span>, <span class="st">&quot;avg_variation&quot;</span>, <span class="st">&quot;avg_ssb&quot;</span>, <span class="st">&quot;avg_age&quot;</span>, <span class="st">&quot;prop_years_lowssb&quot;</span>)</span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>)</span></code></pre></div>
-<p>The <code>metric_list</code> parameter controls which performance
-metrics to calculate and return in the output <code>data.frame</code>.
-Refer to the function documentation for a list of valid values to
-provide in <code>metric_list</code>.</p>
+<p>A summary function is available to compute multiple performance metrics and concatenate them into a single summary <code>tibble</code> object: <code>performance_metric_summary</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">performance_metric_summary</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">model_runs=</span>model_runs, </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">extra_columns=</span>extra_columns, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">dem_params=</span>om<span class="sc">$</span>dem_params, </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">ref_naa=</span>ref_naa,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">hcr_filter=</span><span class="fu">c</span>(<span class="st">&quot;MP1&quot;</span>, <span class="st">&quot;MP2&quot;</span>),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">om_filter=</span><span class="fu">c</span>(<span class="st">&quot;OM1&quot;</span>, <span class="st">&quot;OM2&quot;</span>),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">interval_widths=</span><span class="fu">c</span>(<span class="fl">0.50</span>, <span class="fl">0.95</span>), </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># List of metrics to calculate</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">metric_list =</span> <span class="fu">c</span>(<span class="st">&quot;avg_catch&quot;</span>, <span class="st">&quot;avg_variation&quot;</span>, <span class="st">&quot;avg_ssb&quot;</span>, <span class="st">&quot;avg_age&quot;</span>, <span class="st">&quot;prop_years_lowssb&quot;</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>The <code>metric_list</code> parameter controls which performance metrics to calculate and return in the output <code>tibble</code>. Refer to the function documentation for a list of valid values to provide in <code>metric_list</code>.</p>
 </div>
 </div>
 

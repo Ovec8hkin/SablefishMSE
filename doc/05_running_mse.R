@@ -24,6 +24,27 @@ options
 #     # List of MSE options to run
 #     mse_options_list = list(options)
 #     seed_list = sample(1:1000, 10),
-#     nyears=1
+#     nyears=1,
+#     diagnostics = FALSE,
+#     save = FALSE
 # )
+
+## ----example, eval=FALSE------------------------------------------------------
+# om_list = afscOM::listN(om1, om2)
+# mp_list = afscOM::listN(mp_f40, mp_f50)
+# 
+# mse_options <- setup_mse_options()
+# 
+# seed_list <- sample(1:1000, 10)
+# 
+# model_runs <- run_mse_multiple(
+#     om_list = om_list,
+#     hcr_list = mp_list,
+#     seed_list = sample(1:1000, 10),
+#     mse_options_list = list(mse_options),
+#     nyears=100,
+#     diagnostics = FALSE,
+#     save = TRUE
+# )
+# 
 

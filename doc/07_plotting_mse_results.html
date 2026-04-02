@@ -29,13 +29,13 @@ document.addEventListener('DOMContentLoaded', function(e) {
 </script>
 
 <style type="text/css">
-code{white-space: pre-wrap;}
-span.smallcaps{font-variant: small-caps;}
-span.underline{text-decoration: underline;}
-div.column{display: inline-block; vertical-align: top; width: 50%;}
-div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-ul.task-list{list-style: none;}
-</style>
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 
@@ -239,7 +239,21 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-
+<p>Helper functions are available to facilitate simple and consistent visualization of MSE output data. All visualizations are created with <code>ggplot2</code> and interacting visualization packages (e.g. <code>ggdist</code>, <code>ggridges</code>), allowing for them to be easily customized. By default, the “color” aesthetic corresponds to different management procedures, and plots are facetted by operating model.</p>
+<ul>
+<li><code>plot_ssb</code> - plot of spawning biomass timeseries</li>
+<li><code>plot_relative_ssb</code> - plot of relative spawning biomass timeseries</li>
+<li><code>plot_fishing_mortalities</code> - plot of fishing mortality timeseries</li>
+<li><code>plot_recruitment</code> - plot of recruitment timeseries</li>
+<li><code>plot_landed_catch</code> - plot of landed catch timeseries</li>
+<li><code>plot_ssb_catch</code> - plot of landed catch and spawning biomass timeseries</li>
+<li><code>plot_abc_tac</code> - plot of ABC, TAC, expected landings, and attainment timeseries <!--- `plot_phase_diagram` - plot of phase-plane diagram (SSB vs F)
+- `plot_hcr_phase_diagram` - plot of phase-plane diagram (SSB vs recommended F)
+- `plot_catch_phase_diagram` - plot of phase-plane diagram (SSB vs catch)
+- `plot_mse_summary` - plot of TAC, landed catch, fishing mortality, and spawning biomass timeseries --></li>
+<li><code>plot_performance_metric_summary</code> - plot of median/quantiles of performance metrics <!-- - `plot_ssb_paginate` - paginated plot of SSB (pages correspond to different OMs)
+- `plot_catch_paginate` - paginated plot of catch (pages correspond to different OMs) --></li>
+</ul>
 
 
 

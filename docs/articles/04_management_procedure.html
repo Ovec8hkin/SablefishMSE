@@ -121,12 +121,18 @@
 <span><span class="co">## $ref_points$spr_target</span></span>
 <span><span class="co">## [1] 0.4</span></span>
 <span><span class="co">## </span></span>
+<span><span class="co">## $ref_points$rp_start_age</span></span>
+<span><span class="co">## [1] 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $ref_points$rp_hyperallometry</span></span>
+<span><span class="co">## [1] 1</span></span>
+<span><span class="co">## </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## $management</span></span>
 <span><span class="co">## $management$abc_tac_reduction</span></span>
 <span><span class="co">## [1] 1</span></span>
 <span><span class="co">## </span></span>
-<span><span class="co">## $management$tac_land_reduciton</span></span>
+<span><span class="co">## $management$tac_land_reduction</span></span>
 <span><span class="co">## [1] 1</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## </span></span>
@@ -184,11 +190,9 @@
 <li>
 <code>mp_f40</code> - a threshold HCR using F40/B40 reference points. This is the current HCR used to managed sablefish in Alaska.</li>
 <li>
-<code>mp_f50</code> - a threshold HCR using F50/B50 reference points.</li>
-<li>
 <code>mp_5perc</code> - the <code>mp_f40</code> HCR but with a stability constraint of 5%</li>
 <li>
-<code>mp_15cap</code> - the <code>mp_f40</code> HCR but with a maximum harvest cap of 15,000mt.</li>
+<code>mp_25cap</code> - the <code>mp_f40</code> HCR but with a maximum harvest cap of 25,000mt.</li>
 </ul>
 </div>
 <div class="section level5">
@@ -197,7 +201,7 @@
 <p>Custom HCR functions can be easily developed and used within the MSE simulation loop. All HCR functions must accept, at minimum, the same four function arguments:</p>
 <ul>
 <li>
-<code>ref_pts</code> - a list object containing computed values of reference points</li>
+<code>ref_pts</code> - a list object containing computed values of reference points (see next section on “Defining a Reference Point Object”)</li>
 <li>
 <code>naa</code> - an array of numbers-at-age (will be dimension <code>[1, nages, nsexes, nregions]</code>)</li>
 <li>
@@ -206,7 +210,7 @@
 <code>avgrec</code> - average recruitment across the simulation</li>
 </ul>
 <p>All four of these arguments must be accepted by any custom HCR function, even if they are not used. Additional arguments can also be accepted, and their values specified in the <code>hcr$extra_pars</code> list (the four arguments listed above <strong>DO NOT</strong> need to be specified in the <code>extra_pars</code> list, as they will be passed to the HCR function automatically within the MSE simulation loop). Note that custom HCR functions <strong>CAN NOT</strong> make use of internal state variables from the MSE except for numbers-at-age.</p>
-<p>Below is an example of a custom HCR that recommends a fishing mortality of 10% when <span class="math inline">\(\text{SSB} &gt;= 100\)</span>mt and a fishing mortality of 1% when <span class="math inline">\(\text{SSB} &lt; 100\)</span>mt.</p>
+<p>Below is an example of a custom HCR that recommends a fishing mortality of 10% when <span class="math inline">\(\text{SSB} &gt;= 100,000\)</span>mt and a fishing mortality of 1% when <span class="math inline">\(\text{SSB} &lt; 100,000\)</span>mt.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># the four required function arguemnts are present</span></span>
 <span><span class="va">step_hcr</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ref_pts</span>, <span class="va">naa</span>, <span class="va">dem_params</span>, <span class="va">avgrec</span><span class="op">)</span><span class="op">{</span></span>
@@ -232,43 +236,71 @@
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">weighted.mean</span>(ages, naa))</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>avgage_threshold_f <span class="ot">&lt;-</span> <span class="cf">function</span>(ref_pts, naa, dem_params, ref_naa, ages){</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate ssb as naa*waa*mat (female only) in units of 1,000s tons</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    ssb <span class="ot">&lt;-</span> <span class="fu">apply</span>(naa[,,<span class="dv">1</span>,]<span class="sc">*</span>dem_params<span class="sc">$</span>waa[,,<span class="dv">1</span>,,<span class="at">drop=</span><span class="cn">FALSE</span>]<span class="sc">*</span>dem_params<span class="sc">$</span>mat[,,<span class="dv">1</span>,,<span class="at">drop=</span><span class="cn">FALSE</span>], <span class="dv">1</span>, sum)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    as_stat <span class="ot">&lt;-</span> <span class="fu">average_age</span>(naa, ages)<span class="sc">/</span><span class="fu">average_age</span>(ref_naa, ages)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    as_scalar <span class="ot">&lt;-</span> <span class="fu">threshold_f</span>(as_stat, <span class="at">f_min=</span><span class="dv">0</span>, <span class="at">f_max=</span><span class="dv">1</span>, <span class="at">lrp=</span><span class="dv">0</span>, <span class="at">urp=</span><span class="dv">1</span>)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> ssb<span class="sc">/</span>ref_pts<span class="sc">$</span>B40</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    f_max <span class="ot">&lt;-</span> ref_pts<span class="sc">$</span>F40<span class="sc">*</span>as_scalar</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    f_min <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    lrp <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    urp <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(x <span class="sc">&gt;=</span> urp)  F <span class="ot">&lt;-</span> f_max <span class="co"># if stock status &gt;= 1</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(x <span class="sc">&gt;</span> lrp <span class="sc">&amp;&amp;</span> x <span class="sc">&lt;</span> urp) F <span class="ot">&lt;-</span> f_max <span class="sc">*</span> ((x<span class="sc">-</span>lrp)<span class="sc">/</span>(urp<span class="sc">-</span>lrp)) <span class="co"># if stock status &gt; alpha &amp; stock status &lt; 1</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(x <span class="sc">&lt;=</span> lrp) F <span class="ot">&lt;-</span> f_min</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(f)</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># the HCR function to evaluate</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">func =</span> avgage_threshold_f,</span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># values of additional arguments required by the "avgage_threshold_f" function</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="fu">list</span>(</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>        <span class="at">ref_naa =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">75</span>, <span class="dv">50</span>, <span class="dv">25</span>, <span class="dv">10</span>), </span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">ages =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="cn">NA</span></span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="cn">NA</span></span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">"F"</span></span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>mp <span class="ot">&lt;-</span> <span class="fu">setup_mp_options</span>()</span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>mp<span class="sc">$</span>hcr <span class="ot">&lt;-</span> hcr</span></code></pre></div>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># The maximum fishing mortality rate in a threshold HCR is a function of the average age of the population relative to a reference average age. If the average age is above the reference average age, the maximum fishing mortality rate is not increased, but if the average age is below the reference average age, the maximum fishing mortality rate is reduced proportionately to how much lower the average age is relative to the reference average age.</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>avgage_threshold_f <span class="ot">&lt;-</span> <span class="cf">function</span>(ref_pts, naa, dem_params, ref_naa, ages){</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate ssb as naa*waa*mat (female only) in units of 1,000s tons</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    ssb <span class="ot">&lt;-</span> <span class="fu">apply</span>(naa[,,<span class="dv">1</span>,]<span class="sc">*</span>dem_params<span class="sc">$</span>waa[,,<span class="dv">1</span>,,<span class="at">drop=</span><span class="cn">FALSE</span>]<span class="sc">*</span>dem_params<span class="sc">$</span>mat[,,<span class="dv">1</span>,,<span class="at">drop=</span><span class="cn">FALSE</span>], <span class="dv">1</span>, sum)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    as_stat <span class="ot">&lt;-</span> <span class="fu">average_age</span>(naa, ages)<span class="sc">/</span><span class="fu">average_age</span>(ref_naa, ages)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    as_scalar <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(as_stat <span class="sc">&gt;</span> <span class="dv">1</span>, <span class="dv">1</span>, as_stat) <span class="co"># if average age is above the reference average age, do not increase F</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> ssb<span class="sc">/</span>ref_pts<span class="sc">$</span>Bref</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    f_max <span class="ot">&lt;-</span> ref_pts<span class="sc">$</span>Fref<span class="sc">*</span>as_scalar</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    f_min <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    lrp <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    urp <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(x <span class="sc">&gt;=</span> urp)  F <span class="ot">&lt;-</span> f_max <span class="co"># if stock status &gt;= 1</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(x <span class="sc">&gt;</span> lrp <span class="sc">&amp;&amp;</span> x <span class="sc">&lt;</span> urp) F <span class="ot">&lt;-</span> f_max <span class="sc">*</span> ((x<span class="sc">-</span>lrp)<span class="sc">/</span>(urp<span class="sc">-</span>lrp)) <span class="co"># if stock status &gt; alpha &amp; stock status &lt; 1</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(x <span class="sc">&lt;=</span> lrp) F <span class="ot">&lt;-</span> f_min</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(f)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>hcr <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># the HCR function to evaluate</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">func =</span> avgage_threshold_f,</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># values of additional arguments required by the "avgage_threshold_f" function</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">extra_pars =</span> <span class="fu">list</span>(</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">ref_naa =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">75</span>, <span class="dv">50</span>, <span class="dv">25</span>, <span class="dv">10</span>), </span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>        <span class="at">ages =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">extra_options =</span> <span class="fu">list</span>(</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">max_stability =</span> <span class="cn">NA</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">harvest_cap =</span> <span class="cn">NA</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">units =</span> <span class="st">"F"</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>mp <span class="ot">&lt;-</span> <span class="fu">setup_mp_options</span>()</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>mp<span class="sc">$</span>hcr <span class="ot">&lt;-</span> hcr</span></code></pre></div>
 </div>
+</div>
+<div class="section level3">
+<h3 id="defining-a-reference-point-object">Defining a Reference Point Object<a class="anchor" aria-label="anchor" href="#defining-a-reference-point-object"></a>
+</h3>
+<p><code>SablefishMSE</code> calculates annual reference points using spawning potential ratio (SPR) methods. A target SPR level can be set by the <code>mp$ref_pts$spr_target</code> parameter. The parameter can be either a single value, or a vector of two values. If two values are supplied, the first value corresponds to the fishing mortality reference point and the second value corresponds to the biological reference point.</p>
+<p>The MSE simulation loop reference point function, <code>calculate_ref_points</code>, computes and returns 4 values:</p>
+<ul>
+<li>
+<code>Fmax</code> - a maximum permissible fishing mortality rate corresponding to the fishing mortality that yields <span class="math inline">\(\text{SPR}=0.35\)</span>.</li>
+<li>
+<code>Fref</code> - the fishing mortality rate that yields <span class="math inline">\(\text{SPR}=\text{spr_target}\)</span>
+</li>
+<li>
+<code>Bref</code> - the spawning biomass resulting from fishing at <code>Fref</code>
+</li>
+<li>
+<code>B0</code> - the spawning biomass resulting from fishing at <code>F=0.0</code>
+</li>
+</ul>
+<p>The two biological reference points, <code>Bref</code> and <code>B0</code> are calculated using the average recruitment across the entire simulation.</p>
+<p>Two additional options can be specified in the <code>mp$ref_pts</code> object:</p>
+<ul>
+<li>
+<code>rp_start_age</code> - the age at which individuals start contributing to the reference point calculations. By default, <code>rp_start_age=1</code>, such that all age classes contribute to the reference point calculation.</li>
+<li>
+<code>rp_hyperallometry</code> - a hyperallometric scaling exponent that is applied to weight-at-age within the reference point calculation. This functionally converts reference points to be in terms of spawning output (egg production) as opposed to biomass, by approximating a non-isometric fecundity relationship (whereby <span class="math inline">\(\text{Fecundity} \propto \text{Weight}^{\beta}\)</span>). By Default, <code>rp_hyperallometry=1</code>, inidcating an isometric relationship ebtween weight and fecundity.</li>
+</ul>
 </div>
 <div class="section level3">
 <h3 id="defining-a-management-object">Defining a Management Object<a class="anchor" aria-label="anchor" href="#defining-a-management-object"></a>
@@ -282,26 +314,25 @@
 <code>mp$management$tac_land_reduction</code> - multiplicative factor reflecting what proportion of the TAC to set annual landings too. This is otherwise known as “attainment”.</li>
 </ul>
 <p>Both the <code>abc_tac_reduction</code> and <code>tac_land_reduction</code> parameters are, by default, set to 1, such that the <span class="math inline">\(\text{ABC} = \text{TAC} = \text{Catch}\)</span>. If set to a single value, the same multiplicative factor is applied in every year of the simulation.</p>
+<div class="section level4">
+<h4 id="order-of-operations-for-management-module">Order of Operations for Management Module<a class="anchor" aria-label="anchor" href="#order-of-operations-for-management-module"></a>
+</h4>
+<p>The management module handles calculating reference points, applying the HCR function, calculating an ABC, and eventually outputting a catch level for the following years OM timestep, the exact order of operations is as follow:</p>
+<ol style="list-style-type: decimal">
+<li>Calculate SPR based reference points (Fmax, Fref, Bref, B0) using the average recruitment across the entire simulation and the numbers-at-age in the current year of the simulation.</li>
+<li>Apply the HCR function to calculate a recommended fishing mortality rate or catch level for the following year of the simulation. This is <code>F_\text{ABC}</code>.</li>
+<li>If the HCR function outputs in fishing mortality units, calculate the corresponding catch level using the Baranov catch equation. This is <span class="math inline">\(\text{ABC}\)</span>.</li>
+<li>Apply stability constraints to the ABC if specified in the <code>mp$hcr$extra_options</code> list.</li>
+<li>Apply the <code>abc_tac_reduction</code> to calculate the <span class="math inline">\(\text{TAC}\)</span> for the following year of the simulation.</li>
+<li>Apply harvest caps constraints to the TAC is specified in the <code>mp$hcr$extra_options</code> list.</li>
+<li>Apply the <code>tac_land_reduction</code> to calculate the level of realized landings for the following year of the simulation.</li>
+</ol>
+</div>
 </div>
 <div class="section level3">
-<h3 id="defining-a-reference-point-object">Defining a Reference Point Object<a class="anchor" aria-label="anchor" href="#defining-a-reference-point-object"></a>
+<h3 id="survey-and-assessment-frequency">Survey and Assessment Frequency<a class="anchor" aria-label="anchor" href="#survey-and-assessment-frequency"></a>
 </h3>
-<p><code>SablefishMSE</code> calculates annual reference points using spawning potential ratio (SPR) methods. A target SPR level can be set by the <code>mp$ref_pts$spr_target</code> parameter. The parameter can be either a single value, or a vector of two values. If two values are supplied, the first value corresponds to the fishing mortality reference point and the second value corresponds to the biological reference point.</p>
-<p>The MSE simulation loop reference point function, <code>calculate_ref_points</code>, computes and returns 4 values:</p>
-<ul>
-<li>
-<code>Fmax</code> - a maximum permissible fishing mortality rate corresponding to the fishing mortality that yields <span class="math inline">\(\text{SPR}=0.50\)</span>.</li>
-<li>
-<code>Fref</code> - the fishing mortality rate that yields <span class="math inline">\(\text{SPR}=\text{spr_target}\)</span>
-</li>
-<li>
-<code>Bref</code> - the spawning biomass resulting from fishing at <code>Fref</code>
-</li>
-<li>
-<code>B0</code> - the spawning biomass resulting from fishing at <code>F=0.0</code>
-</li>
-</ul>
-<p>The two biological reference points, <code>Bref</code> and <code>B0</code> are calculated using the average recruitment across the entire simulation.</p>
+<p>The frequency with which scientific survey data is generated and made available to the estimation method is controllable through the <code>mp$survey_frequency</code> parameter. The frequency with which stock assessments are performed and used to update reference points and HCR recommendations is controllable through the <code>mp$assessment_frequency</code> parameter. Both parameters should be set to a single integer value, indicating the number of years between surveys and assessments, respectively. By default, both parameters are set to 1, such that surveys and assessments occur every year of the simulation.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

@@ -80,7 +80,7 @@
 
     
     
-<p>Once an operating model (OM) object, a recruitment object, and a management procedure (MP) object have all been appropriately defined, the MSE simulation loop can be almost be initiated.</p>
+<p>Once an operating model (OM) object, a recruitment object, and a management procedure (MP) object have all been appropriately defined, the MSE simulation loop can almost be initiated.</p>
 <div class="section level3">
 <h3 id="mse-options">MSE Options<a class="anchor" aria-label="anchor" href="#mse-options"></a>
 </h3>
@@ -97,7 +97,7 @@
 </ul>
 <p>Sensible defaults are available via the <code>setup_mse_options</code> function. Using them will begin the MSE simulations from the estimated population state in 2024, and project forward for 100 years.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">options</span> <span class="op">&lt;-</span> <span class="fu">setup_mse_options</span><span class="op">(</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">options</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup_mse_options.html">setup_mse_options</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">options</span></span></code></pre></div>
 <pre><code><span><span class="co">## $n_proj_years</span></span>
 <span><span class="co">## [1] 100</span></span>
@@ -142,9 +142,35 @@
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># List of MSE options to run</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">mse_options_list =</span> <span class="fu">list</span>(options)</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">seed_list =</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>, <span class="dv">10</span>),</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">nyears=</span><span class="dv">1</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">nyears=</span><span class="dv">1</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">diagnostics =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">save =</span> <span class="cn">FALSE</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <p><code>run_mse_multiple</code> will run all combinations of OMs, MPs, and MSE Options provided in their respective lists, each for the number of simulations provided in <code>seed_list</code>.</p>
+<p>The <code>diagnostics</code> parameter controls whether to return observation data and estimation method output objects in addition to the standard set of MSE output arrays. By default, <code>diagnostics=FALSE</code> to save memory.</p>
+<p>The <code>save</code> parameter controls whether to save the output of MSE simulation to disk. By default, <code>save=FALSE</code> to avoid saving large MSE output objects, but often needs to be turned on when running many combinations of OMs, MPs, and simulation seeds. The default location of saved outputs is “./data/active/”.</p>
+</div>
+<div class="section level3">
+<h3 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h3>
+<p>For example, the following code will run 10 simulations of a population under the <code>om1</code> and <code>om2</code> operating models, and managed using the <code>mp_f40</code> and <code>mp_f50</code> management procedures. All simulations will use the same set of default model options, estimation method diagnostics will not be returned, and MSE outputs will be saved to disk:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">om_list</span> <span class="op">=</span> <span class="fu">afscOM</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/afscOM/man/listN.html" class="external-link">listN</a></span><span class="op">(</span><span class="va">om1</span>, <span class="va">om2</span><span class="op">)</span></span>
+<span><span class="va">mp_list</span> <span class="op">=</span> <span class="fu">afscOM</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/afscOM/man/listN.html" class="external-link">listN</a></span><span class="op">(</span><span class="va">mp_f40</span>, <span class="va">mp_f50</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mse_options</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/setup_mse_options.html">setup_mse_options</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">seed_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">model_runs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_mse_multiple.html">run_mse_multiple</a></span><span class="op">(</span></span>
+<span>    om_list <span class="op">=</span> <span class="va">om_list</span>,</span>
+<span>    hcr_list <span class="op">=</span> <span class="va">mp_list</span>,</span>
+<span>    seed_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>    mse_options_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">mse_options</span><span class="op">)</span>,</span>
+<span>    nyears<span class="op">=</span><span class="fl">100</span>,</span>
+<span>    diagnostics <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    save <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

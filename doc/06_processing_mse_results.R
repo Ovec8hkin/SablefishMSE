@@ -1,15 +1,27 @@
 ## ----get_saved_model_runs, eval=FALSE-----------------------------------------
-# model_runs <- get_saved_model_runs()
+# om_filter <- c("OM1", "OM2")
+# hcr_filter <- c("MP1", "MP2")
+# 
+# model_runs <- get_saved_model_runs(om_filter=om_filter, hcr_filter=hcr_filter)
 
-## ----bind_mse_outputs, eval=FALSE---------------------------------------------
-# bind_mse_outputs(
-#     model_runs=model_runs,
-#     var=c("naa"),
-#     extra_columns=expand.grid(
-#         om=c("OM1", "OM2"),
-#         hcr=c("MP1", "MP2")
-#     )
-# )
+## ----process_ssb_examps, eval=FALSE-------------------------------------------
+# om_filter <- c("OM1", "OM2")
+# hcr_filter <- c("MP1", "MP2")
+# 
+# mse_runs <- get_saved_model_runs(om_filter=om_filter, hcr_filter=hcr_filter)
+# model_runs <- mse_runs$model_runs
+# extra_columns <- mse_runs$extra_columns
+# 
+# # Calculate SSB and total biomass across all model runs and simulations
+# ssb_biomass <- get_ssb_biomass(model_runs=model_runs, extra_columns=extra_columns, om1$dem_params, om_filter=om_filter, hcr_filter=hcr_filter)
+# 
+# # Alternatively, if `get_saved_model_runs` is not used
+# rm(model_runs, extra_columns)
+# mse_runs <- NULL
+# 
+# # Itertaively read in and process each model run file as appropriate
+# ssb_biomass <- get_ssb_biomass(model_runs=NULL, extra_columns=NULL, om1$dem_params, om_filter=om_filter, hcr_filter=hcr_filter)
+# 
 
 ## ----performance_metric_summary, eval=FALSE-----------------------------------
 # performance_metric_summary(

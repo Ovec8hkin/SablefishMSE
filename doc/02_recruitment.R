@@ -103,7 +103,7 @@
 # om$recruitment <- recruitment_obj
 # 
 
-## ----bevhlt2, eval=FALSE------------------------------------------------------
+## ----bevholt2, eval=FALSE-----------------------------------------------------
 # beverton_holt_ab <- function(a, b, seed){
 #     set.seed(seed)
 #     function(ssb, y){
