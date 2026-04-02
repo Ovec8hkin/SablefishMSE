@@ -126,15 +126,6 @@ chr <- function(ref_pts, naa, dem_params, avgrec){
 mp_base <- setup_mp_options() # get default values
 mp_base$management$tac_land_reduction <- 1
 
-# mp_base$management$tac_land_reduction <- list(
-#     func = stairstep_attainment,
-#     pars = list(
-#         breakpoints = c(20, 30),
-#         levels = c(0.874, 0.786, 0.647),
-#         phase_ins = 2
-#     )
-# )
-
 #'
 #' Alternative Reference Point HCRs
 #' 
@@ -163,18 +154,6 @@ mp_f50$hcr <- list(
     units = "F"
 )
 
-mp_b40f55 <- mp_base
-mp_b40f55$name <- "B40/F55"
-mp_b40f55$ref_points$spr_target <- c(0.55, 0.4)
-mp_b40f55$hcr <- list(
-    func = tier3,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = NA
-    ),
-    units = "F"
-)
-
 mp_b30f40 <- mp_base
 mp_b30f40$name <- "B30/F40"
 mp_b30f40$ref_points$spr_target <- c(0.4, 0.3)
@@ -186,55 +165,6 @@ mp_b30f40$hcr <- list(
     ),
     units = "F"
 )
-
-mp_b50f40 <- mp_base
-mp_b50f40$name <- "B50/F40"
-mp_b50f40$ref_points$spr_target <- c(0.4, 0.5)
-mp_b50f40$hcr <- list(
-    func = tier3,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = NA
-    ),
-    units = "F"
-)
-
-mp_b30f50 <- mp_base
-mp_b30f50$name <- "B30/F50"
-mp_b30f50$ref_points$spr_target <- c(0.5, 0.3)
-mp_b30f50$hcr <- list(
-    func = tier3,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = NA
-    ),
-    units = "F"
-)
-
-mp_b40f50 <- mp_base
-mp_b40f50$name <- "B40/F50"
-mp_b40f50$ref_points$spr_target <- c(0.5, 0.4)
-mp_b40f50$hcr <- list(
-    func = tier3,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = NA
-    ),
-    units = "F"
-)
-
-mp_f40cons <- mp_base
-mp_f40cons$name <- "F40 Conservative"
-mp_f40cons$hcr <- list(
-    func = new_hcr,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = NA
-    ),
-    units = "F"
-)
-
 
 #'
 #' Stability Constraint HCRs
@@ -275,31 +205,6 @@ mp_10perc_up$hcr <- list(
     units = "F"
 )
 
-mp_15perc <- mp_base
-mp_15perc$name <- "F40 +/- 15%"
-mp_15perc$hcr <- list(
-    func = tier3,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = 0.15,
-        harvest_cap = NA
-    ),
-    units = "F"
-)
-
-mp_25perc <- mp_base
-mp_25perc$name <- "F40 +/- 25%"
-mp_25perc$hcr <- list(
-    func = tier3,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = 0.25,
-        harvest_cap = NA
-    ),
-    units = "F"
-)
-
-
 #'
 #' Harvest Cap HCRs
 #'
@@ -314,20 +219,7 @@ mp_00cap$hcr <- list(
     ),
     units = "F"
 )
-mp_00cap$management$tac_land_reduction <- 1 
 
-mp_10cap <- mp_base
-mp_10cap$name <- "10k Harvest Cap"
-mp_10cap$hcr <- list(
-    func = tier3,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = 10
-    ),
-    units = "F"
-)
-mp_10cap$management$tac_land_reduction <- 1
 
 mp_15cap <- mp_base
 mp_15cap$name <- "15k Harvest Cap"
@@ -340,20 +232,6 @@ mp_15cap$hcr <- list(
     ),
     units = "F"
 )
-mp_15cap$management$tac_land_reduction <- 1
-
-mp_20cap <- mp_base
-mp_20cap$name <- "20k Harvest Cap"
-mp_20cap$hcr <- list(
-    func = tier3,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = 20
-    ),
-    units = "F"
-)
-mp_20cap$management$tac_land_reduction <- 1
 
 mp_25cap <- mp_base
 mp_25cap$name <- "25k Harvest Cap"
@@ -366,53 +244,14 @@ mp_25cap$hcr <- list(
     ),
     units = "F"
 )
-mp_25cap$management$tac_land_reduction <- 1
-# mp_25cap$management$tac_land_reduction <- list(
-#     func = stairstep_attainment,
-#     pars = list(
-#         breakpoints = c(20, 30),
-#         levels = c(1, 0.874, 0.786),
-#         phase_ins = 0
-#     )
-# )
 
-
-
-mp_20cap_cons <- mp_base
-mp_20cap_cons$name <- "B30 20k Harvest Cap"
-mp_20cap_cons$ref_points$spr_target <- c(0.4, 0.3)
-mp_20cap_cons$hcr <- list(
-    func = tier3,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = 20
-    ),
-    units = "F"
-)
-mp_20cap_cons$management$tac_land_reduction <- 1
-
-mp_25cap_cons <- mp_base
-mp_25cap_cons$name <- "B30 25k Harvest Cap"
-mp_25cap_cons$ref_points$spr_target <- c(0.40, 0.30)
-mp_25cap_cons$hcr <- list(
-    func = tier3,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = 25
-    ),
-    units = "F"
-)
-mp_25cap_cons$management$tac_land_reduction <- 1
-# mp_25cap_cons$management$tac_land_reduction <- list(
-#     func = stairstep_attainment,
-#     pars = list(
-#         breakpoints = c(20, 30),
-#         levels = c(1, 0.874, 0.786),
-#         phase_ins = 0
-#     )
-# )
+#'
+#' Hybrid HCRs
+#' 
+mp_f40_hybrid <- mp_f40
+mp_f40_hybrid$name <- "F40 Hybrid"
+mp_f40_hybrid$hcr$extra_options$max_stability <- mp_10perc_up$hcr$extra_options$max_stability
+mp_f40_hybrid$hcr$extra_options$harvest_cap <- mp_20cap$hcr$extra_options$harvest_cap
 
 #'
 #' Constant Fishing Mortality Rules
@@ -442,33 +281,6 @@ mp_f50chr$hcr <- list(
     units = "F"
 )
 mp_f50chr$ref_points$spr_target <- c(0.50, 0.001)
-
-
-mp_f55chr <- mp_base
-mp_f55chr$name <- "Constant F55"
-mp_f55chr$hcr <- list(
-    func = chr,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = NA
-    ),
-    units = "F"
-)
-mp_f55chr$ref_points$spr_target <- c(0.55, 0.001)
-
-mp_f00chr <- mp_base
-mp_f00chr$name <- "No Fishing"
-mp_f00chr$hcr <- list(
-    func = chr,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = NA
-    ),
-    units = "TAC"
-)
-mp_f00chr$ref_points$spr_target <- c(1, 0.001)
 
 #'
 #' Other HCRs
