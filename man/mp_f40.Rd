@@ -9,8 +9,12 @@ is operationally used to manage sablefish in
 Alaska.}
 \format{
 A management procedure object.
+
+A management procedure object.
 }
 \usage{
+mp_f40
+
 mp_f40
 }
 \description{
@@ -18,5 +22,8 @@ An example management procedure that replicates
 the NPFMC F40 harvest control rule policy that
 is operationally used to manage sablefish in
 Alaska.
+
+An example management procedure that uses
+SPR_50% reference points.
 }
 \keyword{datasets}
