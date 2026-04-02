@@ -534,7 +534,7 @@ plot_atage_density_ternary <- function(data, col_names){
 #' @param base_hcr HCR to plot as a thicker line for reference (must match names in `extra_columns`)
 #' @param highlight vector of HCRs to highlight with color (must match names in `extra_columns`)
 #' 
-#' @export plot_ssb_catch
+#' @export plot_abc_tac
 #' 
 plot_abc_tac <- function(data, v1="hcr", v2=NA, common_trajectory=64, interval_widths=c(0.50, 0.80), base_hcr="F40", highlight=NULL){
     group_columns <- colnames(data)
