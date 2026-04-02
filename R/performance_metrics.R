@@ -542,6 +542,7 @@ compute_average_age <- function(
             as_tibble() %>%
             ungroup() %>%
             filter_hcr_om(hcr_filter, om_filter) %>%
+            filter(!is.na(value)) %>%
             ungroup() %>%
             group_by(time, sim, hcr, om, region) %>%
             summarise(
