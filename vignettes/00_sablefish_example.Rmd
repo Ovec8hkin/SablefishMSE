@@ -21,88 +21,30 @@ A fully worked example of this MSE framework for Alaska Sablefish follows. This 
 
 A base operating model (OM) object, `sable_om`, is already available in the package to start from. As all of the OMs developed for this example vary only in terms of how recruitment is projected in the future, we will load this base OM object and simply modify the recruitment parameter(s).
 
-```{r, load_base_om, eval=FALSE}
+```{r, load_base_om, eval=TRUE}
 library(SablefishMSE)
-
-nyears <- 100
-
-hist_recruits <- sablefish_assessment_data$natage.female[,1]*2
+data(sable_om)
 ```
 
 OM1 (`om_rand_recruit`) will project future recruitment by resampling from the historical recruitment timeseries, using the `resample_recruits` function:
-```{r, om1, eval=FALSE}
+```{r, om1, eval=TRUE}
 # Normal recruitment
-om_rand_recruit <- sable_om
-om_rand_recruit$name <- "Random Recruitment"
-om_rand_recruit$recruitment$func <- resample_recruits
-om_rand_recruit$recruitment$pars <- list(
-    hist_recruits = hist_recruits,
-    nyears = 10*nyears
-)
+data(om_rand_recruit)
+om_rand_recruit$recruitment
 ```
 
 OM2 (`om_bh_recruit`) projects future recruitment via a Beverton-Holt stock recruit relationship with $h=0.85$ and $\sigma_R = 1.20$. As a state-dependent recruitment function, the underlying `beverton_holt` R function is a "function factory", whose returned function is used internally by the MSE to compute recruitment based on current spawning biomass. 
 
-```{r, om2, eval=FALSE}
-dp_y <- afscOM::subset_dem_params(sable_om$dem_params, 64, d=1, drop=FALSE)
-joint_selret <- calculate_joint_selret(
-    sel = dp_y$sel,
-    ret = dp_y$ret,
-    prop_fs = c(0.80, 0.20)
-)
-
-sbpr <- compute_sbpr(
-    nages=30,
-    mort = dp_y$mort[,,1,],
-    mat = dp_y$mat[,,1,],
-    waa = dp_y$waa[,,1,],
-    sel =  joint_selret$sel[,,1,,drop=FALSE],
-    ret = joint_selret$ret[,,1,,drop=FALSE],
-    F = 0
-)
-
-# B-H recruitment
-om_bh_recruit <- sable_om
-om_bh_recruit$name <- "Beverton-Holt Recruitment"
-om_bh_recruit$recruitment$func <- beverton_holt
-om_bh_recruit$recruitment$pars <- list(
-    h = 0.85,
-    R0 = 15,
-    S0 = sbpr*15,
-    sigR = 1.20
-)
-
+```{r, om2, eval=TRUE}
+data(om_bh_recruit)
+om_bh_recruit$recruitment
 ```
 
 OM3 (`om_bhcyclic_recruit`) projects future recruitment as occurring in distinct regimes: first a "low" regime for 20 years, followed by a "high" regime for 5 years. The regimes each have a uniquely parameterized Beverton-Holt stock recruitment relationships that differ with respect to the $R_0$ and $S_0$ parameters. This type of recruitment function is available with the provided `bevholt_regimes` function.
 
-```{r, om3, eval=FALSE}
-om_bhcyclic_recruit <- sable_om
-om_bhcyclic_recruit$name <- "Beverton-Holt Cyclic Recruitment"
-om_bhcyclic_recruit$recruitment$func <- bevholt_regimes
-om_bhcyclic_recruit$recruitment$pars <- list(
-    h = 0.85,
-    sbpr = sbpr,
-    R0 = c(12.5, 50),
-    sigR = c(1.20, 1.20),
-    nyears = 10*nyears,
-    regime_length = c(20, 5),
-    starting_regime = 0
-)
-```
-
-OM4 (`om_immcrash_recruit`) assumes that recruitment crashes for the first 20 years of the projection period, while the recruitment for the remainder of the projection period is historically resampled as in OM1.
-```{r, om5, eval=FALSE}
-om_immcrash_recruit <- sable_om
-om_immcrash_recruit$name <- "Crash Recruitment"
-om_immcrash_recruit$recruitment$func <- recruits_crash
-om_immcrash_recruit$recruitment$pars <- list(
-    crash_start_year = 1,
-    crash_length = 20,
-    crash_value = min(hist_recruits),
-    hist_recruits = hist_recruits,
-    nyears = 10*nyears
-)
+```{r, om3, eval=TRUE}
+data(om_bhcyclic_recruit)
+om_bhcyclic_recruit$recruitment
 ```
 
 The four OM objects are placed in a  list that will later be passed to the MSE function.
@@ -113,222 +55,40 @@ om_list <- afscOM::listN(om_rand_recruit, om_bh_recruit, om_bhcyclic_recruit, om
 
 ### Defining Management Procedures
 Management procedures (MPs) are specified as a complex list of values that define the specifics of the harvest control rule to be applied, the reference point targets to use, ABC-TAC and TAC-landings reductions, survey frequency, and assessment frequency. A default MP object is available through the `setup_mp_options` function. The eleven MPs specified here differ only in terms of their HCR function and their reference point target, so the default MP object can, largely be reused.
-```{r, setup_mp_options}
+```{r, setup_mp_options, eval=TRUE}
 mp_base <- setup_mp_options()
+mp_base
 ```
 
 MP1 (`mp_f40`) is an implementation of the NPFMC Tier 3 HCR that is currently used to manage sablefish in Alaska. It is a threshold HCR that uses a target reference point of $SPR_{40\%}$. The HCR function (`tier3`) outputs in units of fishing mortality (F), as specified by "units". No harvest cap or stability constraints are applied. 
-```{r, mp1, eval=FALSE}
-# The tier 3 HCR function that replicates the NPFMC Tier 3 HCR
-tier3 <- function(ref_pts, naa, dem_params, avgrec, cutoff_age=1){
-    nages <- afscOM::get_model_dimensions(dem_params$sel)$nages
-    a <- cutoff_age-1
-    ssb <- apply(naa[,a:nages,1,]*dem_params$waa[,a:nages,1,,drop=FALSE]*dem_params$mat[,a:nages,1,,drop=FALSE], 1, sum)
-    return(
-        npfmc_tier3_F(ssb, ref_pts$Bref, ref_pts$Fref)
-    )
-}
-
-
-mp_f40 <- mp_base
-mp_f40$name <- "F40"
-mp_f40$spr_target<- c(0.40, 0.40)
-mp_f40$hcr <- list(
-    func = tier3,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = NA
-    ),
-    units = "F"
-)
+```{r, mp1, eval=TRUE}
+data(mp_f40)
+mp_f40
 ```
 
 MP2 (`mp_f50`) is a simple variation on MP1, where the target reference points are based on $SPR_{50\%}$ instead of $SPR_{40\%}$.
-```{r, mp23, eval=FALSE}
-mp_f50 <- mp_base
-mp_f50$name <- "F50"
-mp_f50$ref_points$spr_target <- c(0.5, 0.5)
-mp_f50$hcr <- list(
-    func = tier3,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = NA
-    ),
-    units = "F"
-)
+```{r, mp23, eval=TRUE}
+data(mp_f50)
+mp_f50
 ```
 
-MP3 (`mp_5perc`) and MP4 (`mp_10perc`) are another simple variation on MP1, where stability constraints of 5% and 10% are applied to the ABC. Otherwise, these MPs are defined exactly as MP1. The stability constraints limit the year-to-year change in ABC to the specified percentage, such that the ABC cannot increase or decrease by more than the specified percentage from one year to the next. Stability constraints are implemented in catch units, and are thus applied after the `tier3` HCR function has output a recommended F.
-```{r, mp45, eval=FALSE}
-mp_5perc <- mp_base
-mp_5perc$name <- "F40 +/- 5%"
-mp_5perc$hcr <- list(
-    func = tier3,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = 0.05,
-        harvest_cap = NA
-    ),
-    units = "F"
-)
+MP3 (`mp_5perc`) is another simple variation on MP1, where a stability constraint of 5%  are applied to the ABC. Otherwise, these MPs are defined exactly as MP1. The stability constraints limit the year-to-year change in ABC to the specified percentage, such that the ABC cannot increase or decrease by more than the specified percentage from one year to the next. Stability constraints are implemented in catch units, and are thus applied after the `tier3` HCR function has output a recommended F.
 
-mp_10perc <- mp_base
-mp_10perc$name <- "F40 +/- 10%"
-mp_10perc$hcr <- list(
-    func = tier3,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = 0.10,
-        harvest_cap = NA
-    ),
-    units = "F"
-)
+MP4 (`mp_25cap`) is another simple variation on MP1, whereby a maximum permissible TAC is implemented. If the recommended TAC (via evaluation of the HCR function) exceeds the specified harvest cap, the TAC will be reduced to the harvest cap exactly. Attainment will be applied after the harvest cap has been applied. 
+```{r, mp45, eval=TRUE}
+data(mp_5perc)
+data(mp_25cap)
+
+mp_5perc
+mp_25cap
 ```
 
-MP5 (`mp_15cap`) and MP6 (`mp_25cap`) are another simple variation on MP1, whereby a maximum permissible TAC is implemented. If the recommended TAC (via evaluation of the HCR function) exceeds the specified harvest cap, the TAC will be reduced to the harvest cap exactly. Attainment will be applied after the harvest cap has been applied. Harvest caps are 15k, 25k mt respectively.
-```{r, mp67, eval=FALSE}
-mp_15cap <- mp_base
-mp_15cap$name <- "15k Harvest Cap"
-mp_15cap$hcr <- list(
-    func = tier3,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = 15
-    ),
-    units = "F"
-)
-
-mp_25cap <- mp_base
-mp_25cap$name <- "25k Harvest Cap"
-mp_25cap$hcr <- list(
-    func = tier3,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = 25
-    ),
-    units = "F"
-)
-```
-
-MP7 is a constant fishing mortality rate rule that applies $F_{50}$ at all levels of spawning biomass.
-```{r, mp8, eval=FALSE}
-# Contants F HCR function
-chr <- function(ref_pts, naa, dem_params, avgrec){
-    return(constant_F(ref_pts$Fref))
-}
-
-mp_f50chr <- mp_base
-mp_f50chr$name <- "Constant F50"
-# Set biomass reference point to some small level to simulate a constant F rule
-mp_f50chr$ref_points$spr_target <- c(0.50, 0.001)
-mp_f50chr$hcr <- list(
-    func = chr,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = NA
-    ),
-    units = "F"
-)
-```
-
-MP8 and MP9 are approximate implementations of the HCRs used by other management bodies for sablefish in the North Pacific.
-
-MP8 (`mp_pfmc4010`) is an implementation of the Pacific Fisheries Management Council (PFMC) "40-10" HCR that is used to manage sablefish along the west coast of the continental United States. This HCR traditionally operates at the TAC level, but is implemented here so as to output an ABC, as the other HCR functions do. MP8 uses a target fishing mortality rate of $F_{45\%}$ to approximate $F_{\text{MSY}}$, and linearly reduces catch (rather than F as in the other rules) towards 0, as SSB declines from 40% to 10% of $B_0$.
-
-MP9 (`mp_bcsable`) is an implementation of DFO Canada's sablefish HCR that is used for sablefish management in British Columbia, Canada. This HCR is a threshold rule with a maximum harvest rate of 5.5%, which declines towards 0 when $\text{SSB} <= 0.60B_{MSY}$. $B_{\text{MSY}}$ is approximated as the spawning biomass resulting from fishing at a $F=F_{45\%}$, akin to in MP8.
-```{r, mp910, eval=FALSE}
-# HCR function for the PFMC 40-10 HCR used on the US West Coast
-pfmc4010 <- function(ref_pts, naa, dem_params, avgrec, pstar=0.45, OFLsigma=0.32){
-
-    joint_selret <- calculate_joint_selret(dem_params$sel, dem_params$ret, c(0.80, 0.20))
-    ssb <- apply(naa[,,1,]*dem_params$waa[,,1,,drop=FALSE]*dem_params$mat[,,1,,drop=FALSE], 1, sum)
-    exploit_bio <- naa*dem_params$waa*joint_selret$sel
-    dep <- ssb/ref_pts$B0
-
-    ABC <- afscOM::F_to_mu(ref_pts$Fref)*sum(exploit_bio)
-    if(dep < 0.1){TAC <- 0}
-    if(dep > 0.40) {TAC <- ABC}
-    if(dep <= 0.40 & dep >= 0.1){
-        TAC <- ABC*(dep-0.1)/(0.4-0.1)
-    }
-
-    return(TAC)
-}
-
-mp_pfmc4010 <- mp_base
-mp_pfmc4010$name <- "PFMC 40-10"
-mp_pfmc4010$ref_points$spr_target <- c(0.45, 0.40)
-mp_pfmc4010$hcr <- list(
-    func = pfmc4010,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = NA
-    ),
-    units = "TAC"
-)
-
-# HCR function used by DFO for sablefish in British Columbia, CA
-bc_sable <- function(ref_pts, naa, dem_params, avgrec){
-    ssb <- apply(naa[,,1,]*dem_params$waa[,,1,,drop=FALSE]*dem_params$mat[,,1,,drop=FALSE], 1, sum)
-    dep <- ssb/ref_pts$Bref
-
-    ABC <- 0.055
-    if(dep < 0.4){TAC <- 0}
-    if(dep > 0.60) {TAC <- ABC}
-    if(dep <= 0.60 & dep >= 0.40){
-        TAC <- ABC*(dep-0.4)/(0.6-0.4)
-    }
-
-    return(TAC)
-}
-
-mp_bcsable <- mp_base
-mp_bcsable$name <- "British Columbia"
-mp_bcsable$ref_points$spr_target <- c(0.45, 0.45)
-mp_bcsable$hcr <- list(
-    func = bc_sable,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = NA
-    ),
-    units = "F"
-)
-```
-
-MP10 (`mp_f00chr`) is a simple rule that prohibits fishing at any level of biomass.
-```{r, mp11, eval=FALSE}
-mp_f00chr <- mp_base
-mp_f00chr$name <- "No Fishing"
-mp_f00chr$hcr <- list(
-    func = chr,
-    extra_pars = NA,
-    extra_options = list(
-        max_stability = NA,
-        harvest_cap = NA
-    ),
-    units = "TAC"
-)
-mp_f00chr$ref_points$spr_target <- c(1, 0.001)
-```
-
-
-The ten MP objects are placed in a master list that will later be passed to the MSE function.
+The four MP objects are placed in a master list that will later be passed to the MSE function.
 
 ```{r, mp_list, eval=FALSE}
 hcr_list <- afscOM::listN(
     mp_f40, mp_f50, 
-    mp_5perc, mp_10perc,
-    mp_15cap, mp_25cap,
-    mp_f50chr,
-    mp_pfmc4010, mp_bcsable,
-    mp_f00chr
+    mp_5perc, mp_25cap
 )
 ```
 
@@ -337,12 +97,14 @@ An `mse_options` list object is also defined to provide additional options to th
 
 The default values are all appropriate for this case study, and can be accessed using `setup_mse_options`.
 
-```{r, mse_options, eval=FALSE}
+```{r, mse_options, eval=TRUE}
 mse_options_base <- setup_mse_options()
 mse_options <- mse_options_base
 mse_options$n_spinup_years <- 54
 mse_options$recruitment_start_year <- 54
-mse_options$n_proj_years <- 75
+mse_options$n_proj_years <- 25
+
+mse_options
 
 mse_options_list <- afscOM::listN(mse_options)
 ```
@@ -370,10 +132,11 @@ The above MSE will generate results from 40 unique models (10 HCRs across 4 OMs)
 
 Before prcoessing output, create a data.frame that specifies which models in the `model_runs` used which combination of OM and MP object. Often this can be simply accomplished using `expand.grid`, as this is what is used internally by `run_mse_multiple()`. For readability and plotting purposes, it is often useful to assign each OM and HCR a human readable name in the same order as the objects appear in their respective lists (`om_list` for OMs and `hcr_list` for MPs).
 ```{r, extra_columns, eval=FALSE}
+# Quick Way to get the names of the OMs and HCRs in the same order as they appear in the lists
 om_names <- unlist(lapply(om_list, \(x) x$name))
 hcr_names <- unlist(lapply(hcr_list, \(x) x$name))
 
-extra_columns2 <- expand.grid(
+extra_columns <- expand.grid(
     om = om_names,
     hcr = hcr_names
 )
@@ -382,13 +145,13 @@ extra_columns2 <- expand.grid(
 Five helper functions are predefined to facilitate working with common outputs from the MSE: spawning biomass, fishing mortality, recruitment, ABC and TAC, and landed catch. Each function is defined very similarly, taking the list of MSE output objects (`model_runs`) and the data.frame of OMs and HCRs that apply to each model (`extra_columns`). These are used internally by each function to assign the correct OM and HCR name to each model, and pull the correct data from the MSE outputs.
 
 ```{r, data_processing, eval=FALSE}
-ssb_data <- get_ssb_biomass(model_runs, extra_columns2, sable_om$dem_params, hcr_filter=hcr_names, om_filter=om_names)
+ssb_data <- get_ssb_biomass(model_runs, extra_columns, sable_om$dem_params, hcr_filter=hcr_names, om_filter=om_names)
 
-f_data <- get_fishing_mortalities(model_runs, extra_columns2, hcr_filter=hcr_names, om_filter=om_names)
+f_data <- get_fishing_mortalities(model_runs, extra_columns, hcr_filter=hcr_names, om_filter=om_names)
 
-abctac <- get_management_quantities(model_runs, extra_columns2, spinup_years=mse_options$n_spinup_years, hcr_filter=hcr_names, om_filter=om_names)
+abctac <- get_management_quantities(model_runs, extra_columns, spinup_years=mse_options$n_spinup_years, hcr_filter=hcr_names, om_filter=om_names)
 
-catch_data <- get_landed_catch(model_runs, extra_columns2, hcr_filter=hcr_names, om_filter=om_names)
+catch_data <- get_landed_catch(model_runs, extra_columns, hcr_filter=hcr_names, om_filter=om_names)
 
 ```
 
@@ -398,8 +161,6 @@ These helper functions return tibbles in long format that can be easily provided
 common_trajectory <- mse_options$n_spinup_years # the number of years of historical data before the recruitment and HCR functions begin applying
 
 plot_ssb(ssb_data, v1="hcr", v2="om", common_trajectory=common_trajectory, show_est = FALSE)
-
-plot_relative_ssb(ssb_data, v1="hcr", v2="om", common_trajectory = common_trajectory, base_hcr = "No Fishing")
 
 plot_fishing_mortalities(f_data, v1="hcr", v2="om", common_trajectory = common_trajectory, show_est=FALSE)
 
@@ -413,7 +174,7 @@ plot_landed_catch(catch_data, v1="hcr", v2="om", common_trajectory = common_traj
 Helper functions are also provided to compute performance metrics. Individual functions for each performance metric are available (though outputs may require additional processing), or the `performance_metric_summary` function can be used to quickly compute all of them. Like with the other data processing functions, a default plotting functions for performance metrics is also available.
 
 ```{r, performance_metrics, eval=FALSE}
-perf_tradeoffs <- performance_metric_summary(
+perf_tradeoffs <- compute_performance_metric_summary(
     model_runs, 
     extra_columns, 
     sable_om$dem_params, 
