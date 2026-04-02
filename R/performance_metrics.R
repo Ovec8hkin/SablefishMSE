@@ -545,7 +545,7 @@ compute_average_age <- function(
             ungroup() %>%
             group_by(time, sim, hcr, om, region) %>%
             summarise(
-                avg_age = compute_average_age(value, rep(2:31, length.out=n()))
+                avg_age = average_age(value, rep(2:31, length.out=n()))
             ) %>%
             relativize_performance(
                 rel_column = "hcr",

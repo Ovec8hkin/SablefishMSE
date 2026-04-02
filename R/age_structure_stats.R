@@ -24,11 +24,11 @@ shannon_diversity <- function(naa){
 #' @param naa numbers-at-age vector
 #' @param ages vector of ages
 #'
-#' @export compute_average_age
+#' @export average_age
 #'
 #' @example
 #'
-compute_average_age <- function(naa, ages){
+average_age <- function(naa, ages){
     return(weighted.mean(ages, naa))
 }
 
