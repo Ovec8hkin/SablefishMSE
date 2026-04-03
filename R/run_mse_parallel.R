@@ -13,7 +13,8 @@ run_mse_parallel <- function(nsims, seeds, om, hcr, mse_options, nyears, diagnos
             library(devtools)
             library(abind)
             library(afscOM)
-            lapply(list.files("R", full.names = TRUE), source)
+            library(SablefishMSE)
+            # lapply(list.files("R", full.names = TRUE), source)
             # devtools::load_all("~/Desktop/Projects/afscOM")
 
         })
