@@ -111,7 +111,7 @@ process_big_outputs <- function(model_runs, var, extra_columns, hcr_filter, om_f
     if(is.null(model_runs)){
         fs <- list.files(file.path(here::here(), "data", "active"), full.names = TRUE)
         if(!is.null(hcr_filter))
-            fs <- unlist(sapply(hcr_filter, \(x) fs[grepl(paste0(sub("|", "\\|", sub("/", "", sub(" ", "_", tolower(x))), fixed=TRUE), "_\\d+"), fs)]))
+            fs <- unlist(sapply(hcr_filter, \(x) fs[grepl(paste0(sub("|", "\\|", sub("/", "", sub(" ", "_", sub("+", "\\+", tolower(x), fixed=TRUE))), fixed=TRUE), "_\\d+"), fs)]))
 
         o <- bind_rows(
             parallel::mclapply(seq_along(fs), function(i){
