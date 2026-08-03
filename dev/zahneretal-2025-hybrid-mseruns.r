@@ -22,56 +22,21 @@ lapply(list.files("R", full.names = TRUE), source)
 #' processes), and OM initial conditons
 nyears <- 110
 
-sable_om <- readRDS("data/sablefish_om_big.RDS") # Read this saved OM from a file
-sable_om$model_options$fleet_apportionment <- matrix(c(0.80, 0.20), nrow=nrow(sable_om$model_options$fleet_apportionment), ncol=2, byrow=TRUE)
-sable_om$model_options$obs_pars$catch_cv <- c(1e-5, 1e-5, 1e-5, 1e-5)
-
 # Source all available OM and HCR objects
 source("dev/oms.R")
 source("dev/hcrs.R")
 
-# om_crash2 <- om_immcrash_recruit
-# om_crash2$recruitment$pars$crash_start_year <- 20
-# om_crash2$recruitment$pars$crash_length <- 30
-# om_crash2$name <- "Crash Recruitment"
-
-om_crash2 <- om_bhcyclic_recruit
-om_crash2$recruitment$pars$h <- c(0.85, 0.85)
-om_crash2$recruitment$pars$R0 <- c(15, 3.5)
-om_crash2$recruitment$pars$regime_length <- c(25, 30)
-om_crash2$name <- "Crash Recruitment"
-
-om_cycle_low <- om_bhcyclic_recruit
-om_cycle_low$recruitment$pars$h <- c(0.85,0.85)
-om_cycle_low$recruitment$pars$R0 <- c(50, 5.5)
-om_cycle_low$recruitment$pars$regime_length <- c(5, 20)
-om_cycle_low$name <- "Low Regime Recruitment"
 
 mp_f40 # Complete
 mp_f50 # Complete
 mp_20cap # Complete
-mp_10perc # Complete
 mp_10perc_up # Complete
+mp_f40_hybrid
 
-mp_f40_hybrid <- mp_f40
-mp_f40_hybrid$hcr$extra_options$max_stability <- mp_10perc_up$hcr$extra_options$max_stability
-mp_f40_hybrid$hcr$extra_options$harvest_cap <- mp_20cap$hcr$extra_options$harvest_cap
-mp_f40_hybrid$name <- "F40 Hybrid"
-
-mp_f50_hybrid <- mp_f50
-mp_f50_hybrid$hcr$extra_options$max_stability <- mp_10perc_up$hcr$extra_options$max_stability
-mp_f50_hybrid$hcr$extra_options$harvest_cap <- mp_20cap$hcr$extra_options$harvest_cap
-mp_f50_hybrid$name <- "F50 Hybrid"
-
-
-mp_f50_10perc_up <- mp_10perc_up
-mp_f50_10perc_up$ref_points$spr_target <- 0.50
-mp_f50_10perc_up$name <- "F50 +10% Up"
-
-mp_f50_20cap <- mp_20cap
-mp_f50_20cap$ref_points$spr_target <- 0.50
-mp_f50_20cap$name <- "20k Harvest Cap F50"
-
+mp_f50
+mp_f50_10perc_up
+mp_f50_20cap
+mp_f50_hybrid
 
 #' 3. Run the closed-loop MSE simulation
 #' A single MSE simulation can be run using the `run_mse(...)`
@@ -91,11 +56,12 @@ mse_options <- mse_options_base
 mse_options$n_spinup_years <- 54
 mse_options$recruitment_start_year <- 54
 mse_options$n_proj_years <- 75
+mse_options$run_estimation <- TRUE
 
 mse_options_list <- listN(mse_options)
 
 
-om_list <- listN(om_rand_recruit, om_bh_recruit, om_bhcyclic_recruit, om_cycle_low, om_immcrash_recruit, om_crash2)
+om_list <- listN(om_rand_recruit, om_bh_recruit, om_bhcyclic_recruit, om_cycle_low_recruit, om_immcrash_recruit, om_crash_recruit)
 hcr_list <- listN(
     mp_f40,
     mp_10perc_up,
