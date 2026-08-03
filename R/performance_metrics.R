@@ -569,7 +569,81 @@ compute_average_age <- function(
     return(out)
 }
 
-time_below_bref <- function(
+#' Compute Shannon Age Diversity across projection period
+#' 
+#' Compute Shannon age diversity (median and CIs) per year across all years and 
+#' simulation seeds, for each combination of operating models and management 
+#' procedures. Average age is calculated by age of individuals and is not
+#' weighted by biomass or maturity.
+#'
+#' @param model_runs list of completed MSE simulations runs
+#' @param extra_columns data.frame specifying names for OM and HCR to attach
+#' to each model_run (see `bind_mse_outputs` for more details)
+#' @param dem_params demographic parameters matrices from OM
+#' @param hcr_filter vector of HCR names to calculate metric over
+#' @param om_filter vector of OM names to calculate metric over
+#' @param interval_widths confidence intevrals to compute
+#' @param extra_filter an additional set of filters to apply before computing 
+#' medians and confidence intervals
+#' @param relative a management procedure to compute metric relative to
+#' @param summarise_by vector of columns to summarise metric by
+#' @param summary_out whether to output data summarised by `ggdist` or full data
+#' 
+#' @export compute_average_age_diversity
+#'
+#' @example
+#'
+compute_average_age_diversity <- function(
+    model_runs, 
+    extra_columns,
+    hcr_filter,
+    om_filter,
+    interval_widths=c(0.50, 0.80), 
+    time_horizon=c(65, NA), 
+    extra_filter=NULL, 
+    relative=NULL, 
+    summarise_by=c("om", "hcr"),
+    summary_out=TRUE
+){
+    process <- function(data){
+        data %>% filter_times(time_horizon=time_horizon)
+    }
+    
+    group_columns <- c("sim", summarise_by)
+
+    age_div <- process_big_outputs(model_runs, "caa", extra_columns, hcr_filter, om_filter, process) %>%
+            as_tibble() %>%
+            ungroup() %>%
+            filter_hcr_om(hcr_filter, om_filter) %>%
+            filter(!is.na(value)) %>%
+            ungroup() %>%
+            group_by(time, sim, hcr, om, region) %>%
+            summarise(
+                age_div = shannon_diversity(value),
+                age_div = ifelse(is.nan(age_div), 0, age_div)
+            ) %>%
+            relativize_performance(
+                rel_column = "hcr",
+                value_column = "age_div",
+                rel_value = relative,
+                grouping = group_columns
+            )
+            
+    if(!is.null(extra_filter)){
+        age_div <- age_div %>% filter(eval(extra_filter))
+    }
+
+    out <- age_div
+    if(summary_out){
+        out <- age_div %>%
+            group_by(across(all_of(summarise_by))) %>%
+            median_qi(age_div, .width=interval_widths, .simple_names=FALSE)
+    }
+
+    return(out)
+}
+
+compute_time_below_bref <- function(
     model_runs, 
     extra_columns, 
     dem_params,
@@ -1181,6 +1255,7 @@ compute_average_annual_dynamic_value <- function(
 #'      - `avg_ssb` -> average ssb
 #'      - `prop_years_lowssb` -> proportion of years SSB is below a threshold
 #'      - `avg_age` -> average age of the population
+#'      - `age_div` -> average age diversity of the population (Shannon Diversity Index)
 #'      - `avg_abi` -> average ABI of the population (Griffiths et al. 2023)
 #'      - `avg_variation` -> average annual catch variation
 #'      - `avg_catch_lg` -> average proportion of catch that is "large"
@@ -1250,10 +1325,17 @@ compute_performance_metric_summary <- function(
         time_on_ramp <- compute_time_below_bref(model_runs, extra_columns, dem_params, hcr_filter, om_filter, interval_widths, time_horizon=time_horizon, extra_filter=extra_filter, relative=relative, summarise_by = summarise_by, summary_out=summary_out) %>% reformat_ggdist_long(n=n)
         print("Done calculating Time on HCR Ramp")
     }
+
     # Average Age Across Projection Period
     if(any(c("avg_age", "all") %in% metric_list)){
         avg_age <- compute_average_age(model_runs, extra_columns, hcr_filter, om_filter, interval_widths, time_horizon=time_horizon, extra_filter=extra_filter, relative=relative, summarise_by = summarise_by, summary_out=summary_out) %>% reformat_ggdist_long(n=n)
         print("Done calculating Average Age")
+    }
+
+    # Average Age Diversity Across Projection Period
+    if(any(c("age_div", "all") %in% metric_list)){
+        age_div <- compute_average_age_diversity(model_runs, extra_columns, hcr_filter, om_filter, interval_widths, time_horizon=time_horizon, extra_filter=extra_filter, relative=relative, summarise_by = summarise_by, summary_out=summary_out) %>% reformat_ggdist_long(n=n)
+        print("Done calculating Average Age Diversity")
     }
 
     # Average ABI Across Projection Period
@@ -1316,6 +1398,7 @@ compute_performance_metric_summary <- function(
         "Dynamic Annual Value"="dyn_annual_value", 
         "Average ABI"="avg_abi", 
         "Average Age"="avg_age",
+        "Age Diversity"="age_div",
         "Crash Time"="crash_time",
         "Recovery Time"="recovery_time"
     )  
