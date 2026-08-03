@@ -118,7 +118,7 @@ run_mse <- function(om, mp, mse_options, nyears_input=NA, seed=1120, file_suffix
         full_recruitment <- rep(NA, nyears)
         full_recruitment[1:length(hist_recruitment)] <- hist_recruitment
         set.seed(seed)
-        rec_devs <- rlnorm(mse_options$n_proj_years, meanlog = 0, sdlog = 1.20)
+        rec_devs <- rlnorm(mse_options$n_proj_years, meanlog = 0, sdlog = om$recruitment$pars$sigR)
         global_rec_devs[1:mse_options$n_proj_years, 1, 1, 1] <- rec_devs
     }
     
