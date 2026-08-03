@@ -425,6 +425,150 @@ plot_ssb_catch <- function(ssb_data, catch_data, v1="hcr", v2=NA, v3=NA, common_
     return(plot+custom_theme)
 }
 
+#' Plot Trajectories of Spawning Biomass and Landed Catch
+#' 
+#' Plot median trajectory of total landed catch and SSB across all simulations as line plots.
+#' 
+#' @param ssb_data tibble output from `get_ssb_biomass()`
+#' @param catch_data tibble output from `get_landed_catch()`
+#' @param v1 variable to map to color (e.g. "hcr")
+#' @param v2 variable to facet by (e.g. "om")
+#' @param v3 variable to facet by in addition to v2 (e.g. "om")
+#' @param common_trajectory year to plot vertical dashed line to indicate where MSE projection period begins
+#' @param base_hcr HCR to plot as a thicker line for reference (must match names in `extra_columns`)
+#' @param highlight vector of HCRs to highlight with color (must match names in `extra_columns`)
+#' 
+#' @export plot_ssb_catch_value
+#' 
+plot_ssb_catch_value <- function(ssb_data, catch_data, value_data, v1="hcr", v2=NA, v3=NA, common_trajectory=64, base_hcr="F40", flip_facet=FALSE, highlight=NULL){
+
+    group_columns <- colnames(ssb_data)
+    group_columns <- group_columns[! group_columns %in% c("sim", "spbio", "biomass")]
+    # Plot spawning biomass from OM and EM
+    ssb_d <- ssb_data %>%
+        select(-c("biomass")) %>%
+        # Compute quantiles of SSB distribution
+        group_by(across(all_of(group_columns))) %>%
+        median_qi(spbio, .width=c(0.50, 0.80), .simple_names=FALSE) %>%
+        # Reformat ggdist tibble into long format
+        reformat_ggdist_long(n=length(group_columns)) %>%
+        mutate(
+            color_group = as.character(hcr) 
+        )
+
+    if(!is.null(highlight)){
+        ssb_d <- ssb_d %>% mutate(
+            color_group = ifelse(hcr %in% highlight, color_group, "Other")
+        )
+    }
+
+    hcr1 <- as.character((ssb_d %>% pull(hcr) %>% unique)[1])
+
+    traj_column <- ifelse(is.na(v3), v2, v3)
+    traj <- ssb_d %>% distinct(eval(rlang::parse_expr(traj_column))) %>% mutate(common=common_trajectory) %>% rename(!!traj_column := 1)
+
+    ssb_common <- ssb_d %>% left_join(traj, by=traj_column) %>% filter(L1=="naa", hcr==hcr1) %>% group_by(om) %>% filter(time <= common)
+
+
+    group_columns <- colnames(catch_data)
+    group_columns <- group_columns[! group_columns %in% c("sim", "catch", "total_catch")]
+
+    catch_d <- catch_data %>%
+        group_by(across(all_of(group_columns))) %>%
+        median_qi(total_catch, .width=c(0.50, 0.80), .simple_names=TRUE) %>%
+        reformat_ggdist_long(n=length(group_columns)) %>%
+        mutate(
+            color_group = as.character(hcr) 
+        )
+
+    if(!is.null(highlight)){
+        catch_d <- catch_d %>% mutate(
+            color_group = ifelse(hcr %in% highlight, color_group, "Other")
+        )
+    }
+    
+    hcr1 <- as.character((catch_d %>% pull(hcr) %>% unique)[1])
+    traj_column <- ifelse(is.na(v3), v2, v3)
+    traj <- catch_d %>% distinct(eval(rlang::parse_expr(traj_column))) %>% mutate(common=common_trajectory) %>% rename(!!traj_column := 1)
+
+    catch_common <- catch_d %>% left_join(traj, by=traj_column) %>% filter(hcr==hcr1) %>% group_by(om) %>% filter(time <= common)
+
+    group_columns <- colnames(value_data)
+    group_columns <- group_columns[! group_columns %in% c("sim", "total_value")]
+
+    value_d <- value_data %>%
+        group_by(across(all_of(group_columns))) %>%
+        median_qi(total_value, .width=interval_widths, .simple_names=FALSE) %>%
+        # Reformat ggdist tibble into long format
+        reformat_ggdist_long(n=length(group_columns))%>%
+        mutate(
+            color_group = as.character(hcr),
+            L1="vaa"
+        )
+
+    if(!is.null(highlight)){
+        value_d <- value_d %>% mutate(
+            color_group = ifelse(hcr %in% highlight, color_group, "Other")
+        )
+    }
+
+    hcr1 <- as.character((value_d %>% pull(hcr) %>% unique)[1])
+    traj_column <- ifelse(is.na(v3), v2, v3)
+    traj <- value_d %>% distinct(eval(rlang::parse_expr(traj_column))) %>% mutate(common=common_trajectory) %>% rename(!!traj_column := 1)
+
+    value_common <- value_d %>% left_join(traj, by=traj_column) %>% filter(hcr==hcr1) %>% group_by(om) %>% filter(time <= common)
+
+
+    d <- bind_rows(ssb_d, catch_d, value_d) %>% filter(L1 != "naa_est") %>% 
+            mutate(L1 = factor(L1, labels=c("Landed Catch", "SSB", "Economic Value")))
+    common <- bind_rows(ssb_common, catch_common, value_common) %>% filter(L1 != "naa_est") %>% 
+            mutate(L1 = factor(L1, labels=c("Landed Catch", "SSB", "Economic Value")))
+
+    base_hcr <- d %>% filter(hcr == base_hcr)
+
+    colors <- hcr_colors
+    sizes <- rep(0.85, length(colors))
+    names(sizes) <- names(colors)
+    if(!is.null(highlight)){
+        colors <- hcr_colors[highlight]
+        colors <- c(colors, "Other" = "grey70")
+
+        sizes <- c(rep(1.2, length(highlight)), 0.85)
+        names(sizes) <- c(highlight, "Other")
+    }
+
+    plot <- ggplot(d) + 
+        geom_line(data = base_hcr, aes(x=time, y=median, group=.data[[v1]], color=.data[[v1]]), size=0.85)+
+        geom_line(aes(x=time, y=median, group=.data[[v1]], color=hcr), size=0.85)+
+        # geom_line(
+        #     data = d %>% filter(color_group != "Other", time > common_trajectory-1), 
+        #     aes(x=time, y=median, ymin=lower, ymax=upper, group=.data[[v1]], color=color_group, size=color_group)
+        # )+
+        geom_line(data = common, aes(x=time, y=median), size=0.85)+
+        geom_vline(data=common, aes(xintercept=common), linetype="dashed")+
+        # geom_hline(yintercept=121.4611, linetype="dashed")+
+        scale_fill_brewer(palette="Blues")+
+        scale_color_manual(values=colors)+
+        # scale_size_manual(values=sizes)+
+        # scale_y_continuous(limits=c(0, 320))+
+        labs(x="Year", y="1000s Metric Tons")+
+        coord_cartesian(expand=0)+
+        guides(color=guide_legend("Management \n Strategy", nrow=2), fill="none", size="none")+
+        facet_grid(rows=vars(L1), cols=vars(.data[[v2]]), scales="free_y")+
+        ggh4x::facetted_pos_scales(
+            y = list(
+                scale_y_continuous(limits=c(0, 60)),
+                scale_y_continuous(limits=c(0, 500))
+            )
+        )
+
+    if(flip_facet){
+        plot <- plot + facet_grid(rows=vars(.data[[v2]]), cols=vars(L1), scales="free_y")
+    }
+    
+    return(plot+custom_theme)
+}
+
 plot_atage_trajectory_ternary <- function(data, segments, col_names){
     axis_names = names(data)[6:8]
     return(
