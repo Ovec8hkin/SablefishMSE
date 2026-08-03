@@ -396,10 +396,10 @@ compute_biomass_crash_time <- function(
 
     group_columns <- c("sim", summarise_by)
 
-    crash_time <- all_ssb %>% filter_times(time_horizon=c(time_horizon[1], time_horizon[1]+30)) %>%
+    crash_time <- all_ssb %>% filter_times(time_horizon=c(time_horizon[1]+25, time_horizon[1]+55)) %>%
         filter(spbio <= threshold) %>%
         group_by(sim, om, hcr) %>%
-        summarise(crash_time=min(time)-time_horizon[1]) %>%
+        summarise(crash_time=min(time)-time_horizon[1]-25) %>%
         relativize_performance(
             rel_column = "hcr",
             value_column = "crash_time",
@@ -470,10 +470,10 @@ compute_biomass_recovery_time <- function(
 
     group_columns <- c("sim", summarise_by)
 
-    recovery_time <- all_ssb %>% filter_times(time_horizon=c(time_horizon[1]+30, time_horizon[2])) %>%
+    recovery_time <- all_ssb %>% filter_times(time_horizon=c(time_horizon[1]+55, time_horizon[2])) %>%
         filter(spbio >= threshold) %>%
         group_by(sim, om, hcr) %>%
-        summarise(recovery_time=min(time)-(time_horizon[1]+30)) %>%
+        summarise(recovery_time=min(time)-(time_horizon[1]+55)) %>%
         relativize_performance(
             rel_column = "hcr",
             value_column = "recovery_time",
