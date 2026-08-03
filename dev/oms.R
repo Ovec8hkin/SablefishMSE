@@ -1,6 +1,13 @@
 # Define recruitment to occur via historical resampling
 assessment <- dget(file.path(here::here(), "data", "sablefish_assessment_2023.rdat"))
 hist_recruits <- assessment$natage.female[,1]*2
+hist_catch <- assessment$t.series[,"Catch_HAL"]+assessment$t.series[,"Catch_TWL"]
+
+sable_om <- readRDS("data/sablefish_om_big.RDS") # Read this saved OM from a file
+sable_om$model_options$fleet_apportionment <- matrix(c(0.80, 0.20), nrow=nrow(sable_om$model_options$fleet_apportionment), ncol=2, byrow=TRUE)
+sable_om$model_options$obs_pars$catch_cv <- c(1e-5, 1e-5, 1e-5, 1e-5)
+sable_om$hist_recruits <- hist_recruits
+sable_om$hist_catch <- hist_catch
 
 dp_y <- afscOM::subset_dem_params(sable_om$dem_params, 64, d=1, drop=FALSE)
 joint_selret <- calculate_joint_selret(
