@@ -123,18 +123,18 @@ om_bhcyclic_recruit$recruitment$pars <- list(
 )
 
 # OM8: B-H Regime recruitment with lower R0s
-om_cycle_low <- om_bhcyclic_recruit
-om_cycle_low$recruitment$pars$h <- c(0.85,0.85)
-om_cycle_low$recruitment$pars$R0 <- c(50, 5.5)
-om_cycle_low$recruitment$pars$regime_length <- c(5, 20)
-om_cycle_low$name <- "Low Regime Recruitment"
+om_cycle_low_recruit <- om_bhcyclic_recruit
+om_cycle_low_recruit$recruitment$pars$h <- c(0.85,0.85)
+om_cycle_low_recruit$recruitment$pars$R0 <- c(50, 5.5)
+om_cycle_low_recruit$recruitment$pars$regime_length <- c(5, 20)
+om_cycle_low_recruit$name <- "Low Regime Recruitment"
 
 # OM9: BH Crash Recruitment
-om_crash <- om_bhcyclic_recruit
-om_crash$recruitment$pars$h <- c(0.85, 0.85)
-om_crash$recruitment$pars$R0 <- c(15, 3.5)
-om_crash$recruitment$pars$regime_length <- c(25, 30)
-om_crash$name <- "Crash Recruitment"
+om_crash_recruit <- om_bhcyclic_recruit
+om_crash_recruit$recruitment$pars$h <- c(0.85, 0.85)
+om_crash_recruit$recruitment$pars$R0 <- c(15, 3.5)
+om_crash_recruit$recruitment$pars$regime_length <- c(25, 30)
+om_crash_recruit$name <- "Crash Recruitment"
 
 # Immediate Recruitment Crash
 om_immcrash_recruit <- sable_om
