@@ -250,7 +250,13 @@ round_to_zero <- function(data, col_name, zero_threshold=1e-2){
 #' 
 #' @export scale_and_rank
 #' 
-scale_and_rank <- function(data, col_name){
+scale_and_rank <- function(data, col_name, omit_hcr=NULL){
+    omitted <- tibble::tibble()
+    if(!is.null(omit_hcr)){
+        omitted <- data %>% filter(hcr %in% omit_hcr)
+        data <- data %>% filter(!(hcr %in% omit_hcr))
+    }
+
     return(
         data %>%
             mutate(
@@ -260,7 +266,8 @@ scale_and_rank <- function(data, col_name){
                                 "Catch AAV", 
                                 "Proportion of Years SSB < B35", 
                                 "Average Years on HCR Ramp",
-                                "Recovery Time"
+                                "Recovery Time",
+                                "Average Years SSB < Bref"
                             ), 
                             inf_min(eval(rlang::parse_expr(col_name)))/eval(rlang::parse_expr(col_name)), 
                             eval(rlang::parse_expr(col_name))/inf_max(eval(rlang::parse_expr(col_name)))
@@ -268,18 +275,22 @@ scale_and_rank <- function(data, col_name){
             ) %>%
             arrange(desc(scaled), .by_group=TRUE) %>%
             mutate(
-                rank = ifelse(
-                            name %in% c(
-                                "Catch AAV", 
-                                "Proportion of Years SSB < B35",
-                                "Average Years on HCR Ramp", 
-                                "Recovery Time"
-                            ), 
-                            factor(desc(row_number())), 
-                            factor(row_number())
-                        ),
+                rank=factor(row_number()),
+                # rank = ifelse(
+                #             name %in% c(
+                #                 "Catch AAV", 
+                #                 "Proportion of Years SSB < B35",
+                #                 "Average Years on HCR Ramp", 
+                #                 "Recovery Time",
+                #                 "Average Years SSB < Bref"
+                #             ), 
+                #             factor(desc(row_number())), 
+                #             factor(row_number())
+                #         ),
                 rank = factor(rank)
-            )
+            ) %>%
+            bind_rows(omitted) %>%
+            arrange(desc(scaled), .by_group=TRUE)
     )
 }
 
