@@ -63,7 +63,7 @@ run_mse <- function(om, mp, mse_options, nyears_input=NA, seed=1120, file_suffix
     landings <- rep(0, nyears)
     hcr_F <- rep(0, nyears)
     out_f <- rep(0, nyears) # vector to store outputted F
-    landings[1:64] <- (assessment$t.series[,"Catch_HAL"]+assessment$t.series[,"Catch_TWL"])
+    landings[1:length(hist_catch)] <- hist_catch#(assessment$t.series[,"Catch_HAL"]+assessment$t.series[,"Catch_TWL"])
 
     #' 6. Setup empty array to collect derived quantities from the OM
     #' It is left to the user to decide what information to store, and
@@ -109,7 +109,7 @@ run_mse <- function(om, mp, mse_options, nyears_input=NA, seed=1120, file_suffix
     naa[1,,,] = init_naa
 
     set.seed(seed)
-    hist_recruitment <- assessment$natage.female[,1]*2
+    hist_recruitment <- hist_recruits#assessment$natage.female[,1]*2
     hist_recruitment <- hist_recruitment[1:mse_options$recruitment_start]
     projected_recruitment <- do.call(recruitment$func, c(recruitment$pars, list(seed=seed)))
     if(!is.function(projected_recruitment)){
