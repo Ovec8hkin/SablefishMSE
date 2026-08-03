@@ -1184,10 +1184,10 @@ compute_average_annual_dynamic_value <- function(
     price_data_max <- matrix(c(price_age_f_max, price_age_m_max), nrow=length(price_age_f_max), ncol=2)
     dimnames(price_data_max) <- list("age"=2:31, "sex"=c("F", "M"))
     
-    max_price <- max(c(price_age_f_max, price_age_m_max))
-    price_data_low <- price_data_low/price_data_max
-    price_data_max <- price_data_max/max_price
-    price_data_low <- price_data_max*price_data_low
+    # max_price <- max(c(price_age_f_max, price_age_m_max))
+    # price_data_low <- price_data_low/price_data_max
+    # price_data_max <- price_data_max/max_price
+    # price_data_low <- price_data_max*price_data_low
 
     group_columns <- c("sim", summarise_by)
 
