@@ -98,7 +98,7 @@ height_small <- 8
 all_hcrs <- c("F40", "F40 +/- 10% Up", "20k Harvest Cap", "F40 Hybrid", "F50", "F50 +10% Up", "20k Harvest Cap F50", "F50 Hybrid", "No Fishing")
 all_hcr_names <- c("F40", "F40 Stability Constraint", "F40 Harvest Cap", "F40 Hybrid", "F50", "F50 Stability Constraint", "F50 Harvest Cap", "F50 Hybrid", "No Fishing")
 
-publication_hcrs <- c("F40", "F40 +/- 10% Up", "20k Harvest Cap", "F40 Hybrid", "F50")
+publication_hcrs <- c("F40", "F40 +/- 10% Up", "20k Harvest Cap", "F40 Hybrid", "F50", "No Fishing")
 publication_hcr_names <- all_hcr_names[match(publication_hcrs, all_hcrs)]
 supplementary_hcrs <- c("F40", "F50", "F50 +10% Up", "20k Harvest Cap F50", "F50 Hybrid", "No Fishing")
 supplementary_hcr_names <- all_hcr_names[match(supplementary_hcrs, all_hcrs)]
@@ -131,6 +131,7 @@ time_horizon <- c(55, 129)
 
 hcr_colors <- set_hcr_colors2(publication_hcrs)
 names(hcr_colors) <- all_hcr_names
+hcr_colors["No Fishing"] <- "grey40"
 
 # Specify which subset of HCR/OM combinations to get results for
 hcr_filter <- publication_hcr_names#[c(1, 2, 3, 4, 5)]
@@ -139,17 +140,18 @@ om_filter <- publication_om_names
 ### Spawning Biomass and Catch Plots
 ssb_data <- get_ssb_biomass(model_runs, extra_columns, sable_om$dem_params, hcr_filter=hcr_filter, om_filter=om_filter)
 catch_data <- get_landed_catch(model_runs, extra_columns, hcr_filter=hcr_filter, om_filter=om_filter)
+econ_data <- get_dynamic_economic_value(model_runs, extra_columns, hcr_filter=hcr_filter, om_filter=om_filter)
 
-
-rp_data <- expand.grid(hcr=hcr_filter, om=om_filter, L1=c("caa", "naa")) 
+rp_data <- expand.grid(hcr=hcr_filter, om=om_filter, L1=c("caa", "naa", "vaa")) 
 rp_data <- rp_data %>%
     mutate(
         hcr = factor(hcr, levels=all_hcr_names, labels=all_hcr_names),
         om = factor(om, levels=all_om_names, labels=all_om_names),
-        L1 = factor(L1, labels=c("Landed Catch", "SSB")),
+        L1 = factor(L1, labels=c("Landed Catch", "SSB", "Economic Value")),
         RP = case_when(
             L1 == "Landed Catch" ~ 18538/1000, #mean(assessment$t.series[,"Catch_HAL"]+assessment$t.series[,"Catch_TWL"]),
-            L1 == "SSB" ~ 105.935
+            L1 == "SSB" ~ 105.935,
+            L1 == "Economic Value" ~ 0 # This is the relative economic value of the F40 reference point compared to the maximum economic value across all HCRs and OMs, which is used as the reference point for the economic value metric
         )
     )
 
@@ -166,10 +168,51 @@ plot_ssb_catch(
         linetype="dashed", 
         color="grey50"
     )+
+    ggh4x::facetted_pos_scales(
+        y = list(
+            scale_y_continuous(limits=c(-1, 60)),
+            scale_y_continuous(limits=c(0, 400))
+        )
+    )+
     guides(color=guide_legend("Harvest\nControl\nRule", nrow = 1))
     
 
 ggsave(filename=file.path("~/Desktop/", "ssb_catch.jpeg"), width=16*(3/3), height=10, units="in")
+
+
+plot_ssb_catch_value(
+    ssb_data,
+    catch_data,
+    econ_data,
+    v1="hcr",
+    v2="om",
+    common_trajectory = common_trajectory
+) + 
+    geom_hline(
+        data=rp_data %>% filter_hcr_om(hcrs=hcr_filter, oms=om_filter), 
+        aes(yintercept=RP), 
+        linetype="dashed", 
+        color="grey50"
+    )+
+    ggh4x::facetted_pos_scales(
+        y = list(
+            scale_y_continuous(limits=c(-1, 60)),
+            scale_y_continuous(limits=c(0, 400)),
+            scale_y_continuous(limits=c(0, 200))
+        )
+    )
+
+catch_data %>%
+    mutate(
+        om_type = case_when(
+            om %in% publication_om_names ~ "New Recruitment Scenarios",
+            om %in% supplementary_om_names ~ "Old Recruitment Scenarios"
+        ),
+        om = factor(om, levels=supplementary_om_names)
+    ) %>%
+
+    plot_landed_catch(v1="hcr",v2="om",common_trajectory = common_trajectory)
+
 
 ### Cumulative Catch Plot -----------------
 #########################################
@@ -214,9 +257,9 @@ ggsave(filename=file.path(figures_dir, paste0("cumulative_catch_supp", filetype)
 #########################################
 metric_names <- c("Annual Catch", "Catch AAV", "SSB", "Average Age", "Years on HCR Ramp", "Dynamic Annual Value")
 
-performance_metrics <- performance_metric_summary(
-    model_runs, 
-    extra_columns, 
+performance_metrics <- compute_performance_metric_summary(
+    model_runs = model_runs,#_true[good_models], 
+    extra_columns %>% filter(!is.na(hcr)), 
     dem_params = sable_om$dem_params, 
     ref_naa = ref_naa,
     hcr_filter=hcr_filter,
@@ -238,26 +281,41 @@ perf_data <- performance_metrics$perf_data %>%
             labels=c("Average Annual Catch", "Catch AAV", "Average Annual SSB", "Average Age", "Average Years on HCR Ramp", "Average Annual Economic Value")
         )
     ) %>%
-    filter(hcr != "No Fishing") %>%
+    # filter(hcr != "No Fishing") %>%
     group_by(.width, om, name) %>%
-    scale_and_rank("median")
+    scale_and_rank("median", omit_hcr="No Fishing")
 
-rank_colors <- rank_colors_small
-plot_performance_metric_summary(perf_data, v1="hcr", v2="om")+
+rank_colors <- c(
+    "#D55E00",
+    "#FF8B33",
+    "#FFA35C",
+    "#33B4FF",
+    "#0072B2"
+)
+
+perf_data %>% mutate(
+    name = factor(
+        name,
+        levels=c("Average Annual Catch", "Catch AAV", "Average Annual SSB", "Average Age", "Average Years on HCR Ramp", "Average Annual Economic Value"),
+        labels = c("Average Annual Catch", "Catch AAV", "Average Annual SSB", "Average Age", "Average Years\nSSB < Bref", "Average Annual\nEconomic Value")
+    )
+) %>%
+plot_performance_metric_summary(v1="hcr", v2="om")+
+    scale_color_manual(values=rank_colors)+
     theme(
         panel.spacing.x = unit(0.75, "cm"),
     )+
     ggh4x::facetted_pos_scales(
         x = list(
-            scale_x_continuous(limits=c(0, 55)),
+            scale_x_continuous(limits=c(0, 50)),
             scale_x_continuous(limits=c(0, 0.08), breaks=c(0, 0.025, 0.05, 0.075)),
             scale_x_continuous(limits=c(0, 550), breaks=c(0, 150, 300, 450)),
             scale_x_continuous(limits=c(0, 15)),
             scale_x_continuous(limits=c(0, 75), breaks=seq(0, 75, 15)),
-            scale_x_continuous(limits=c(0, 15), breaks=seq(0, 15, 5))
+            scale_x_continuous(limits=c(0, 200), breaks=seq(0, 200, 50))
         )
     )
-ggsave(filename=file.path(figures_dir, paste0("performance", filetype)), width=18, height=12, units="in")
+ggsave(filename=file.path(figures_dir, paste0("performance_pointrange", filetype)), width=18, height=12, units="in")
 
 
 formatted_metric_names <- c(
@@ -280,7 +338,8 @@ yaxs <- data.frame(
     y=seq(0, 1, 0.25)
 )
 
-radar <- perf_data %>% select(om, hcr, name, scaled) %>%
+radar <- perf_data %>%
+    select(om, hcr, name, scaled) %>%
     mutate(name=factor(
         name, 
         levels=c("Average Annual Catch", "Catch AAV", "Average Annual SSB", "Average Age", "Average Years on HCR Ramp", "Average Annual Economic Value"), 
@@ -325,13 +384,17 @@ table <- perf_data %>% filter(.width==0.50) %>%
         ),
         hcr = factor(
             hcr,
-            labels = c("F40", "F40\nStability\nConstraint", "F40\nHarvest\nCap", "F40\nHybrid", "F50")
-        ) 
+            labels = c("F40", "F40\nStability\nConstraint", "F40\nHarvest\nCap", "F40\nHybrid", "F50")#, "No\nFishing")
+        ),
+        color = case_when(
+            hcr == "No\nFishing" ~ NA,
+            TRUE ~ scaled
+        )
     ) %>%
     ggplot()+
-        geom_tile(aes(x=hcr, y=name, fill=scaled))+
+        geom_tile(aes(x=hcr, y=name, fill=color))+
         geom_text(aes(x=hcr, y=name, label=round(median, 2)), size=6, color="black")+
-        scale_fill_gradient(oob=scales::squish, limits=c(0.6, 1), low="white", high="#368536")+
+        scale_fill_gradient(oob=scales::squish, limits=c(0.6, 1), low="white", high="#368536", na.value="grey80")+
         scale_y_discrete(name="", position="right")+
         scale_x_discrete(name="", position="bottom")+
         facet_wrap(~om, nrow=1, strip.position="left")+
@@ -346,7 +409,7 @@ table <- perf_data %>% filter(.width==0.50) %>%
 library(patchwork)
 radar/table + plot_layout(guides="collect") & theme(legend.position="top")
 
-ggsave(filename=file.path(figures_dir, paste0("performance_table_radar", filetype)), width=16, height=12, units="in")
+ggsave(filename=file.path(figures_dir, paste0("performance_table_radar", filetype)), width=18, height=12, units="in")
 
 perf_data %>% select(om, hcr, name, median) %>%
     mutate(name=factor(
@@ -357,7 +420,7 @@ perf_data %>% select(om, hcr, name, median) %>%
     pivot_wider(names_from=name, values_from=median)
 
 
-rel_performance_metrics <- performance_metric_summary(
+rel_performance_metrics <- compute_performance_metric_summary(
     model_runs, 
     extra_columns, 
     dem_params = sable_om$dem_params, 
@@ -367,18 +430,18 @@ rel_performance_metrics <- performance_metric_summary(
     interval_widths=interval_widths,
     time_horizon = time_horizon, 
     extra_filter = NULL,
-    relative="F40", 
+    relative=NULL, 
     summarise_by=c("om", "hcr"),
     summary_out = TRUE,
-    metric_list = c("avg_catch", "avg_ssb")
+    metric_list = c("avg_catch", "avg_ssb", "dynamic_value")
 )
 
 rel_perf_data <- rel_performance_metrics$perf_data %>%
     mutate(
         name = factor(
             name, 
-            levels=c("Annual Catch", "SSB"), 
-            labels=c("Average Annual Catch", "Average Annual SSB")
+            levels=c("Annual Catch", "SSB", "Dynamic Annual Value"), 
+            labels=c("Average Annual Catch", "Average Annual SSB", "Average Annual Economic Value")
         ),
         hcr = factor(
             hcr,
@@ -386,9 +449,17 @@ rel_perf_data <- rel_performance_metrics$perf_data %>%
             labels=hcr_filter
         )
     ) %>%
-    filter(hcr != "No Fishing") %>%
+    # filter(hcr != "No Fishing") %>%
     group_by(.width, om, name) %>%
     scale_and_rank("median")
+
+f40_data <- rel_perf_data %>% filter(hcr=="F40")
+
+rel_perf_data <- rel_perf_data %>% left_join(
+    f40_data %>% select(om, .width, name, median) %>% rename(f40_median=median), 
+    by=c("om", ".width", "name")
+) %>%
+mutate(median = median/f40_median, lower = lower/f40_median, upper = upper/f40_median)
 
 catchssb_perf <- ggplot(
         rel_perf_data
@@ -412,8 +483,9 @@ catchssb_perf <- ggplot(
     )+
     ggh4x::facetted_pos_scales(
         x = list(
-            scale_x_continuous(limits=c(0, 1.5)),
-            scale_x_continuous(limits=c(0, 2), breaks=c(0, 0.5, 1.0, 1.5, 2.0))
+            scale_x_continuous(limits=c(0, 2.5)),
+            scale_x_continuous(limits=c(0, 4), breaks=seq(0, 4, 1)),
+            scale_x_continuous(limits=c(0, 1.5), breaks=seq(0, 1.5, 0.5))
         )
     )
 
@@ -425,22 +497,26 @@ library(ggpmisc)
 
 g1 <- ggplotGrob(catchssb_perf)
 
-insets <- expand.grid(om=om_filter, L1=c("Landed Catch", "SSB"))
+insets <- expand.grid(om=om_filter, L1=c("Landed Catch", "SSB", "Economic Value"))
 insets$x <- 125
-insets$y <- c(rep(58, 3), rep(360, 3))
+insets$y <- c(rep(58, 3), rep(570, 3), rep(280, 3))
 insets$plot <- list(
     as.ggplot(g1[c(10, 15), c(7)]),
     as.ggplot(g1[c(12, 15), c(7)]),
     as.ggplot(g1[c(14, 15), c(7)]),
     as.ggplot(g1[c(10, 15), c(9)]),
     as.ggplot(g1[c(12, 15), c(9)]),
-    as.ggplot(g1[c(14, 15), c(9)])
+    as.ggplot(g1[c(14, 15), c(9)]),
+    as.ggplot(g1[c(10, 15), c(11)]),
+    as.ggplot(g1[c(12, 15), c(11)]),
+    as.ggplot(g1[c(14, 15), c(11)])
 )
 
 
-plot_ssb_catch(
-    ssb_data %>% filter_hcr_om(hcrs=hcr_filter[1:5], oms=om_filter),
-    catch_data %>% filter_hcr_om(hcrs=hcr_filter[1:5], oms=om_filter),
+plot_ssb_catch_value(
+    ssb_data %>% filter_hcr_om(hcrs=hcr_filter[1:6], oms=om_filter),
+    catch_data %>% filter_hcr_om(hcrs=hcr_filter[1:6], oms=om_filter),
+    econ_data %>% filter_hcr_om(hcrs=hcr_filter[1:6], oms=om_filter),
     v1="hcr",
     v2="om",
     common_trajectory = common_trajectory
@@ -456,11 +532,12 @@ plot_ssb_catch(
     ggh4x::facetted_pos_scales(
             y = list(
                 scale_y_continuous(limits=c(0, 60)),
-                scale_y_continuous(limits=c(0, 370))
+                scale_y_continuous(limits=c(0, 600)),
+                scale_y_continuous(limits=c(0, 300))
             )
         )
 
-ggsave(filename=file.path(figures_dir, paste0("ssb_catch_insets_supp", filetype)), width=16, height=10, units="in")
+ggsave(filename=file.path(figures_dir, paste0("ssb_catch_value_insets", filetype)), width=16, height=13, units="in")
 
 
 
@@ -982,23 +1059,23 @@ ggplot(d)+
 ggsave("~/Desktop/kobe_scatter.jpeg", width=16, height=12, units="in")
 
 
-recruit_data <- get_recruits(model_runs, extra_columns, publication_hcrs, publication_oms)
+recruit_data <- get_recruits(model_runs, extra_columns, hcr_filter, om_filter)
 plot_recruitment(recruit_data %>% filter(time > common_trajectory), v1="hcr", v2="om", common_trajectory = common_trajectory)+custom_theme
 ggsave(filename=file.path(figures_dir, paste0("recruitment_supp", filetype)), width=16, height=7, units="in")
 
 
 examp_rec <- recruit_data %>% 
     as_tibble() %>%
-    filter(time > 54, sim %in% sample(seed_list, 5)) %>%
+    filter(hcr=="F40", time > 54, sim %in% sample(seed_list, 5)) %>%
     mutate(
         sim = factor(sim)
     )
 
-mean_rec <- examp_rec %>% group_by(om) %>% summarise(r=median(rec))
+mean_rec <- recruit_data %>% filter(hcr=="F40") %>% group_by(om) %>% summarise(r=median(rec))
 
 summ_rec <- recruit_data %>%
     as_tibble() %>%
-    filter(time > 54) %>%
+    filter(time > 54, hcr=="F40") %>%
     group_by(time, om) %>%
     median_qi(rec, .width=interval_widths)
 
@@ -1006,7 +1083,7 @@ ggplot(examp_rec) +
     geom_line(aes(x=time, y=rec, color=om, group=sim), size=0.5, alpha=0.6)+
     geom_line(data=summ_rec, aes(x=time, y=rec), color="black", size=1)+
     geom_hline(data=mean_rec, aes(yintercept=r), linetype="dashed")+
-    geom_text(data=mean_rec, aes(x=120, y=115, label=round(r, 3)), size=6)+
+    geom_text(data=mean_rec, aes(x=120, y=140, label=round(r, 3)), size=6)+
     # scale_y_continuous(limits=c(0, 120))+
     scale_x_continuous(breaks=c(seq(55, 130, 20), 134), labels=c(seq(0, 75, 20), 75))+
     guides(color="none")+
