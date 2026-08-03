@@ -205,6 +205,10 @@ mp_10perc_up$hcr <- list(
     units = "F"
 )
 
+mp_f50_10perc_up <- mp_10perc_up
+mp_f50_10perc_up$ref_points$spr_target <- 0.50
+mp_f50_10perc_up$name <- "F50 +10% Up"
+
 #'
 #' Harvest Cap HCRs
 #'
@@ -233,6 +237,18 @@ mp_15cap$hcr <- list(
     units = "F"
 )
 
+mp_20cap <- mp_base
+mp_20cap$name <- "20k Harvest Cap"
+mp_20cap$hcr <- list(
+    func = tier3,
+    extra_pars = NA,
+    extra_options = list(
+        max_stability = NA,
+        harvest_cap = 20
+    ),
+    units = "F"
+)
+
 mp_25cap <- mp_base
 mp_25cap$name <- "25k Harvest Cap"
 mp_25cap$hcr <- list(
@@ -245,13 +261,22 @@ mp_25cap$hcr <- list(
     units = "F"
 )
 
+mp_f50_20cap <- mp_20cap
+mp_f50_20cap$ref_points$spr_target <- 0.50
+mp_f50_20cap$name <- "20k Harvest Cap F50"
+
 #'
 #' Hybrid HCRs
 #' 
 mp_f40_hybrid <- mp_f40
 mp_f40_hybrid$name <- "F40 Hybrid"
 mp_f40_hybrid$hcr$extra_options$max_stability <- mp_10perc_up$hcr$extra_options$max_stability
-mp_f40_hybrid$hcr$extra_options$harvest_cap <- mp_20cap$hcr$extra_options$harvest_cap
+mp_f40_hybrid$hcr$extra_options$harvest_cap <- 20
+
+mp_f50_hybrid <- mp_f50
+mp_f50_hybrid$hcr$extra_options$max_stability <- mp_10perc_up$hcr$extra_options$max_stability
+mp_f50_hybrid$hcr$extra_options$harvest_cap <- mp_20cap$hcr$extra_options$harvest_cap
+mp_f50_hybrid$name <- "F50 Hybrid"
 
 #'
 #' Constant Fishing Mortality Rules
@@ -281,6 +306,19 @@ mp_f50chr$hcr <- list(
     units = "F"
 )
 mp_f50chr$ref_points$spr_target <- c(0.50, 0.001)
+
+mp_f00chr <- mp_base
+mp_f00chr$name <- "No Fishing"
+mp_f00chr$hcr <- list(
+    func = chr,
+    extra_pars = NA,
+    extra_options = list(
+        max_stability = NA,
+        harvest_cap = NA
+    ),
+    units = "F"
+)
+mp_f00chr$ref_points$spr_target <- c(1.00, 0.001)
 
 #'
 #' Other HCRs
